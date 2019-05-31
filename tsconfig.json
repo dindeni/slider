@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "noEmitOnError": true,
+    "strictNullChecks": true, //check null
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
