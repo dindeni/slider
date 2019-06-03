@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const config = {
-  entry: ['./src/ts/app.ts'],
+  entry: ['jquery', './src/ts/app.ts'],
   output: {
     path: path.resolve(__dirname, './src'),
     filename: 'ts/bundle.js'
@@ -10,7 +10,7 @@ const config = {
 		module: {
 				rules: [
 					{
-						test: /\.js$/, // files ending with .ts
+						test: /\.js$/, // files ending with .js
 						exclude: /node_modules/, // exclude the node_modules directory
 						loader: "babel-loader", // use this (babel-core) loader
 						query: {
@@ -45,6 +45,12 @@ const config = {
 				]
 		},
 	plugins: [
+		new webpack.ProvidePlugin({
+			$: 'jquery',
+			jQuery: 'jquery',
+			'window.jQuery': 'jquery',
+			"window.$": "jquery"
+		})
 	],
 };
 

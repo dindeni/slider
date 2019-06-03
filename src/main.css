@@ -1,0 +1,19 @@
+main {
+  padding: 15px; }
+
+.slider-wrapper {
+  position: relative; }
+
+.slider-thumb {
+  width: 21px;
+  height: 21px;
+  background: #e75735;
+  border-radius: 50%;
+  position: absolute;
+  top: -8px; }
+
+.slider-track {
+  width: 260px;
+  height: 5px;
+  background: #e5e5e5; }
+
