@@ -1,6 +1,12 @@
+import {ViewOptional} from "../view/viewOptional";
+
+const viewOptional = new ViewOptional();
+
 class Presenter {
     private coordXStart: number;
     private shift: number;
+    divThumbLeft: number = 0;
+    optionProgress: boolean = false;
 
     addDnD(){
         const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;
@@ -21,6 +27,12 @@ class Presenter {
                 break;
                 default: divThumb.style.left = thumbDistance + 'px';
             }
+
+            this.divThumbLeft = parseInt(divThumb.style.left, 10);
+
+            this.optionProgress ? viewOptional.stylingProgress(this.divThumbLeft) :
+                null;
+
         };
 
         const getDownCoord = (evt: MouseEvent)=>{

@@ -4,17 +4,13 @@ main {
 .slider-wrapper {
   position: relative; }
 
-/*.slider-thumb{
-  width: 21px;
-  height: 21px;
-  background: #e75735;
-  border-radius: 50%;
-  position: absolute;
-  top: -8px;
-  left: 0;
-}*/
 .slider-track {
   width: 260px;
   height: 5px;
   background: #e5e5e5; }
+
+.slider-progress {
+  width: 0;
+  height: 5px;
+  background: #e75735; }
 

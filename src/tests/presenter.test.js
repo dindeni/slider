@@ -9,23 +9,9 @@ describe('Presenter', ()=>{
     let divThumbTop;
     let divThumbWidth;
     let divThumbLeft;
+    const moveDistance = 50;
 
-    beforeAll(  ()=>{
-        const view = new View();
-        view.createSlider($('body'));
-
-        divThumb = document.querySelector('.slider-thumb');
-        divThumbLeft = divThumb.getBoundingClientRect().left;
-        divThumbTop = divThumb.getBoundingClientRect().top;
-
-    });
-
-    it('should div thumb to be draggable',  ()=> {
-        expect(divThumb.hasAttribute('draggable')).toBeTruthy();
-    });
-
-    it('should div thumb move a distance', ()=>{
-        const moveDistance = 50;
+    const dispatchMove = ()=>{
         divThumbWidth = divThumb.getBoundingClientRect().width;
         const evtDown = new MouseEvent('mousedown', {
             'view': window,
@@ -45,7 +31,37 @@ describe('Presenter', ()=>{
 
         divThumb.dispatchEvent(evtDown);
         divThumb.dispatchEvent(evtMove);
+    };
 
+    const createElements = ()=>{
+        const view = new View();
+        view.createSlider($('body'));
+
+    };
+    const addDnd = ()=>{
+        const presenter = new Presenter();
+        presenter.addDnD();
+    };
+
+    const findElements = ()=>{
+        divThumb = document.querySelector('.slider-thumb');
+        divThumbLeft = divThumb.getBoundingClientRect().left;
+        divThumbTop = divThumb.getBoundingClientRect().top;
+    };
+
+    beforeAll(  async ()=>{
+        await createElements();
+        await addDnd();
+        await findElements();
+        await dispatchMove();
+
+    });
+
+    it('should div thumb to be draggable',  ()=> {
+        expect(divThumb.hasAttribute('draggable')).toBeTruthy();
+    });
+
+    it('should div thumb move a distance', ()=>{
         divThumbLeft = divThumb.getBoundingClientRect().left;
         expect(divThumbLeft).toBe(moveDistance - divThumbWidth)
     })

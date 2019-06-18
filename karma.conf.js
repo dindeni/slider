@@ -3,6 +3,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = function(config) {
   config.set({
@@ -18,7 +19,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/tests/*.js'
+      'src/tests/*.js',
     ],
 
 
@@ -32,11 +33,14 @@ module.exports = function(config) {
     preprocessors: {
       "src/tests/*.js": ['webpack'],
       "test/**/*.js": ['webpack'],
-        "src/blocks/view/*.ts": ['webpack']
     },
 
       webpack: {
           entry: ['jquery'],
+          resolve: {
+              // Add `.ts` and `.tsx` as a resolvable extension.
+              extensions: [".ts", ".tsx", ".js"]
+          },
         module: {
             rules: [
                 {
@@ -56,7 +60,7 @@ module.exports = function(config) {
                     test: /\.tsx?$/,
                     loader: 'ts-loader',
                     exclude: /node_modules/,
-                }
+                },
             ]
         },
           plugins: [
@@ -65,7 +69,7 @@ module.exports = function(config) {
                   jQuery: 'jquery',
                   'window.jQuery': 'jquery',
                   "window.$": "jquery"
-              })
+              }),
           ],
       },
 

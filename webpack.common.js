@@ -7,6 +7,10 @@ const config = {
     path: path.resolve(__dirname, './src'),
     filename: 'ts/bundle.js'
   },
+	resolve: {
+		// Add `.ts` and `.tsx` as a resolvable extension.
+		extensions: [".ts", ".tsx", ".js"]
+	},
 		module: {
 				rules: [
 					{
