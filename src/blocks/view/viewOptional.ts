@@ -8,6 +8,7 @@ class ViewOptional{
 
         $('<div class="slider-progress"></div>').appendTo(this.divTrack);
         this.divProgress = $('.slider-progress');
+
     }
     stylingProgress(divProgressWidth: number){
         !this.divProgress ?

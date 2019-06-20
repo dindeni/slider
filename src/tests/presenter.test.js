@@ -1,7 +1,7 @@
 const $  = require('jquery');
 
-import {Presenter} from "../blocks/presenter/presenter.ts";
-import {View} from "../blocks/view/view.ts";
+import {View} from "../blocks/view/view";
+import {Presenter} from "../blocks/presenter/presenter";
 
 describe('Presenter', ()=>{
 
@@ -10,6 +10,7 @@ describe('Presenter', ()=>{
     let divThumbWidth;
     let divThumbLeft;
     const moveDistance = 50;
+    let presenter;
 
     const dispatchMove = ()=>{
         divThumbWidth = divThumb.getBoundingClientRect().width;
@@ -39,7 +40,7 @@ describe('Presenter', ()=>{
 
     };
     const addDnd = ()=>{
-        const presenter = new Presenter();
+        presenter = new Presenter();
         presenter.addDnD();
     };
 
@@ -54,6 +55,7 @@ describe('Presenter', ()=>{
         await addDnd();
         await findElements();
         await dispatchMove();
+        
 
     });
 
@@ -64,6 +66,17 @@ describe('Presenter', ()=>{
     it('should div thumb move a distance', ()=>{
         divThumbLeft = divThumb.getBoundingClientRect().left;
         expect(divThumbLeft).toBe(moveDistance - divThumbWidth)
+    });
+
+    it('should calculate slider value percent', ()=> {
+        expect(presenter.calculateSliderMovePercent(100, 50,)).
+        toBe(50);
+    });
+
+    it('should calculate slider value', ()=>{
+        expect(presenter.calculateSliderValue(100, 500, 50)).
+        toBe(300)
     })
+
 
 });

@@ -1,9 +1,7 @@
 const $  = require('jquery');
-import '../blocks/view/view.ts';
 import {View} from "../blocks/view/view.ts";
 import {ViewOptional} from "../blocks/view/viewOptional";
 import {Presenter} from "../blocks/presenter/presenter";
-/*import '../blocks/view/view.scss';*/
 
 describe('View', ()=>{
     let divThumb;
