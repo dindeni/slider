@@ -12,7 +12,8 @@ const viewOptional = new ViewOptional();
 interface sliderOptions {
     progress?: boolean,
     max?: number,
-    min?: number
+    min?: number,
+    label?: boolean
 }
 
 declare global {
@@ -28,11 +29,18 @@ const createProgress = (progress: boolean)=>{
     }
 };
 
+const createLabel = (label: boolean, initValue: number)=>{
+    if (label){
+        viewOptional.createLabel(initValue)
+    }
+};
+
 const initSlider = async (element: JQuery, progress: boolean, min: number,
-                          max: number):Promise<void> =>{
+                          max: number, label: boolean):Promise<void> =>{
 
     await view.createSlider(element);
     await presenter.getMinMax(min, max);
+    await createLabel(label, min);
     await presenter.addDnD();
 
     await createProgress(progress);
@@ -44,13 +52,13 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
         const optionsDefault= {
             progress: false,
             min: 0,
-            max: 100
+            max: 100,
+            label: true
         };
 
         const config = $.extend({}, optionsDefault, options);
 
-        initSlider(this, config.progress, config.min, config.max);
-
+        initSlider(this, config.progress, config.min, config.max, config.label);
 
         return this;
     };

@@ -1,7 +1,7 @@
 import {ViewOptional} from "../view/viewOptional";
 import {Model} from "../model/model";
 
-const viewOptional = new ViewOptional();
+/*const viewOptional = new ViewOptional();*/
 
 class Presenter {
     private coordXStart: number;
@@ -13,12 +13,14 @@ class Presenter {
     sliderValuePercent: number;
 
     model: Model;
+    viewOptional: ViewOptional;
 
     addDnD(){
         const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;
         const  divTrack = document.querySelector('.slider-track') as HTMLElement;
         const thumbWidth = divThumb.getBoundingClientRect().width;
 
+        this.viewOptional = new ViewOptional();
         this.model = new Model();
 
         const moveThumb = (evt: MouseEvent)=>{
@@ -38,15 +40,18 @@ class Presenter {
 
             this.divThumbLeft = parseInt(divThumb.style.left, 10);
 
-            this.optionProgress ? viewOptional.stylingProgress(this.divThumbLeft) :
+            this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft) :
                 null;
 
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
                 divTrack.getBoundingClientRect().width, thumbDistance);
             this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
                 this.model.sliderValuePercent);
-            console.log('model-per', this.model.sliderValuePercent);
-            console.log('val', this.model.sliderValue);
+
+            this.viewOptional.updateLabelValue(this.model.sliderValue,
+                this.divThumbLeft);
+
+
         };
 
         const getDownCoord = (evt: MouseEvent)=>{

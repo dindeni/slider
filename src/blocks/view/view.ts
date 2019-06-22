@@ -15,7 +15,7 @@ class View {
             background: '#e75735',
             borderRadius: '50%',
             position: 'absolute',
-            top: '-8px',
+            top: '12px',
             left: 0
         });
 
