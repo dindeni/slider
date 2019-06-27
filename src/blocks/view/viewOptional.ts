@@ -34,6 +34,20 @@ class ViewOptional{
             left: left - this.labelOffset
         })
     }
+
+    createScale(scaleValue: number[], scaleCoords: number[]){
+        !this.divWrapper ? this.divWrapper = $('.slider-wrapper') : null;
+        const ul = $('<ul class="slider-scale"></ul>').appendTo(this.divWrapper);
+
+        scaleValue.map((item, i)=>{
+
+                const itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo(ul);
+
+            itemElement.css({left: scaleCoords[i]})
+
+        })
+
+    }
 }
 
 export {ViewOptional};

@@ -13,7 +13,8 @@ interface sliderOptions {
     progress?: boolean,
     max?: number,
     min?: number,
-    label?: boolean
+    label?: boolean,
+    step?: number
 }
 
 declare global {
@@ -35,15 +36,22 @@ const createLabel = (label: boolean, initValue: number)=>{
     }
 };
 
+const createScale = (min: number, max: number, step: number | undefined)=>{
+    presenter.calculateLeftScaleCoords(min, max, step);
+    /*viewOptional.createScale(min, max, step);*/
+};
+
 const initSlider = async (element: JQuery, progress: boolean, min: number,
-                          max: number, label: boolean):Promise<void> =>{
+                          max: number, label: boolean,
+                          step: number | undefined):Promise<void> =>{
 
     await view.createSlider(element);
     await presenter.getMinMax(min, max);
     await createLabel(label, min);
-    await presenter.addDnD();
-
+    await presenter.addDnD(step);
     await createProgress(progress);
+    createScale(min, max, step)
+
 
 };
 
@@ -53,12 +61,14 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
             progress: false,
             min: 0,
             max: 100,
-            label: true
+            label: true,
+            step: undefined
         };
 
         const config = $.extend({}, optionsDefault, options);
 
-        initSlider(this, config.progress, config.min, config.max, config.label);
+        initSlider(this, config.progress, config.min, config.max, config.label,
+            config.step);
 
         return this;
     };

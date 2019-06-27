@@ -12,6 +12,7 @@ describe('View', ()=>{
     let divThumbTop;
     const moveDistance = 50;
     let divLabel;
+    let divScale;
 
     const dispatchMove = ()=>{
         divThumbWidth = divThumb.getBoundingClientRect().width;
@@ -42,7 +43,9 @@ describe('View', ()=>{
         const viewOptional = new ViewOptional();
         viewOptional.createProgress();
         viewOptional.createLabel(0);
-        viewOptional.updateLabelValue(50, 50)
+        viewOptional.updateLabelValue(50, 50);
+        viewOptional.createScale([100, 200, 300, 400, 500],
+            [0, 65, 130, 195, 260]);
     };
 
     const turnOnProgress = ()=>{
@@ -58,6 +61,7 @@ describe('View', ()=>{
         divThumbTop = divThumb.getBoundingClientRect().top;
         divTrack = document.querySelector('.slider-track');
         divLabel = document.querySelector('.slider-label');
+        divScale = document.querySelector('.slider-scale');
     };
 
     beforeAll(async ()=>{
@@ -89,7 +93,11 @@ describe('View', ()=>{
         expect(divLabel).not.toBeNull();
     });
 
-    it('should label value to be 42', ()=> {
+    it('should label value to be 50', ()=> {
         expect(divLabel.textContent).toBe('50')
     });
+
+    it('should scale exist', ()=>{
+        expect(divScale).not.toBeNull();
+    })
 });

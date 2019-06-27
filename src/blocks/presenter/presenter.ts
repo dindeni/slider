@@ -1,8 +1,6 @@
 import {ViewOptional} from "../view/viewOptional";
 import {Model} from "../model/model";
 
-/*const viewOptional = new ViewOptional();*/
-
 class Presenter {
     private coordXStart: number;
     private shift: number;
@@ -11,13 +9,16 @@ class Presenter {
     private min: number;
     private max: number;
     sliderValuePercent: number;
+    divTrack: HTMLElement;
+    scaleValueCoords: number[] = [];
+
 
     model: Model;
     viewOptional: ViewOptional;
 
-    addDnD(){
+    addDnD(step: number | undefined){
         const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;
-        const  divTrack = document.querySelector('.slider-track') as HTMLElement;
+        this.divTrack = document.querySelector('.slider-track') as HTMLElement;
         const thumbWidth = divThumb.getBoundingClientRect().width;
 
         this.viewOptional = new ViewOptional();
@@ -26,17 +27,26 @@ class Presenter {
         const moveThumb = (evt: MouseEvent)=>{
             evt.preventDefault();
 
-            const thumbDistance: number = evt.screenX - this.shift;
-            const trackWidth = divTrack.getBoundingClientRect().width;
+            let thumbDistance: number;
 
-            switch (true) {
-                case thumbDistance > trackWidth:
-                    divThumb.style.left = trackWidth - thumbWidth + 'px';
-                    break;
-                case thumbDistance  < 0 : divThumb.style.left = 0 + 'px';
-                break;
-                default: divThumb.style.left = thumbDistance + 'px';
+            if (step){
+                thumbDistance = this.addDnDStep(step, divThumb, this.coordXStart,
+                    evt.screenX);
+            } else {
+                thumbDistance  = evt.screenX - this.shift;
             }
+
+            const trackWidth = this.divTrack.getBoundingClientRect().width;
+
+                switch (true) {
+                    case thumbDistance > trackWidth:
+                        divThumb.style.left = trackWidth - thumbWidth + 'px';
+                        break;
+                    case thumbDistance  < 0 : divThumb.style.left = 0 + 'px';
+                        break;
+                    default: divThumb.style.left = thumbDistance + 'px';
+                }
+
 
             this.divThumbLeft = parseInt(divThumb.style.left, 10);
 
@@ -44,14 +54,14 @@ class Presenter {
                 null;
 
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
-                divTrack.getBoundingClientRect().width, thumbDistance);
+                this.divTrack.getBoundingClientRect().width, thumbDistance);
             this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
                 this.model.sliderValuePercent);
 
             this.viewOptional.updateLabelValue(this.model.sliderValue,
                 this.divThumbLeft);
 
-
+            step  ? document.removeEventListener('mousemove', moveThumb) : null;
         };
 
         const getDownCoord = (evt: MouseEvent)=>{
@@ -96,11 +106,46 @@ class Presenter {
         switch (true) {
             case percent <= 0 ||
             !percent:
-                return 0;
+                return min;
             default:
                 return min + ((max - min) * percent) / 100
         }
     }
+
+    calculateLeftScaleCoords(min: number, max: number, step: number | undefined){
+        let scaleValue: {value: number[], coords: number[]} = {
+            coords: [],
+            value: []
+        };
+
+        if (step){
+            let stepCount = 0;
+            for (let i = min; i<=max; i+=step){
+                const coordsItems = stepCount / (max - min) *
+                    this.divTrack.getBoundingClientRect().width;
+                scaleValue.value.push(i);
+                scaleValue.coords.push(coordsItems);
+                this.scaleValueCoords.push(coordsItems);
+                stepCount+=step;
+            }
+
+            this.viewOptional.createScale(scaleValue.value, scaleValue.coords);
+        }
+    }
+
+    addDnDStep(step: number, divThumb: any, coordDown: number, coordMove: number):
+        number{
+
+        switch (true) {
+            case coordMove > coordDown:
+                return parseInt(divThumb.style.left) + this.scaleValueCoords[1];
+            case coordMove < coordDown:
+                return parseInt(divThumb.style.left) - this.scaleValueCoords[1];
+            default: return parseInt(divThumb.style.left)
+
+        }
+    }
+
 }
 
 export {Presenter};
