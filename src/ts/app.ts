@@ -38,7 +38,6 @@ const createLabel = (label: boolean, initValue: number)=>{
 
 const createScale = (min: number, max: number, step: number | undefined)=>{
     presenter.calculateLeftScaleCoords(min, max, step);
-    /*viewOptional.createScale(min, max, step);*/
 };
 
 const initSlider = async (element: JQuery, progress: boolean, min: number,

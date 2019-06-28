@@ -3,38 +3,17 @@ import {View} from "../blocks/view/view.ts";
 import {ViewOptional} from "../blocks/view/viewOptional";
 import {Presenter} from "../blocks/presenter/presenter";
 
+import {dispatchMove} from "./_serviceFunctions";
+
 describe('View', ()=>{
     let divThumb;
     let divTrack;
     let divProgress;
-    let divThumbWidth;
     let divThumbLeft;
     let divThumbTop;
     const moveDistance = 50;
     let divLabel;
     let divScale;
-
-    const dispatchMove = ()=>{
-        divThumbWidth = divThumb.getBoundingClientRect().width;
-        const evtDown = new MouseEvent('mousedown', {
-            'view': window,
-            'bubbles': true,
-            'screenX': divThumbLeft,
-            'screenY': divThumbTop,
-            'cancelable': true
-        });
-
-        const evtMove = new MouseEvent('mousemove', {
-            'view': window,
-            'screenX': divThumbLeft + moveDistance,
-            'screenY': divThumbTop,
-            'bubbles': true,
-            'cancelable': true
-        });
-
-        divThumb.dispatchEvent(evtDown);
-        divThumb.dispatchEvent(evtMove);
-    };
 
     const createElements = ()=>{
         const view = new View();
@@ -43,7 +22,6 @@ describe('View', ()=>{
         const viewOptional = new ViewOptional();
         viewOptional.createProgress();
         viewOptional.createLabel(0);
-        viewOptional.updateLabelValue(50, 50);
         viewOptional.createScale([100, 200, 300, 400, 500],
             [0, 65, 130, 195, 260]);
     };
@@ -53,6 +31,8 @@ describe('View', ()=>{
         presenter.optionProgress = true;
         divProgress = document.querySelector('.slider-progress');
         divProgress.style.width = 0;
+        presenter.getMinMax(100, 500);
+        presenter.addDnD();
     };
 
     const findElements = ()=>{
@@ -62,13 +42,15 @@ describe('View', ()=>{
         divTrack = document.querySelector('.slider-track');
         divLabel = document.querySelector('.slider-label');
         divScale = document.querySelector('.slider-scale');
+
+        divTrack.style.width = '260px';
     };
 
     beforeAll(async ()=>{
        await createElements();
        await turnOnProgress();
        await findElements();
-       await dispatchMove();
+       await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistance);
 
     });
 
@@ -85,7 +67,6 @@ describe('View', ()=>{
     });
 
     it('should track progress width to be equal thumb coordinates left',  ()=> {
-        console.log(divProgress.getBoundingClientRect().width);
         expect(divProgress.getBoundingClientRect().width).toBe(divThumb.getBoundingClientRect().left)
     });
 
@@ -93,11 +74,11 @@ describe('View', ()=>{
         expect(divLabel).not.toBeNull();
     });
 
-    it('should label value to be 50', ()=> {
-        expect(divLabel.textContent).toBe('50')
+    it('should label value to be 188', ()=> {
+        expect(divLabel.textContent).toBe('188')
     });
 
     it('should scale exist', ()=>{
         expect(divScale).not.toBeNull();
-    })
+    });
 });

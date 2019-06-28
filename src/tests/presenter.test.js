@@ -3,6 +3,8 @@ const $  = require('jquery');
 import {View} from "../blocks/view/view";
 import {Presenter} from "../blocks/presenter/presenter";
 
+import {dispatchMove} from "./_serviceFunctions";
+
 describe('Presenter', ()=>{
 
     let divThumb;
@@ -11,28 +13,6 @@ describe('Presenter', ()=>{
     let divThumbLeft;
     const moveDistance = 50;
     let presenter;
-
-    const dispatchMove = ()=>{
-        divThumbWidth = divThumb.getBoundingClientRect().width;
-        const evtDown = new MouseEvent('mousedown', {
-            'view': window,
-            'bubbles': true,
-            'screenX': divThumbLeft,
-            'screenY': divThumbTop,
-            'cancelable': true
-        });
-
-        const evtMove = new MouseEvent('mousemove', {
-            'view': window,
-            'screenX': divThumbLeft + moveDistance,
-            'screenY': divThumbTop,
-            'bubbles': true,
-            'cancelable': true
-        });
-
-        divThumb.dispatchEvent(evtDown);
-        divThumb.dispatchEvent(evtMove);
-    };
 
     const createElements = ()=>{
         const view = new View();
@@ -48,14 +28,15 @@ describe('Presenter', ()=>{
         divThumb = document.querySelector('.slider-thumb');
         divThumbLeft = divThumb.getBoundingClientRect().left;
         divThumbTop = divThumb.getBoundingClientRect().top;
+        divThumbWidth = divThumb.getBoundingClientRect().width;
     };
 
     beforeAll(  async ()=>{
+
         await createElements();
         await addDnd();
         await findElements();
-        await dispatchMove();
-        
+        await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistance);
 
     });
 
@@ -75,7 +56,7 @@ describe('Presenter', ()=>{
 
     it('should calculate slider value', ()=>{
         expect(presenter.calculateSliderValue(100, 500, 50)).
-        toBe(300)
+        toBe(300);
     })
 
 

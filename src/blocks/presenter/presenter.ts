@@ -142,10 +142,8 @@ class Presenter {
             case coordMove < coordDown:
                 return parseInt(divThumb.style.left) - this.scaleValueCoords[1];
             default: return parseInt(divThumb.style.left)
-
         }
     }
-
 }
 
 export {Presenter};
