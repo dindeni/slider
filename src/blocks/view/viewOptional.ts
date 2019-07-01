@@ -4,7 +4,8 @@ class ViewOptional{
     private divTrack: JQuery;
     divLabel: JQuery;
     private divWrapper: JQuery;
-    private labelOffset: number = 8;
+    private labelOffsetLeft: number = 8;
+    private labelOffsetTop: number = -30;
     private divThumb: JQuery;
 
     createProgress(){
@@ -22,17 +23,24 @@ class ViewOptional{
         });
     }
 
-    createLabel(initValue: number){
+    createLabel(initValue: number, vertical: boolean){
         this.divWrapper = $('.slider-wrapper');
         this.divLabel = $('<div class="slider-label"></div>').appendTo(this.divWrapper);
-        this.divLabel.text(initValue)
+        this.divLabel.text(initValue);
+
+        vertical ? this.divLabel.css({
+            left: '-15px',
+            top:  this.labelOffsetTop + 'px'
+        }) : null
     }
 
-    updateLabelValue(value: number, left: number){
+    updateLabelValue(vertical, value: number, coord: number){
         !this.divLabel ? this.divLabel = $('.slider-label') : null;
         this.divLabel.text(value);
-        this.divLabel.css({
-            left: left - this.labelOffset
+        !vertical ? this.divLabel.css({
+            left: coord - this.labelOffsetLeft + 'px'
+        }) : this.divLabel.css({
+            top: coord + this.labelOffsetTop + 'px'
         })
     }
 

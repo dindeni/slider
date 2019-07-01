@@ -5,7 +5,8 @@ class Presenter {
     private coordXStart: number;
     private coordYStart: number;
     private shift: number;
-    divThumbLeft: number = 0;
+    private divThumbLeft: number = 0;
+    private divThumbTop: number = 0;
     optionProgress: boolean = false;
     private min: number;
     private max: number;
@@ -36,14 +37,22 @@ class Presenter {
 
             this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft) :
                 null;
+            if (!vertical){
+                this.model.sliderValuePercent = this.calculateSliderMovePercent(
+                    this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
+                this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
+                    this.model.sliderValuePercent);
+            } else {
+                this.model.sliderValuePercent = this.calculateSliderMovePercent(
+                    this.divTrack.getBoundingClientRect().height, this.divThumbTop);
+                this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
+                    this.model.sliderValuePercent);
+                this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
+                    this.divThumbTop);
+            }
 
-            this.model.sliderValuePercent = this.calculateSliderMovePercent(
-                this.divTrack.getBoundingClientRect().width, thumbDistance);
-            this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
-                this.model.sliderValuePercent);
-
-            this.viewOptional.updateLabelValue(this.model.sliderValue,
-                this.divThumbLeft);
+            /*this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
+                this.divThumbLeft);*/
 
             step  ? document.removeEventListener('mousemove', moveThumb) : null;
         };
@@ -78,9 +87,8 @@ class Presenter {
         this.max = max;
     }
 
-    calculateSliderMovePercent(trackWidth: number, distance: number){
-        let value: number = Math.floor((distance / trackWidth) * 100);
-
+    calculateSliderMovePercent(trackWidthHeight: number, distance: number){
+        let value: number = Math.floor((distance / trackWidthHeight) * 100);
         switch (true) {
             case value < 0:
                 return value = 0;
@@ -88,6 +96,7 @@ class Presenter {
                 return value = 100;
             default: return value
         }
+
     }
 
     calculateSliderValue(min: number, max: number, percent: number){
@@ -136,7 +145,7 @@ class Presenter {
 
     calculateThumbDistance(vertical: boolean, evt: MouseEvent,
                            step: number | undefined, divThumb: HTMLElement){
-        console.log('ll',evt.screenY, this.coordYStart);
+
         switch (true) {
             case step && !vertical:
                 return this.addDnDStep(step, divThumb, this.coordXStart,
@@ -162,6 +171,7 @@ class Presenter {
                 case thumbDistance + this.shift  < 0 : divThumb.style.left = 0 + 'px';
                     break;
                 default: divThumb.style.left = this.shift + thumbDistance + 'px';
+                this.divThumbLeft = this.shift + thumbDistance
             }
         } else if (vertical) {
             switch (true) {
@@ -171,8 +181,8 @@ class Presenter {
                 case thumbDistance + this.shift < 0:
                     divThumb.style.top = 0 + 'px';
                     break;
-                default: divThumb.style.top = (this.shift +
-                    thumbDistance) + 'px';
+                default: divThumb.style.top = (this.shift + thumbDistance) + 'px';
+                    this.divThumbTop = this.shift + thumbDistance
             }
         }
 

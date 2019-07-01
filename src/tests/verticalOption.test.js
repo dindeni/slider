@@ -8,13 +8,18 @@ describe('Vertical option', ()=>{
     let divThumb;
     let divThumbLeft;
     let divThumbTop;
+    let divLabel;
     const moveDistanceX = 0;
     const moveDistanceY = 50;
+
+    const viewOptional = new ViewOptional();
 
     const createElements = ()=>{
         const view = new View();
 
+
         view.createSlider($('body'));
+        viewOptional.createLabel(0);
 
         /*const viewOptional = new ViewOptional();
         viewOptional.createProgress();
@@ -26,6 +31,7 @@ describe('Vertical option', ()=>{
     const addDnd = ()=>{
         const presenter = new Presenter();
         presenter.addDnD(undefined, true);
+        presenter.getMinMax(100, 500);
     };
 
     const findElements = ()=>{
@@ -36,15 +42,14 @@ describe('Vertical option', ()=>{
         divThumb = document.querySelector('.slider-thumb');
         divThumbLeft = divThumb.getBoundingClientRect().left;
         divThumbTop = divThumb.getBoundingClientRect().top;
-        /*divLabel = document.querySelector('.slider-label');
-        divScale = document.querySelector('.slider-scale');*/
+        divLabel = document.querySelector('.slider-label');
+        /*divScale = document.querySelector('.slider-scale');*/
 
         divTrack.style.width = '260px';
         divTrack.style.height = '5px';
     };
 
     const makeVertical = ()=>{
-        const viewOptional = new ViewOptional();
         viewOptional.makeVertical(true);
     };
 
@@ -62,6 +67,11 @@ describe('Vertical option', ()=>{
     });
 
     it('should div thumb move a distance', function () {
-        expect(parseInt(divThumb.style.top)).toBe(moveDistanceY)
+
+        expect(parseInt(divThumb.style.top)).toBe(moveDistanceY);
+    });
+    it('should label value to be 176', ()=> {
+        console.log('label', divLabel.textContent);
+        expect(divLabel.textContent).toBe('176')
     });
 });

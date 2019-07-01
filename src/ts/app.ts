@@ -31,9 +31,9 @@ const createProgress = (progress: boolean)=>{
     }
 };
 
-const createLabel = (label: boolean, initValue: number)=>{
+const createLabel = (label: boolean, initValue: number, vertical: boolean)=>{
     if (label){
-        viewOptional.createLabel(initValue)
+        viewOptional.createLabel(initValue, vertical)
     }
 };
 
@@ -52,7 +52,7 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
     await view.createSlider(element);
     await makeVertical(vertical);
     await presenter.getMinMax(min, max);
-    await createLabel(label, min);
+    await createLabel(label, min, vertical);
     await presenter.addDnD(step, vertical);
     await createProgress(progress);
     createScale(min, max, step)

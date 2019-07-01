@@ -76,8 +76,8 @@ describe('View', ()=>{
         expect(divLabel).not.toBeNull();
     });
 
-    it('should label value to be 188', ()=> {
-        expect(divLabel.textContent).toBe('188')
+    it('should label value to be 176', ()=> {
+        expect(divLabel.textContent).toBe('176')
     });
 
     it('should scale exist', ()=>{
