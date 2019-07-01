@@ -1,4 +1,4 @@
-const dispatchMove = (divThumb, coordX, coordY, moveDistance)=>{
+const dispatchMove = (divThumb, coordX, coordY, moveDistanceX, moveDistanceY)=>{
     const evtDown = new MouseEvent('mousedown', {
         'view': window,
         'bubbles': true,
@@ -9,8 +9,8 @@ const dispatchMove = (divThumb, coordX, coordY, moveDistance)=>{
 
     const evtMove = new MouseEvent('mousemove', {
         'view': window,
-        'screenX': coordX + moveDistance,
-        'screenY': coordY,
+        'screenX': coordX + moveDistanceX,
+        'screenY': coordY + moveDistanceY,
         'bubbles': true,
         'cancelable': true
     });

@@ -11,7 +11,8 @@ describe('Presenter', ()=>{
     let divThumbTop;
     let divThumbWidth;
     let divThumbLeft;
-    const moveDistance = 50;
+    const moveDistanceX = 50;
+    const moveDistanceY = 0;
     let presenter;
 
     const createElements = ()=>{
@@ -36,7 +37,8 @@ describe('Presenter', ()=>{
         await createElements();
         await addDnd();
         await findElements();
-        await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistance);
+        await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
+            moveDistanceY);
 
     });
 
@@ -45,8 +47,7 @@ describe('Presenter', ()=>{
     });
 
     it('should div thumb move a distance', ()=>{
-        divThumbLeft = divThumb.getBoundingClientRect().left;
-        expect(divThumbLeft).toBe(moveDistance - divThumbWidth)
+        expect(parseInt(divThumb.style.left)).toBe(moveDistanceX)
     });
 
     it('should calculate slider value percent', ()=> {

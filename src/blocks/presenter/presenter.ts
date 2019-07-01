@@ -3,6 +3,7 @@ import {Model} from "../model/model";
 
 class Presenter {
     private coordXStart: number;
+    private coordYStart: number;
     private shift: number;
     divThumbLeft: number = 0;
     optionProgress: boolean = false;
@@ -12,14 +13,14 @@ class Presenter {
     divTrack: HTMLElement;
     scaleValueCoords: number[] = [];
 
-
     model: Model;
     viewOptional: ViewOptional;
 
-    addDnD(step: number | undefined){
+    addDnD(step: number | undefined, vertical: boolean){
         const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;
         this.divTrack = document.querySelector('.slider-track') as HTMLElement;
-        const thumbWidth = divThumb.getBoundingClientRect().width;
+        const thumbWidth: number = divThumb.getBoundingClientRect().width;
+        const trackHeight: number = this.divTrack.getBoundingClientRect().height;
 
         this.viewOptional = new ViewOptional();
         this.model = new Model();
@@ -27,28 +28,11 @@ class Presenter {
         const moveThumb = (evt: MouseEvent)=>{
             evt.preventDefault();
 
-            let thumbDistance: number;
+            let thumbDistance: number = this.calculateThumbDistance(vertical,
+                evt, step, divThumb);
 
-            if (step){
-                thumbDistance = this.addDnDStep(step, divThumb, this.coordXStart,
-                    evt.screenX);
-            } else {
-                thumbDistance  = evt.screenX - this.shift;
-            }
-
-            const trackWidth = this.divTrack.getBoundingClientRect().width;
-
-                switch (true) {
-                    case thumbDistance > trackWidth:
-                        divThumb.style.left = trackWidth - thumbWidth + 'px';
-                        break;
-                    case thumbDistance  < 0 : divThumb.style.left = 0 + 'px';
-                        break;
-                    default: divThumb.style.left = thumbDistance + 'px';
-                }
-
-
-            this.divThumbLeft = parseInt(divThumb.style.left, 10);
+            this.updateThumbCoordinates(vertical, thumbDistance, divThumb,
+                thumbWidth, trackHeight);
 
             this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft) :
                 null;
@@ -67,14 +51,19 @@ class Presenter {
         const getDownCoord = (evt: MouseEvent)=>{
             evt.preventDefault();
 
-            if (evt.target === divThumb){
+            if (evt.target === divThumb && !vertical){
                 this.coordXStart = evt.screenX;
 
-                this.shift = evt.screenX - divThumb.getBoundingClientRect().left
-                    + thumbWidth;
+                this.shift = parseInt(divThumb.style.left || '0', 10);
 
-                document.addEventListener('mousemove', moveThumb);
+
+            }else if (evt.target === divThumb && vertical){
+                this.coordYStart = evt.screenY;
+
+                this.shift = parseInt(divThumb.style.top || '0', 10);
+
             }
+            document.addEventListener('mousemove', moveThumb);
         };
 
         document.addEventListener('mousedown', getDownCoord);
@@ -133,7 +122,7 @@ class Presenter {
         }
     }
 
-    addDnDStep(step: number, divThumb: any, coordDown: number, coordMove: number):
+    addDnDStep(step: number | undefined, divThumb: any, coordDown: number, coordMove: number):
         number{
 
         switch (true) {
@@ -144,6 +133,52 @@ class Presenter {
             default: return parseInt(divThumb.style.left)
         }
     }
+
+    calculateThumbDistance(vertical: boolean, evt: MouseEvent,
+                           step: number | undefined, divThumb: HTMLElement){
+        console.log('ll',evt.screenY, this.coordYStart);
+        switch (true) {
+            case step && !vertical:
+                return this.addDnDStep(step, divThumb, this.coordXStart,
+                    evt.screenX);
+            case !step && !vertical:
+                return evt.screenX - this.coordXStart;
+            case !step && vertical:
+                return evt.screenY - this.coordYStart;
+            default: return  0
+        }
+    }
+
+    updateThumbCoordinates(vertical: boolean, thumbDistance: number,
+                           divThumb: HTMLElement, thumbWidth: number,
+                           trackHeight: number){
+        const trackWidth = this.divTrack.getBoundingClientRect().width;
+
+        if (!vertical){
+            switch (true) {
+                case thumbDistance + this.shift > trackWidth:
+                    divThumb.style.left = trackWidth + 'px';
+                    break;
+                case thumbDistance + this.shift  < 0 : divThumb.style.left = 0 + 'px';
+                    break;
+                default: divThumb.style.left = this.shift + thumbDistance + 'px';
+            }
+        } else if (vertical) {
+            switch (true) {
+                case thumbDistance + this.shift > trackHeight:
+                    divThumb.style.top = trackHeight + 'px';
+                    break;
+                case thumbDistance + this.shift < 0:
+                    divThumb.style.top = 0 + 'px';
+                    break;
+                default: divThumb.style.top = (this.shift +
+                    thumbDistance) + 'px';
+            }
+        }
+
+        /*this.divThumbLeft = parseInt(divThumb.style.left, 10);*/
+    }
+
 }
 
 export {Presenter};

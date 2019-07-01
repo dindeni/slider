@@ -14,7 +14,8 @@ interface sliderOptions {
     max?: number,
     min?: number,
     label?: boolean,
-    step?: number
+    step?: number,
+    vertical?: boolean
 }
 
 declare global {
@@ -40,14 +41,19 @@ const createScale = (min: number, max: number, step: number | undefined)=>{
     presenter.calculateLeftScaleCoords(min, max, step);
 };
 
+const makeVertical = (vartical: boolean)=>{
+    vartical ? viewOptional.makeVertical(vartical) : null;
+};
+
 const initSlider = async (element: JQuery, progress: boolean, min: number,
                           max: number, label: boolean,
-                          step: number | undefined):Promise<void> =>{
+                          step: number | undefined, vertical: boolean):Promise<void> =>{
 
     await view.createSlider(element);
+    await makeVertical(vertical);
     await presenter.getMinMax(min, max);
     await createLabel(label, min);
-    await presenter.addDnD(step);
+    await presenter.addDnD(step, vertical);
     await createProgress(progress);
     createScale(min, max, step)
 
@@ -61,18 +67,19 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
             min: 0,
             max: 100,
             label: true,
-            step: undefined
+            step: undefined,
+            vertical: false
         };
 
         const config = $.extend({}, optionsDefault, options);
 
         initSlider(this, config.progress, config.min, config.max, config.label,
-            config.step);
+            config.step, config.vertical);
 
         return this;
     };
 
 }(jQuery));
 
-$('main').slider({progress: true, min: 100, max: 500});
+$('main').slider({progress: true, min: 100, max: 500, vertical: true});
 

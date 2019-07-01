@@ -5,9 +5,10 @@ class ViewOptional{
     divLabel: JQuery;
     private divWrapper: JQuery;
     private labelOffset: number = 8;
+    private divThumb: JQuery;
 
     createProgress(){
-        this.divTrack = $('.slider-track');
+        !this.divTrack ? this.divTrack = $('.slider-track') : null;
 
         $('<div class="slider-progress"></div>').appendTo(this.divTrack);
         this.divProgress = $('.slider-progress');
@@ -44,7 +45,25 @@ class ViewOptional{
                 const itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo(ul);
 
             itemElement.css({left: scaleCoords[i]})
+        })
+    }
 
+    makeVertical(vertical: boolean){
+        !this.divTrack ? this.divTrack = $('.slider-track') : null;
+
+        const trackWidth: number | undefined = this.divTrack.width();
+        const trackHeight: number | undefined = this.divTrack.height();
+
+        this.divTrack.css({
+            width: trackHeight + 'px',
+            height: trackWidth + 'px'
+        });
+
+        this.divThumb = $('.slider-thumb');
+
+        this.divThumb.css({
+            left: '-8px',
+            top: '0px'
         })
 
     }

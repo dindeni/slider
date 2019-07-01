@@ -11,7 +11,8 @@ describe('View', ()=>{
     let divProgress;
     let divThumbLeft;
     let divThumbTop;
-    const moveDistance = 50;
+    const moveDistanceX = 50;
+    const moveDistanceY = 0;
     let divLabel;
     let divScale;
 
@@ -50,7 +51,8 @@ describe('View', ()=>{
        await createElements();
        await turnOnProgress();
        await findElements();
-       await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistance);
+       await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
+           moveDistanceY);
 
     });
 
