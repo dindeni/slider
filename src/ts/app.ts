@@ -37,8 +37,9 @@ const createLabel = (label: boolean, initValue: number, vertical: boolean)=>{
     }
 };
 
-const createScale = (min: number, max: number, step: number | undefined)=>{
-    presenter.calculateLeftScaleCoords(min, max, step);
+const createScale = (min: number, max: number, step: number | undefined,
+                     vertical: boolean)=>{
+    presenter.calculateLeftScaleCoords(min, max, step, vertical);
 };
 
 const makeVertical = (vartical: boolean)=>{
@@ -55,7 +56,7 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
     await createLabel(label, min, vertical);
     await presenter.addDnD(step, vertical);
     await createProgress(progress);
-    createScale(min, max, step)
+    createScale(min, max, step, vertical)
 
 
 };
@@ -81,5 +82,5 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 
 }(jQuery));
 
-$('main').slider({progress: true, min: 100, max: 500, vertical: true});
+$('main').slider({progress: true, min: 100, max: 500, vertical: false, step: 100});
 

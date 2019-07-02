@@ -32,16 +32,18 @@ class Presenter {
             let thumbDistance: number = this.calculateThumbDistance(vertical,
                 evt, step, divThumb);
 
-            this.updateThumbCoordinates(vertical, thumbDistance, divThumb,
-                thumbWidth, trackHeight);
+            this.updateThumbCoordinates(vertical, step, thumbDistance, divThumb,
+                thumbWidth, trackHeight, evt);
 
             this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft) :
                 null;
-            if (!vertical){
+            if (!vertical ){
                 this.model.sliderValuePercent = this.calculateSliderMovePercent(
                     this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
                 this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
                     this.model.sliderValuePercent);
+                this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
+                    this.divThumbLeft);
             } else {
                 this.model.sliderValuePercent = this.calculateSliderMovePercent(
                     this.divTrack.getBoundingClientRect().height, this.divThumbTop);
@@ -51,10 +53,7 @@ class Presenter {
                     this.divThumbTop);
             }
 
-            /*this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
-                this.divThumbLeft);*/
-
-            step  ? document.removeEventListener('mousemove', moveThumb) : null;
+            step ? document.removeEventListener('mousemove', moveThumb) : null;
         };
 
         const getDownCoord = (evt: MouseEvent)=>{
@@ -96,7 +95,6 @@ class Presenter {
                 return value = 100;
             default: return value
         }
-
     }
 
     calculateSliderValue(min: number, max: number, percent: number){
@@ -110,7 +108,8 @@ class Presenter {
         }
     }
 
-    calculateLeftScaleCoords(min: number, max: number, step: number | undefined){
+    calculateLeftScaleCoords(min: number, max: number, step: number | undefined,
+                             vertical: boolean){
         let scaleValue: {value: number[], coords: number[]} = {
             coords: [],
             value: []
@@ -119,28 +118,43 @@ class Presenter {
         if (step){
             let stepCount = 0;
             for (let i = min; i<=max; i+=step){
-                const coordsItems = stepCount / (max - min) *
-                    this.divTrack.getBoundingClientRect().width;
+                let coordsItems;
+                !vertical ? coordsItems = stepCount / (max - min) *
+                    this.divTrack.getBoundingClientRect().width :
+                    coordsItems = stepCount / (max - min) *
+                        this.divTrack.getBoundingClientRect().height;
                 scaleValue.value.push(i);
                 scaleValue.coords.push(coordsItems);
                 this.scaleValueCoords.push(coordsItems);
                 stepCount+=step;
             }
 
-            this.viewOptional.createScale(scaleValue.value, scaleValue.coords);
+            this.viewOptional.createScale(scaleValue.value, scaleValue.coords,
+                vertical);
         }
     }
 
-    addDnDStep(step: number | undefined, divThumb: any, coordDown: number, coordMove: number):
-        number{
+    addDnDStep(step: number | undefined, divThumb: any, coordDown: number,
+               coordMove: number, vertical: boolean): number{
 
-        switch (true) {
-            case coordMove > coordDown:
-                return parseInt(divThumb.style.left) + this.scaleValueCoords[1];
-            case coordMove < coordDown:
-                return parseInt(divThumb.style.left) - this.scaleValueCoords[1];
-            default: return parseInt(divThumb.style.left)
+        if (!vertical){
+            switch (true) {
+                case coordMove > coordDown:
+                    return parseInt(divThumb.style.left) + this.scaleValueCoords[1];
+                case coordMove < coordDown:
+                    return parseInt(divThumb.style.left) - this.scaleValueCoords[1];
+                default: return parseInt(divThumb.style.left)
+            }
+        } else {
+            switch (vertical) {
+                case coordMove > coordDown:
+                    return parseInt(divThumb.style.top) + this.scaleValueCoords[1];
+                case coordMove < coordDown:
+                    return parseInt(divThumb.style.top) - this.scaleValueCoords[1];
+                default: return parseInt(divThumb.style.top)
+            }
         }
+
     }
 
     calculateThumbDistance(vertical: boolean, evt: MouseEvent,
@@ -149,7 +163,10 @@ class Presenter {
         switch (true) {
             case step && !vertical:
                 return this.addDnDStep(step, divThumb, this.coordXStart,
-                    evt.screenX);
+                    evt.screenX, vertical);
+            case step && vertical:
+                return this.addDnDStep(step, divThumb, this.coordYStart,
+                    evt.screenY, vertical);
             case !step && !vertical:
                 return evt.screenX - this.coordXStart;
             case !step && vertical:
@@ -158,12 +175,12 @@ class Presenter {
         }
     }
 
-    updateThumbCoordinates(vertical: boolean, thumbDistance: number,
-                           divThumb: HTMLElement, thumbWidth: number,
-                           trackHeight: number){
+    updateThumbCoordinates(vertical: boolean, step: number | undefined,
+                           thumbDistance: number, divThumb: HTMLElement,
+                           thumbWidth: number, trackHeight: number, evt: MouseEvent){
         const trackWidth = this.divTrack.getBoundingClientRect().width;
 
-        if (!vertical){
+        if (!vertical && !step){
             switch (true) {
                 case thumbDistance + this.shift > trackWidth:
                     divThumb.style.left = trackWidth + 'px';
@@ -173,7 +190,31 @@ class Presenter {
                 default: divThumb.style.left = this.shift + thumbDistance + 'px';
                 this.divThumbLeft = this.shift + thumbDistance
             }
-        } else if (vertical) {
+        }else if(!vertical && step && evt.target === divThumb){
+            switch (true) {
+                case thumbDistance > trackWidth:
+                    divThumb.style.left = thumbWidth + 'px';
+                    break;
+                case thumbDistance < 0:
+                    divThumb.style.left = 0 + 'px';
+                    break;
+                default: divThumb.style.left = thumbDistance + 'px';
+                this.divThumbLeft = parseInt(divThumb.style.left);
+            }
+
+        }else if(vertical && step && evt.target === divThumb){
+            switch (true) {
+                case thumbDistance > trackHeight:
+                    divThumb.style.top = trackHeight + 'px';
+                    break;
+                case thumbDistance < 0:
+                    divThumb.style.top = 0 + 'px';
+                    break;
+                default: divThumb.style.top = thumbDistance + 'px';
+                    this.divThumbTop = parseInt(divThumb.style.top);
+            }
+
+        } else if (vertical  && !step) {
             switch (true) {
                 case thumbDistance + this.shift > trackHeight:
                     divThumb.style.top = trackHeight + 'px';
@@ -186,7 +227,6 @@ class Presenter {
             }
         }
 
-        /*this.divThumbLeft = parseInt(divThumb.style.left, 10);*/
     }
 
 }
