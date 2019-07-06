@@ -17,7 +17,7 @@ describe('Presenter', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'));
+        view.createSlider($('body'), false);
 
     };
     const addDnd = ()=>{
@@ -33,6 +33,7 @@ describe('Presenter', ()=>{
     };
 
     beforeAll(  async ()=>{
+        document.body.innerHTML = '';
 
         await createElements();
         await addDnd();

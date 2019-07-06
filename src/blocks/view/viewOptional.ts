@@ -3,6 +3,8 @@ class ViewOptional{
     private divProgress: JQuery;
     private divTrack: JQuery;
     divLabel: JQuery;
+    divLabelMin: JQuery;
+    divLabelMax: JQuery;
     private divWrapper: JQuery;
     private labelOffsetLeft: number = 8;
     private labelOffsetTop: number = -30;
@@ -23,10 +25,27 @@ class ViewOptional{
         });
     }
 
-    createLabel(initValue: number, vertical: boolean){
+    createLabel(initValue: number, vertical: boolean, range: boolean, max: number){
+
         this.divWrapper = $('.slider-wrapper');
-        this.divLabel = $('<div class="slider-label"></div>').appendTo(this.divWrapper);
-        this.divLabel.text(initValue);
+
+        if (!range){
+            this.divLabel = $('<div class="slider-label"></div>').appendTo(this.divWrapper);
+            this.divLabel.text(initValue);
+        }else {
+            this.divLabelMin = $('<div class="slider-label" id="label-min">' +
+                '</div>').appendTo(this.divWrapper);
+            this.divLabelMax = $('<div class="slider-label" id="label-max">' +
+                '</div>').appendTo(this.divWrapper);
+
+            !this.divTrack ? this.divTrack = $('.slider-track') : null;
+            this.divLabelMax.css({
+                left: (this.divTrack.width() || 0) - this.labelOffsetLeft +'px'
+            });
+            this.divLabelMin.text(initValue);
+            this.divLabelMax.text(max);
+        }
+
 
         vertical ? this.divLabel.css({
             left: '-15px',
@@ -34,14 +53,38 @@ class ViewOptional{
         }) : null
     }
 
-    updateLabelValue(vertical, value: number, coord: number){
-        !this.divLabel ? this.divLabel = $('.slider-label') : null;
-        this.divLabel.text(value);
-        !vertical ? this.divLabel.css({
+    updateLabelValue(range: boolean, element: 'min' | 'max' | 'default', value: number, coord: number){
+            switch (element) {
+                case 'min':
+                    !this.divLabelMin ? this.divLabelMin =  $('#label-min') : null;
+                    this.divLabelMin.text(value);
+                    this.divLabelMin.css({left: coord - this.labelOffsetLeft});
+                    break;
+                case 'max':
+                    !this.divLabelMax ? this.divLabelMax =  $('#label-max') : null;
+                    this.divLabelMax.text(value);
+                    this.divLabelMax.css({left: coord - this.labelOffsetLeft});
+                    break;
+                    case 'default':
+                        !this.divLabel ? this.divLabel = $('.slider-label') : null;
+                        this.divLabel.text(value);
+                        this.divLabel.css({left: coord - this.labelOffsetLeft});
+        }
+        console.log(coord)
+        /*if (!range){
+            !this.divLabel ? this.divLabel = $('.slider-label') : null;
+            this.divLabel.text(value);
+        } else {
+            !this.divLabelMin ? this.divLabelMin = $('#label-min') : null;
+            !this.divLabelMax ? this.divLabelMax = $('#label-max') : null;
+
+        }*/
+
+        /*!vertical ? this.divLabel.css({
             left: coord - this.labelOffsetLeft + 'px'
         }) : this.divLabel.css({
             top: coord + this.labelOffsetTop + 'px'
-        })
+        })*/
     }
 
     createScale(scaleValue: number[], scaleCoords: number[], vertical: boolean){

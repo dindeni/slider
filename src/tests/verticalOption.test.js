@@ -54,6 +54,7 @@ describe('Vertical option', ()=>{
     };
 
     beforeAll(async ()=>{
+        document.body.innerHTML = '';
         await createElements();
         await findElements();
         await makeVertical();
@@ -71,7 +72,6 @@ describe('Vertical option', ()=>{
         expect(parseInt(divThumb.style.top)).toBe(moveDistanceY);
     });
     it('should label value to be 176', ()=> {
-        console.log('label', divLabel.textContent);
         expect(divLabel.textContent).toBe('176')
     });
 });

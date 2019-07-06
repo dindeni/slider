@@ -18,13 +18,13 @@ describe('View', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'));
+        view.createSlider($('body'), false);
 
         const viewOptional = new ViewOptional();
         viewOptional.createProgress();
         viewOptional.createLabel(0);
         viewOptional.createScale([100, 200, 300, 400, 500],
-            [0, 65, 130, 195, 260]);
+            [0, 65, 130, 195, 260], false);
     };
 
     const turnOnProgress = ()=>{
@@ -48,6 +48,7 @@ describe('View', ()=>{
     };
 
     beforeAll(async ()=>{
+        document.body.innerHTML = '';
        await createElements();
        await turnOnProgress();
        await findElements();
@@ -69,7 +70,7 @@ describe('View', ()=>{
     });
 
     it('should track progress width to be equal thumb coordinates left',  ()=> {
-        expect(divProgress.getBoundingClientRect().width).toBe(divThumb.getBoundingClientRect().left)
+        expect(divProgress.style.width).toBe(divThumb.style.left)
     });
 
     it('should label exists',  ()=> {

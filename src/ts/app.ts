@@ -15,7 +15,8 @@ interface sliderOptions {
     min?: number,
     label?: boolean,
     step?: number,
-    vertical?: boolean
+    vertical?: boolean,
+    range?: boolean
 }
 
 declare global {
@@ -31,9 +32,10 @@ const createProgress = (progress: boolean)=>{
     }
 };
 
-const createLabel = (label: boolean, initValue: number, vertical: boolean)=>{
+const createLabel = (label: boolean, initValue: number, vertical: boolean,
+                     range: boolean, max: number)=>{
     if (label){
-        viewOptional.createLabel(initValue, vertical)
+        viewOptional.createLabel(initValue, vertical, range, max)
     }
 };
 
@@ -48,13 +50,14 @@ const makeVertical = (vartical: boolean)=>{
 
 const initSlider = async (element: JQuery, progress: boolean, min: number,
                           max: number, label: boolean,
-                          step: number | undefined, vertical: boolean):Promise<void> =>{
+                          step: number | undefined, vertical: boolean,
+                          range: boolean):Promise<void> =>{
 
-    await view.createSlider(element);
+    await view.createSlider(element,range);
     await makeVertical(vertical);
     await presenter.getMinMax(min, max);
-    await createLabel(label, min, vertical);
-    await presenter.addDnD(step, vertical);
+    await createLabel(label, min, vertical, range, max);
+    await presenter.addDnD(step, vertical, range);
     await createProgress(progress);
     createScale(min, max, step, vertical)
 
@@ -69,18 +72,20 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
             max: 100,
             label: true,
             step: undefined,
-            vertical: false
+            vertical: false,
+            range: false
         };
 
         const config = $.extend({}, optionsDefault, options);
 
         initSlider(this, config.progress, config.min, config.max, config.label,
-            config.step, config.vertical);
+            config.step, config.vertical, config.range);
 
         return this;
     };
 
 }(jQuery));
 
-$('main').slider({progress: true, min: 100, max: 500, vertical: false, step: 100});
+$('main').slider({progress: true, min: 100, max: 500, vertical: false,
+range: true});
 
