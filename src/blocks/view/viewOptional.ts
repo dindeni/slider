@@ -70,37 +70,51 @@ class ViewOptional{
                 '</div>').appendTo(this.divWrapper);
 
             !this.divTrack ? this.divTrack = $('.slider-track') : null;
-            this.divLabelMax.css({
+
+            !vertical ? this.divLabelMax.css({
                 left: (this.divTrack.width() || 0) - this.labelOffsetLeft +'px'
+            }) : this.divLabelMax.css({
+                top: (this.divTrack.height() || 0) + this.labelOffsetTop +'px',
+                left: this.labelOffsetTop / 2 + 'px'
+            });
+            this.divLabelMin.css({
+                left: this.labelOffsetTop / 2 + 'px',
+                top: this.labelOffsetTop + 'px'
             });
             this.divLabelMin.text(initValue);
             this.divLabelMax.text(max);
         }
-
-
-        vertical ? this.divLabel.css({
-            left: '-15px',
-            top:  this.labelOffsetTop + 'px'
-        }) : null
     }
 
-    updateLabelValue(range: boolean, element: 'min' | 'max' | 'default', value: number, coord: number){
+    updateLabelValue(range: boolean, element: 'min' | 'max' | 'default', value: number, coord: number,
+                     vertical: boolean){
+
             switch (element) {
                 case 'min':
                     !this.divLabelMin ? this.divLabelMin =  $('#label-min') : null;
                     this.divLabelMin.text(value);
-                    this.divLabelMin.css({left: coord - this.labelOffsetLeft});
+                    !vertical ? this.divLabelMin.css({
+                            left: coord - this.labelOffsetLeft}) :
+                        this.divLabelMin.css({
+                        top: coord + this.labelOffsetTop
+                    });
                     break;
                 case 'max':
                     !this.divLabelMax ? this.divLabelMax =  $('#label-max') : null;
                     this.divLabelMax.text(value);
-                    this.divLabelMax.css({left: coord - this.labelOffsetLeft});
+                    !vertical ? this.divLabelMax.css({
+                        left: coord - this.labelOffsetLeft}) :
+                        this.divLabelMax.css({
+                            top: coord + this.labelOffsetTop
+                        });
                     break;
-                    case 'default':
-                        !this.divLabel ? this.divLabel = $('.slider-label') : null;
-                        this.divLabel.text(value);
-                        this.divLabel.css({left: coord - this.labelOffsetLeft});
-        }
+                case 'default':
+                    !this.divLabel ? this.divLabel = $('.slider-label') : null;
+                    this.divLabel.text(value);
+                    !vertical ? this.divLabel.css({left: coord - this.labelOffsetLeft}) :
+                    this.divLabel.css({top: coord + this.labelOffsetTop})
+            }
+
     }
 
     createScale(scaleValue: number[], scaleCoords: number[], vertical: boolean){
@@ -116,24 +130,38 @@ class ViewOptional{
         })
     }
 
-    makeVertical(vertical: boolean){
+    makeVertical(vertical: boolean, range: boolean){
         !this.divTrack ? this.divTrack = $('.slider-track') : null;
 
         const trackWidth: number | undefined = this.divTrack.width();
-        const trackHeight: number | undefined = this.divTrack.height();
+        let trackHeight: number | undefined = this.divTrack.height();
 
         this.divTrack.css({
             width: trackHeight + 'px',
             height: trackWidth + 'px'
         });
 
-        this.divThumb = $('.slider-thumb');
+        if (!range){
+            this.divThumb = $('.slider-thumb');
 
-        this.divThumb.css({
-            left: '-8px',
-            top: '0px'
-        })
+            this.divThumb.css({
+                left: '-8px',
+                top: '0px'
+            })
+        }else {
+            const divThumbMin = $('#thumb-min');
+            const divThumbMax = $('#thumb-max');
+            trackHeight = this.divTrack.height();
 
+            divThumbMin.css({
+                left: '-8px',
+                top: '0px'
+            });
+            divThumbMax.css({
+                left: '-8px',
+                top: trackHeight +'px'
+            });
+        }
     }
 }
 

@@ -9,6 +9,8 @@ describe('Range', ()=>{
         divProgressMax;
     const moveDistanceX = 50;
     const moveDistanceY = 0;
+    const moveDistanceXVertical = 0;
+    const moveDistanceYVertical = 50;
 
     const viewOptional = new ViewOptional();
 
@@ -116,5 +118,6 @@ describe('Range', ()=>{
         });
 
     });
+
 
 });

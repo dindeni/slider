@@ -1,5 +1,6 @@
 import {ViewOptional} from "../view/viewOptional";
 import {Model} from "../model/model";
+import {runInThisContext} from "vm";
 
 class Presenter {
     private coordXStart: number;
@@ -88,10 +89,11 @@ class Presenter {
                 this.shift = parseInt((evt.target as HTMLElement).style.left || '0', 10);
 
 
-            }else if (evt.target === divThumb && vertical){
+            }else if (evt.target === divThumb|| evt.target === divThumbMin ||
+                evt.target === divThumbMax && vertical){
                 this.coordYStart = evt.screenY;
 
-                this.shift = parseInt(divThumb.style.top || '0', 10);
+                this.shift = parseInt((evt.target as HTMLElement).style.top || '0', 10);
 
             }
             document.addEventListener('mousemove', moveThumb);
@@ -264,7 +266,8 @@ class Presenter {
                     this.model.sliderValue = this.calculateSliderValue(this.min,
                         this.max, this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
-                        'default', this.model.sliderValue, this.divThumbLeft);
+                        'default', this.model.sliderValue, this.divThumbLeft,
+                        false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
                     'default') : null;
                 break;
@@ -272,7 +275,8 @@ class Presenter {
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
-                        'min', this.model.sliderValueMin, this.divThumbLeft);
+                        'min', this.model.sliderValueMin, this.divThumbLeft,
+                        false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
                         'min') : null;
                     break;
@@ -280,7 +284,8 @@ class Presenter {
                     this.model.sliderValueMax = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
-                        'max', this.model.sliderValueMax, this.divThumbLeft);
+                        'max', this.model.sliderValueMax, this.divThumbLeft,
+                        false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
                         'max') : null;
                     break;
@@ -289,6 +294,36 @@ class Presenter {
 
             /*this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
                 this.divThumbLeft, range);*/
+        }else{
+            this.model.sliderValuePercent = this.calculateSliderMovePercent(
+                this.divTrack.getBoundingClientRect().height, this.divThumbTop);
+
+            switch (true) {
+                case !range:
+                    this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
+                        this.model.sliderValuePercent);
+                    this.viewOptional.updateLabelValue(range,
+                        'default', this.model.sliderValue, this.divThumbTop,
+                        true);
+                    break;
+                case range && evt.target === divThumbMin:
+                    this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
+                        this.model.sliderValuePercent);
+                    this.viewOptional.updateLabelValue(range,
+                        'min', this.model.sliderValueMin, this.divThumbTop,
+                        true);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
+                        'min') : null;
+                    break;
+                case range && evt.target === divThumbMax:
+                    this.model.sliderValueMax = this.calculateSliderValue(this.min, this.max,
+                        this.model.sliderValuePercent);
+                    this.viewOptional.updateLabelValue(range,
+                        'max', this.model.sliderValueMax, this.divThumbTop,
+                        true);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
+                        'min') : null;
+            }
         }
     }
 
