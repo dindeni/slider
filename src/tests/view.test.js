@@ -21,7 +21,7 @@ describe('View', ()=>{
         view.createSlider($('body'), false);
 
         const viewOptional = new ViewOptional();
-        viewOptional.createProgress();
+        viewOptional.createProgress(false);
         viewOptional.createLabel(0);
         viewOptional.createScale([100, 200, 300, 400, 500],
             [0, 65, 130, 195, 260], false);
@@ -33,7 +33,7 @@ describe('View', ()=>{
         divProgress = document.querySelector('.slider-progress');
         divProgress.style.width = 0;
         presenter.getMinMax(100, 500);
-        presenter.addDnD();
+        presenter.addDnD(undefined, false, false, true);
     };
 
     const findElements = ()=>{
@@ -70,7 +70,7 @@ describe('View', ()=>{
     });
 
     it('should track progress width to be equal thumb coordinates left',  ()=> {
-        expect(divProgress.style.width).toBe(divThumb.style.left)
+        expect(divProgress.style.width).toBe(divThumb.style.left);
     });
 
     it('should label exists',  ()=> {

@@ -25,9 +25,9 @@ declare global {
     }
 }
 
-const createProgress = (progress: boolean)=>{
+const createProgress = (progress: boolean, range: boolean)=>{
     if (progress){
-        viewOptional.createProgress();
+        viewOptional.createProgress(range);
         presenter.optionProgress = true;
     }
 };
@@ -57,8 +57,8 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
     await makeVertical(vertical);
     await presenter.getMinMax(min, max);
     await createLabel(label, min, vertical, range, max);
-    await presenter.addDnD(step, vertical, range);
-    await createProgress(progress);
+    await presenter.addDnD(step, vertical, range, progress);
+    await createProgress(progress, range);
     createScale(min, max, step, vertical)
 
 

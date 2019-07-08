@@ -16,7 +16,8 @@ main {
 .slider-track {
   width: 260px;
   height: 5px;
-  background: #e5e5e5; }
+  background: #e5e5e5;
+  position: relative; }
 
 .slider-progress {
   width: 0;

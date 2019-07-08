@@ -4,15 +4,9 @@ import {Presenter} from "../blocks/presenter/presenter";
 import {dispatchMove} from "./_serviceFunctions";
 
 describe('Range', ()=>{
-    let divThumbMin;
-    let divThumbMax;
-    let divTrack;
-    let divThumbLeftMin;
-    let divThumbTopMin;
-    let divThumbLeftMax;
-    let divThumbTopMax;
-    let divLabelMin;
-    let divLabelMax;
+    let divThumbMin,  divThumbMax, divTrack, divThumbLeftMin, divThumbTopMin,
+        divThumbLeftMax, divThumbTopMax, divLabelMin, divLabelMax, divProgressMin,
+        divProgressMax;
     const moveDistanceX = 50;
     const moveDistanceY = 0;
 
@@ -22,6 +16,7 @@ describe('Range', ()=>{
         const view = new View();
         view.createSlider($('body'), true);
         viewOptional.createLabel(0, false, true, 500);
+        viewOptional.createProgress(true);
 
         /*viewOptional.createLabel(0);*/
 
@@ -34,7 +29,7 @@ describe('Range', ()=>{
 
     const addDnd = ()=>{
         const presenter = new Presenter();
-        presenter.addDnD(undefined, false, true);
+        presenter.addDnD(undefined, false, true, true);
         presenter.getMinMax(100, 500);
     };
 
@@ -57,6 +52,8 @@ describe('Range', ()=>{
         divTrack = document.querySelector('.slider-track');
         divLabelMin = document.querySelector('#label-min');
         divLabelMax = document.querySelector('#label-max');
+        divProgressMin = document.querySelector('#progress-min');
+        divProgressMax = document.querySelector('#progress-max');
 
         divTrack.style.width = '260px';
         divTrack.style.height = '5px';
@@ -77,6 +74,9 @@ describe('Range', ()=>{
     it('should label min and max exists',  ()=> {
         expect(divLabelMin && divLabelMax).not.toBeNull();
     });
+    it('should progress bar min and max exist',  ()=> {
+        expect(divProgressMin && divProgressMax).not.toBeNull();
+    });
 
     describe('After dispatch max', ()=>{
         beforeAll(()=>{
@@ -90,6 +90,11 @@ describe('Range', ()=>{
         });
         it('should label max value to be 432', ()=> {
             expect(divLabelMax.textContent).toBe('420')
+        });
+        it('should progress max width to be equal thumb max coordinates left', ()=> {
+            const progressWidth = parseInt(divTrack.style.width, 10) -
+               parseInt(divThumbMax.style.left, 10) + 'px';
+            expect(divProgressMax.style.width).toBe(progressWidth)
         });
 
     });
@@ -105,6 +110,9 @@ describe('Range', ()=>{
         });
         it('should label min value to be 176', ()=> {
             expect(divLabelMin.textContent).toBe('176')
+        });
+        it('should progress min width to be equal thumb min coordinates left', ()=> {
+            expect(divProgressMin.style.width).toBe(divThumbMin.style.left)
         });
 
     });

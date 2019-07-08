@@ -17,7 +17,7 @@ class Presenter {
     model: Model;
     viewOptional: ViewOptional;
 
-    addDnD(step: number | undefined, vertical: boolean, range: boolean){
+    addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean){
         let divThumb, divThumbMin: HTMLElement, divThumbMax;
         if (range){
             divThumbMin = document.querySelector('#thumb-min') as HTMLElement;
@@ -47,10 +47,10 @@ class Presenter {
                 evt.target === divThumbMax) ? this.updateThumbCoordinates(vertical, step, thumbDistance,
                 evt.target as HTMLElement, width, trackHeight, evt) : null;
 
-            this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft) :
-                null;
+            /*this.optionProgress ? this.viewOptional.stylingProgress(this.divThumbLeft, range) :
+                null;*/
 
-            this.setModelValue(vertical, range, evt, divThumbMin, divThumbMax);
+            this.updateData(vertical, range, evt, divThumbMin, divThumbMax, progress);
            /* if (!vertical ){
                 this.model.sliderValuePercent = this.calculateSliderMovePercent(
                     this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
@@ -252,8 +252,9 @@ class Presenter {
 
     }
 
-    setModelValue(vertical: boolean, range: boolean, evt: MouseEvent,
-                  divThumbMin: HTMLElement, divThumbMax: HTMLElement){
+    updateData(vertical: boolean, range: boolean, evt: MouseEvent,
+                  divThumbMin: HTMLElement, divThumbMax: HTMLElement,
+               progress: boolean){
         if (!vertical){
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
                 this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
@@ -264,25 +265,30 @@ class Presenter {
                         this.max, this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
                         'default', this.model.sliderValue, this.divThumbLeft);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
+                    'default') : null;
                 break;
                 case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
                         'min', this.model.sliderValueMin, this.divThumbLeft);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
+                        'min') : null;
                     break;
                 case range && evt.target === divThumbMax:
                     this.model.sliderValueMax = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
                         'max', this.model.sliderValueMax, this.divThumbLeft);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
+                        'max') : null;
                     break;
             }
 
 
             /*this.viewOptional.updateLabelValue(vertical, this.model.sliderValue,
                 this.divThumbLeft, range);*/
-            console.log(this.model.sliderValueMin, this.model.sliderValueMax);
         }
     }
 
