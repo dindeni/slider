@@ -269,7 +269,7 @@ class Presenter {
                         'default', this.model.sliderValue, this.divThumbLeft,
                         false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                    'default') : null;
+                    'default', vertical) : null;
                 break;
                 case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
@@ -278,7 +278,7 @@ class Presenter {
                         'min', this.model.sliderValueMin, this.divThumbLeft,
                         false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                        'min') : null;
+                        'min', vertical) : null;
                     break;
                 case range && evt.target === divThumbMax:
                     this.model.sliderValueMax = this.calculateSliderValue(this.min, this.max,
@@ -287,7 +287,7 @@ class Presenter {
                         'max', this.model.sliderValueMax, this.divThumbLeft,
                         false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                        'max') : null;
+                        'max', vertical) : null;
                     break;
             }
 
@@ -305,6 +305,8 @@ class Presenter {
                     this.viewOptional.updateLabelValue(range,
                         'default', this.model.sliderValue, this.divThumbTop,
                         true);
+                    progress ? this.viewOptional.stylingProgress(this.divThumbTop,
+                        'default', vertical) : null;
                     break;
                 case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
@@ -312,8 +314,8 @@ class Presenter {
                     this.viewOptional.updateLabelValue(range,
                         'min', this.model.sliderValueMin, this.divThumbTop,
                         true);
-                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                        'min') : null;
+                    progress ? this.viewOptional.stylingProgress(this.divThumbTop,
+                        'min', vertical) : null;
                     break;
                 case range && evt.target === divThumbMax:
                     this.model.sliderValueMax = this.calculateSliderValue(this.min, this.max,
@@ -321,8 +323,8 @@ class Presenter {
                     this.viewOptional.updateLabelValue(range,
                         'max', this.model.sliderValueMax, this.divThumbTop,
                         true);
-                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                        'min') : null;
+                    progress ? this.viewOptional.stylingProgress(this.divThumbTop,
+                        'max', vertical) : null;
             }
         }
     }

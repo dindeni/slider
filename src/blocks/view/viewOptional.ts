@@ -25,32 +25,44 @@ class ViewOptional{
 
     }
     stylingProgress(divProgressWidth: number, type: 'min' | 'max' |
-    'default'){
+    'default', vertical: boolean){
         !this.divTrack ? this.divTrack = $('.slider-track') : null;
 
         switch (type) {
             case "default":
                 !this.divProgress ?
                     this.divProgress = $('.slider-progress') : null;
-                this.divProgress.css({
+                !vertical ? this.divProgress.css({
                     width: divProgressWidth + 'px'
+                }) : this.divProgress.css({
+                    height: divProgressWidth + 'px',
+                    width: '5px'
                 });
                 break;
                 case "min":
                     !this.divProgressMin ?
                         this.divProgressMin = $('#progress-min') : null;
-                    this.divProgressMin.css({
+                    !vertical ? this.divProgressMin.css({
                         width: divProgressWidth + 'px'
+                    }) : this.divProgressMin.css({
+                        height: divProgressWidth + 'px',
+                        width: '5px'
                     });
                     break;
             case "max":
                 !this.divProgressMax ?
                     this.divProgressMax = $('#progress-max') : null;
-                this.divProgressMax.css({
+                !vertical ? this.divProgressMax.css({
                     width:  (this.divTrack.width() || 0) - divProgressWidth + 'px',
                     position: 'absolute',
                     right: '0px',
                     top: '0px'
+                }) : this.divProgressMax.css({
+                    height:  (this.divTrack.height() || 0) - divProgressWidth + 'px',
+                    width: '5px',
+                    position: 'absolute',
+                    right: '0px',
+                    bottom: '0px'
                 })
         }
 
@@ -63,6 +75,10 @@ class ViewOptional{
         if (!range){
             this.divLabel = $('<div class="slider-label"></div>').appendTo(this.divWrapper);
             this.divLabel.text(initValue);
+            vertical ? this.divLabel.css({
+                top: this.labelOffsetTop +'px',
+                left: this.labelOffsetTop / 2 + 'px'
+            }) : null;
         }else {
             this.divLabelMin = $('<div class="slider-label" id="label-min">' +
                 '</div>').appendTo(this.divWrapper);
