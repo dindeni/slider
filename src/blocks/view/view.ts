@@ -30,12 +30,6 @@ class View {
     stylingElements(range: boolean){
         if (!range){
             this.divThumb.css({
-                /*width: '21px',
-                height: '21px',
-                background: '#e75735',
-                borderRadius: '50%',
-                position: 'absolute',
-                top: '12px',*/
                 left: 0
             });
         }else {

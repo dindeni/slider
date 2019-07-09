@@ -93,10 +93,10 @@ class ViewOptional{
                 top: (this.divTrack.height() || 0) + this.labelOffsetTop +'px',
                 left: this.labelOffsetTop / 2 + 'px'
             });
-            this.divLabelMin.css({
+            vertical ? this.divLabelMin.css({
                 left: this.labelOffsetTop / 2 + 'px',
                 top: this.labelOffsetTop + 'px'
-            });
+            }) : null;
             this.divLabelMin.text(initValue);
             this.divLabelMax.text(max);
         }
@@ -134,6 +134,7 @@ class ViewOptional{
     }
 
     createScale(scaleValue: number[], scaleCoords: number[], vertical: boolean){
+        const scaleTopPositionCorrection = 5;
         !this.divWrapper ? this.divWrapper = $('.slider-wrapper') : null;
         const ul = $('<ul class="slider-scale"></ul>').appendTo(this.divWrapper);
 
@@ -142,7 +143,8 @@ class ViewOptional{
                 const itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo(ul);
 
             !vertical ? itemElement.css({left: scaleCoords[i]}) :
-                itemElement.css({top: scaleCoords[i]})
+                itemElement.css({top: scaleCoords[i] -
+                        scaleTopPositionCorrection})
         })
     }
 

@@ -9,8 +9,6 @@ describe('Range', ()=>{
         divProgressMax;
     const moveDistanceX = 50;
     const moveDistanceY = 0;
-    const moveDistanceXVertical = 0;
-    const moveDistanceYVertical = 50;
 
     const viewOptional = new ViewOptional();
 
@@ -19,14 +17,6 @@ describe('Range', ()=>{
         view.createSlider($('body'), true);
         viewOptional.createLabel(0, false, true, 500);
         viewOptional.createProgress(true);
-
-        /*viewOptional.createLabel(0);*/
-
-        /*const viewOptional = new ViewOptional();
-        viewOptional.createProgress();
-        viewOptional.createLabel(0);
-        viewOptional.createScale([100, 200, 300, 400, 500],
-            [0, 65, 130, 195, 260]);*/
     };
 
     const addDnd = ()=>{
@@ -36,15 +26,6 @@ describe('Range', ()=>{
     };
 
     const findElements = ()=>{
-        /*divThumb = document.querySelector('.slider-thumb');
-        divThumbLeft = divThumb.getBoundingClientRect().left;
-        divThumbTop = divThumb.getBoundingClientRect().top;*/
-       /* divTrack = document.querySelector('.slider-track');
-        divThumb = document.querySelector('.slider-thumb');
-        divThumbLeft = divThumb.getBoundingClientRect().left;
-        divThumbTop = divThumb.getBoundingClientRect().top;
-        divLabel = document.querySelector('.slider-label');*/
-        /*divScale = document.querySelector('.slider-scale');*/
         divThumbMin = document.querySelector('#thumb-min');
         divThumbMax = document.querySelector('#thumb-max');
         divThumbLeftMin = divThumbMin.getBoundingClientRect().left;

@@ -16,16 +16,8 @@ describe('Vertical option', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-
-
         view.createSlider($('body'));
         viewOptional.createLabel(0);
-
-        /*const viewOptional = new ViewOptional();
-        viewOptional.createProgress();
-        viewOptional.createLabel(0);
-        viewOptional.createScale([100, 200, 300, 400, 500],
-            [0, 65, 130, 195, 260]);*/
     };
 
     const addDnd = ()=>{
@@ -35,15 +27,11 @@ describe('Vertical option', ()=>{
     };
 
     const findElements = ()=>{
-        /*divThumb = document.querySelector('.slider-thumb');
-        divThumbLeft = divThumb.getBoundingClientRect().left;
-        divThumbTop = divThumb.getBoundingClientRect().top;*/
         divTrack = document.querySelector('.slider-track');
         divThumb = document.querySelector('.slider-thumb');
         divThumbLeft = divThumb.getBoundingClientRect().left;
         divThumbTop = divThumb.getBoundingClientRect().top;
         divLabel = document.querySelector('.slider-label');
-        /*divScale = document.querySelector('.slider-scale');*/
 
         divTrack.style.width = '260px';
         divTrack.style.height = '5px';

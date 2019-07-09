@@ -4,7 +4,6 @@ import {Presenter} from "../blocks/presenter/presenter";
 
 import '../blocks/view/view.scss';
 
-
 const view = new View();
 const presenter = new Presenter();
 const viewOptional = new ViewOptional();
@@ -87,5 +86,5 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 }(jQuery));
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: true,
-range: true});
+range: true, step: 100});
 
