@@ -18,11 +18,10 @@ describe('View', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'), false);
+        view.createElements($('body'), false, 0,
+            false, 500);
 
         const viewOptional = new ViewOptional();
-        viewOptional.createProgress(false);
-        viewOptional.createLabel(0);
         viewOptional.createScale([100, 200, 300, 400, 500],
             [0, 65, 130, 195, 260], false);
     };

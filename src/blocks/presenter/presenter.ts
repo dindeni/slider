@@ -1,5 +1,6 @@
 import {ViewOptional} from "../view/viewOptional";
 import {Model} from "../model/model";
+import {View} from "../view/view";
 
 class Presenter {
     private coordXStart: number;
@@ -16,20 +17,82 @@ class Presenter {
 
     model: Model;
     viewOptional: ViewOptional;
+    view: View;
 
     addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean){
         let divThumb, divThumbMin: HTMLElement, divThumbMax;
-        if (range){
+        Array.from(document.querySelectorAll('.slider-thumb')).map((value, i)=>{
+            this.divTrack = document.querySelector('.slider-track') as HTMLElement;
+            /*const thumbWidth: number = divThumb.getBoundingClientRect().width;*/
+            const trackHeight: number = this.divTrack.getBoundingClientRect().height;
+
+            this.viewOptional = new ViewOptional();
+            this.model = new Model();
+            this.view = new View();
+
+            const moveThumb = (evt: MouseEvent)=>{
+                evt.preventDefault();
+
+                const width: number = (evt.target as HTMLElement).getBoundingClientRect().width;
+
+                let thumbDistance: number = this.calculateThumbDistance(vertical,
+                    evt, step, evt.target as HTMLElement);
+
+                /*(evt.target === value || evt.target === divThumbMin ||
+                    evt.target === divThumbMax) ? this.updateThumbCoordinates(vertical, step, thumbDistance,
+                    evt.target as HTMLElement, width, trackHeight, evt) : null;
+
+                this.updateData(vertical, range, evt, divThumbMin, divThumbMax, progress);*/
+                if (evt.target === value){
+                    this.updateThumbCoordinates(vertical, step, thumbDistance,
+                        evt.target as HTMLElement, width, trackHeight, evt);
+                    this.updateData(vertical, range, evt, divThumbMin, divThumbMax,
+                        value as HTMLElement, progress);
+
+                }
+
+                step ? document.removeEventListener('mousemove', moveThumb) : null;
+            };
+
+            const getDownCoord = (evt: MouseEvent)=>{
+                evt.preventDefault();
+
+                if ((evt.target === value || evt.target === divThumbMin ||
+                    evt.target === divThumbMax) && !vertical){
+                    this.coordXStart = evt.screenX;
+
+                    this.shift = parseInt((evt.target as HTMLElement).style.left || '0', 10);
+
+
+                }else if (evt.target === value|| evt.target === divThumbMin ||
+                    evt.target === divThumbMax && vertical){
+                    this.coordYStart = evt.screenY;
+
+                    this.shift = parseInt((evt.target as HTMLElement).style.top || '0', 10);
+
+                }
+                document.addEventListener('mousemove', moveThumb);
+            };
+
+            document.addEventListener('mousedown', getDownCoord);
+
+            document.addEventListener('mouseup', ()=>{
+                document.removeEventListener('mousemove', moveThumb);
+            });
+
+        });
+       /* /!*if (range){
             divThumbMin = document.querySelector('#thumb-min') as HTMLElement;
             divThumbMax = document.querySelector('#thumb-max') as HTMLElement;
         }else {
             divThumb = document.querySelector('.slider-thumb') as HTMLElement;
-        }
+        }*!/
 
 
-        /*const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;*/
+
+        /!*const  divThumb = document.querySelector('.slider-thumb') as HTMLElement;*!/
         this.divTrack = document.querySelector('.slider-track') as HTMLElement;
-        /*const thumbWidth: number = divThumb.getBoundingClientRect().width;*/
+        /!*const thumbWidth: number = divThumb.getBoundingClientRect().width;*!/
         const trackHeight: number = this.divTrack.getBoundingClientRect().height;
 
         this.viewOptional = new ViewOptional();
@@ -47,7 +110,8 @@ class Presenter {
                 evt.target === divThumbMax) ? this.updateThumbCoordinates(vertical, step, thumbDistance,
                 evt.target as HTMLElement, width, trackHeight, evt) : null;
 
-            this.updateData(vertical, range, evt, divThumbMin, divThumbMax, progress);
+            this.updateData(vertical, range, evt, divThumbMin, divThumbMax,
+                progress);
 
             step ? document.removeEventListener('mousemove', moveThumb) : null;
         };
@@ -76,7 +140,7 @@ class Presenter {
 
         document.addEventListener('mouseup', ()=>{
             document.removeEventListener('mousemove', moveThumb);
-        });
+        });*/
     }
 
     getMinMax(min: number, max: number){
@@ -229,22 +293,28 @@ class Presenter {
 
     updateData(vertical: boolean, range: boolean, evt: MouseEvent,
                   divThumbMin: HTMLElement, divThumbMax: HTMLElement,
-               progress: boolean){
+               divThumb: HTMLElement, progress: boolean){
         if (!vertical){
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
                 this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
 
+            this.model.sliderValue = this.calculateSliderValue(this.min,
+                this.max, this.model.sliderValuePercent);
+            this.view.updateLabelValue(this.model.sliderValue, this.divThumbLeft,
+                false, divThumb);
+            progress ? this.view.stylingProgress(this.divThumbLeft, vertical,
+                divThumb) : null;
             switch (true) {
                 case !range:
-                    this.model.sliderValue = this.calculateSliderValue(this.min,
+                    /*this.model.sliderValue = this.calculateSliderValue(this.min,
                         this.max, this.model.sliderValuePercent);
-                    this.viewOptional.updateLabelValue(range,
+                    this.view.updateLabelValue(range,
                         'default', this.model.sliderValue, this.divThumbLeft,
-                        false);
-                    progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
-                    'default', vertical) : null;
+                        false, divThumb);
+                    progress ? this.view.stylingProgress(this.divThumbLeft,
+                    'default', vertical, divThumb) : null;*/
                 break;
-                case range && evt.target === divThumbMin:
+              /*  case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
@@ -261,7 +331,7 @@ class Presenter {
                         false);
                     progress ? this.viewOptional.stylingProgress(this.divThumbLeft,
                         'max', vertical) : null;
-                    break;
+                    break;*/
             }
         }else{
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
@@ -271,13 +341,12 @@ class Presenter {
                 case !range:
                     this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
-                    this.viewOptional.updateLabelValue(range,
-                        'default', this.model.sliderValue, this.divThumbTop,
-                        true);
-                    progress ? this.viewOptional.stylingProgress(this.divThumbTop,
-                        'default', vertical) : null;
+                    this.view.updateLabelValue(this.model.sliderValue, this.divThumbTop,
+                        true, divThumb);
+                    progress ? this.view.stylingProgress(this.divThumbTop, vertical,
+                        divThumb) : null;
                     break;
-                case range && evt.target === divThumbMin:
+                /*case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
                     this.viewOptional.updateLabelValue(range,
@@ -293,7 +362,7 @@ class Presenter {
                         'max', this.model.sliderValueMax, this.divThumbTop,
                         true);
                     progress ? this.viewOptional.stylingProgress(this.divThumbTop,
-                        'max', vertical) : null;
+                        'max', vertical) : null;*/
             }
         }
     }

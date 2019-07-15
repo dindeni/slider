@@ -12,7 +12,7 @@ class ViewOptional{
     private labelOffsetTop: number = -30;
     private divThumb: JQuery;
 
-    createProgress(range: boolean){
+    /*createProgress(range: boolean){
         !this.divTrack ? this.divTrack = $('.slider-track') : null;
 
         if (!range){
@@ -23,8 +23,8 @@ class ViewOptional{
             $('<div class="slider-progress" id="progress-max"></div>').appendTo(this.divTrack);
         }
 
-    }
-    stylingProgress(divProgressWidth: number, type: 'min' | 'max' |
+    }*/
+    /*stylingProgress(divProgressWidth: number, type: 'min' | 'max' |
     'default', vertical: boolean){
         !this.divTrack ? this.divTrack = $('.slider-track') : null;
 
@@ -66,9 +66,9 @@ class ViewOptional{
                 })
         }
 
-    }
+    }*/
 
-    createLabel(initValue: number, vertical: boolean, range: boolean, max: number){
+    /*createLabel(initValue: number, vertical: boolean, range: boolean, max: number){
 
         this.divWrapper = $('.slider-wrapper');
 
@@ -100,9 +100,9 @@ class ViewOptional{
             this.divLabelMin.text(initValue);
             this.divLabelMax.text(max);
         }
-    }
+    }*/
 
-    updateLabelValue(range: boolean, element: 'min' | 'max' | 'default', value: number, coord: number,
+ /*   updateLabelValue(range: boolean, element: 'min' | 'max' | 'default', value: number, coord: number,
                      vertical: boolean){
 
             switch (element) {
@@ -131,7 +131,7 @@ class ViewOptional{
                     this.divLabel.css({top: coord + this.labelOffsetTop})
             }
 
-    }
+    }*/
 
     createScale(scaleValue: number[], scaleCoords: number[], vertical: boolean){
         const scaleTopPositionCorrection = 5;

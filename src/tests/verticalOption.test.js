@@ -1,4 +1,4 @@
-import {View} from "../blocks/view/view";
+/*import {View} from "../blocks/view/view";
 import {ViewOptional} from "../blocks/view/viewOptional";
 import {Presenter} from "../blocks/presenter/presenter";
 import {dispatchMove} from "./_serviceFunctions";
@@ -62,4 +62,4 @@ describe('Vertical option', ()=>{
     it('should label value to be 176', ()=> {
         expect(divLabel.textContent).toBe('176')
     });
-});
+});*/

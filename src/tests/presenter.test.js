@@ -17,7 +17,8 @@ describe('Presenter', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'), false);
+        view.createElements($('body'), false, 0,
+            false, 500);
 
     };
     const addDnd = ()=>{

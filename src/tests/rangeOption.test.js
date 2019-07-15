@@ -10,13 +10,10 @@ describe('Range', ()=>{
     const moveDistanceX = 50;
     const moveDistanceY = 0;
 
-    const viewOptional = new ViewOptional();
-
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'), true);
-        viewOptional.createLabel(0, false, true, 500);
-        viewOptional.createProgress(true);
+        view.createElements($('body'), true, 100,
+            false, 500);
     };
 
     const addDnd = ()=>{
@@ -63,8 +60,10 @@ describe('Range', ()=>{
 
     describe('After dispatch max', ()=>{
         beforeAll(()=>{
+            divThumbMax.style.left='260px';
             dispatchMove(divThumbMax, divThumbLeftMax, divThumbTopMax, -moveDistanceX,
                 moveDistanceY);
+
         });
 
         it('should div thumb max move a distance', ()=>{
