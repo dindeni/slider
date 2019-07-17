@@ -19,12 +19,15 @@ class Presenter {
     viewOptional: ViewOptional;
     view: View;
 
-    addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean){
+    addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean,
+           ){
         let divThumb, divThumbMin: HTMLElement, divThumbMax;
+
         Array.from(document.querySelectorAll('.slider-thumb')).map((value, i)=>{
-            this.divTrack = document.querySelector('.slider-track') as HTMLElement;
+           /* const divTrack = document.querySelector('.slider-track') as HTMLElement;*/
             /*const thumbWidth: number = divThumb.getBoundingClientRect().width;*/
-            const trackHeight: number = this.divTrack.getBoundingClientRect().height;
+            /*const trackHeight: number = divTrack.getBoundingClientRect().height;*/
+            /*const trackWidth: number = divTrack.getBoundingClientRect().width;*/
 
             this.viewOptional = new ViewOptional();
             this.model = new Model();
@@ -33,9 +36,16 @@ class Presenter {
             const moveThumb = (evt: MouseEvent)=>{
                 evt.preventDefault();
 
+                const trackHeight: number = (((evt.target as HTMLElement).parentElement as HTMLElement).
+                querySelector('.slider-track') as HTMLElement).getBoundingClientRect().height;
+                const trackWidth: number = (((evt.target as HTMLElement).parentElement as HTMLElement).
+                querySelector('.slider-track') as HTMLElement).getBoundingClientRect().width;
+                const isVertical = (evt.target as HTMLElement).classList.contains('vertical');
+
+
                 const width: number = (evt.target as HTMLElement).getBoundingClientRect().width;
 
-                let thumbDistance: number = this.calculateThumbDistance(vertical,
+                let thumbDistance: number = this.calculateThumbDistance(isVertical,
                     evt, step, evt.target as HTMLElement);
 
                 /*(evt.target === value || evt.target === divThumbMin ||
@@ -44,10 +54,12 @@ class Presenter {
 
                 this.updateData(vertical, range, evt, divThumbMin, divThumbMax, progress);*/
                 if (evt.target === value){
-                    this.updateThumbCoordinates(vertical, step, thumbDistance,
-                        evt.target as HTMLElement, width, trackHeight, evt);
-                    this.updateData(vertical, range, evt, divThumbMin, divThumbMax,
-                        value as HTMLElement, progress);
+
+                    this.updateThumbCoordinates(isVertical, step, thumbDistance,
+                        evt.target as HTMLElement, width, trackHeight, evt,
+                        trackWidth);
+                    this.updateData(isVertical, range, evt, divThumbMin, divThumbMax,
+                        value as HTMLElement, progress, trackWidth, trackHeight);
 
                 }
 
@@ -56,16 +68,17 @@ class Presenter {
 
             const getDownCoord = (evt: MouseEvent)=>{
                 evt.preventDefault();
+                const isVertical = (evt.target as HTMLElement).classList.contains('vertical');
 
                 if ((evt.target === value || evt.target === divThumbMin ||
-                    evt.target === divThumbMax) && !vertical){
+                    evt.target === divThumbMax) && !isVertical){
                     this.coordXStart = evt.screenX;
 
                     this.shift = parseInt((evt.target as HTMLElement).style.left || '0', 10);
 
 
                 }else if (evt.target === value|| evt.target === divThumbMin ||
-                    evt.target === divThumbMax && vertical){
+                    evt.target === divThumbMax && isVertical){
                     this.coordYStart = evt.screenY;
 
                     this.shift = parseInt((evt.target as HTMLElement).style.top || '0', 10);
@@ -221,17 +234,17 @@ class Presenter {
 
     calculateThumbDistance(vertical: boolean, evt: MouseEvent,
                            step: number | undefined, divThumb: HTMLElement){
-
+        const isVertical = divThumb.classList.contains('vertical');
         switch (true) {
-            case step && !vertical:
+            case step && !isVertical:
                 return this.addDnDStep(step, divThumb, this.coordXStart,
                     evt.screenX, vertical);
-            case step && vertical:
+            case step && isVertical:
                 return this.addDnDStep(step, divThumb, this.coordYStart,
                     evt.screenY, vertical);
-            case !step && !vertical:
+            case !step && !isVertical:
                 return evt.screenX - this.coordXStart;
-            case !step && vertical:
+            case !step && isVertical:
                 return evt.screenY - this.coordYStart;
             default: return  0
         }
@@ -239,10 +252,11 @@ class Presenter {
 
     updateThumbCoordinates(vertical: boolean, step: number | undefined,
                            thumbDistance: number, divThumb: HTMLElement,
-                           thumbWidth: number, trackHeight: number, evt: MouseEvent){
-        const trackWidth = this.divTrack.getBoundingClientRect().width;
-
-        if (!vertical && !step){
+                           thumbWidth: number, trackHeight: number, evt: MouseEvent,
+                           trackWidth){
+        /*const trackWidth = this.divTrack.getBoundingClientRect().width;*/
+        const isVertical = divThumb.classList.contains('vertical');
+        if (!isVertical && !step){
             switch (true) {
                 case thumbDistance + this.shift > trackWidth:
                     divThumb.style.left = trackWidth + 'px';
@@ -252,7 +266,7 @@ class Presenter {
                 default: divThumb.style.left = this.shift + thumbDistance + 'px';
                 this.divThumbLeft = this.shift + thumbDistance
             }
-        }else if(!vertical && step && evt.target === divThumb){
+        }else if(!isVertical && step && evt.target === divThumb){
             switch (true) {
                 case thumbDistance > trackWidth:
                     divThumb.style.left = thumbWidth + 'px';
@@ -264,7 +278,7 @@ class Presenter {
                 this.divThumbLeft = parseInt(divThumb.style.left);
             }
 
-        }else if(vertical && step && evt.target === divThumb){
+        }else if(isVertical && step && evt.target === divThumb){
             switch (true) {
                 case thumbDistance > trackHeight:
                     divThumb.style.top = trackHeight + 'px';
@@ -276,7 +290,7 @@ class Presenter {
                     this.divThumbTop = parseInt(divThumb.style.top);
             }
 
-        } else if (vertical  && !step) {
+        } else if (isVertical  && !step) {
             switch (true) {
                 case thumbDistance + this.shift > trackHeight:
                     divThumb.style.top = trackHeight + 'px';
@@ -293,16 +307,18 @@ class Presenter {
 
     updateData(vertical: boolean, range: boolean, evt: MouseEvent,
                   divThumbMin: HTMLElement, divThumbMax: HTMLElement,
-               divThumb: HTMLElement, progress: boolean){
+               divThumb: HTMLElement, progress: boolean, trackWidth: number,
+               trackHeight: number){
         if (!vertical){
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
-                this.divTrack.getBoundingClientRect().width, this.divThumbLeft);
+                /*this.divTrack.getBoundingClientRect().width*/trackWidth,
+                this.divThumbLeft);
 
             this.model.sliderValue = this.calculateSliderValue(this.min,
                 this.max, this.model.sliderValuePercent);
             this.view.updateLabelValue(this.model.sliderValue, this.divThumbLeft,
                 false, divThumb);
-            progress ? this.view.stylingProgress(this.divThumbLeft, vertical,
+            progress ? this.viewOptional.stylingProgress(this.divThumbLeft, vertical,
                 divThumb) : null;
             switch (true) {
                 case !range:
@@ -335,17 +351,15 @@ class Presenter {
             }
         }else{
             this.model.sliderValuePercent = this.calculateSliderMovePercent(
-                this.divTrack.getBoundingClientRect().height, this.divThumbTop);
+                /*this.divTrack.getBoundingClientRect().height*/trackHeight,
+                this.divThumbTop);
 
-            switch (true) {
-                case !range:
-                    this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
-                        this.model.sliderValuePercent);
-                    this.view.updateLabelValue(this.model.sliderValue, this.divThumbTop,
-                        true, divThumb);
-                    progress ? this.view.stylingProgress(this.divThumbTop, vertical,
-                        divThumb) : null;
-                    break;
+            this.model.sliderValue = this.calculateSliderValue(this.min, this.max,
+                this.model.sliderValuePercent);
+            this.view.updateLabelValue(this.model.sliderValue, this.divThumbTop,
+                true, divThumb);
+            progress ? this.viewOptional.stylingProgress(this.divThumbTop, vertical,
+                divThumb) : null;
                 /*case range && evt.target === divThumbMin:
                     this.model.sliderValueMin = this.calculateSliderValue(this.min, this.max,
                         this.model.sliderValuePercent);
@@ -363,7 +377,7 @@ class Presenter {
                         true);
                     progress ? this.viewOptional.stylingProgress(this.divThumbTop,
                         'max', vertical) : null;*/
-            }
+
         }
     }
 

@@ -137,7 +137,7 @@ class ViewOptional{
         const scaleTopPositionCorrection = 5;
         !this.divWrapper ? this.divWrapper = $('.slider-wrapper') : null;
         const ul = $('<ul class="slider-scale"></ul>').appendTo(this.divWrapper);
-
+        console.log('yes')
         scaleValue.map((item, i)=>{
 
                 const itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo(ul);
@@ -147,29 +147,173 @@ class ViewOptional{
                         scaleTopPositionCorrection})
         })
     }
+    createProgress(range: boolean, wrapper: JQuery){
+        const track = wrapper.find('.slider-track');
+        if (!range){
+            $('<div class="slider-progress"></div>').appendTo(track);
+        }else {
+            $('<div class="slider-progress" id="progress-min"></div>').appendTo(track);
+            $('<div class="slider-progress" id="progress-max"></div>').appendTo(track);
+        }
 
-    makeVertical(vertical: boolean, range: boolean){
-        !this.divTrack ? this.divTrack = $('.slider-track') : null;
+    }
 
-        const trackWidth: number | undefined = this.divTrack.width();
-        let trackHeight: number | undefined = this.divTrack.height();
+    stylingProgress(divProgressWidth: number, vertical: boolean,
+                    divThumb: HTMLElement){
 
-        this.divTrack.css({
+        /*switch (type || vertical) {
+            case "default" && !vertical:
+                divProgress.style.width = divProgressWidth + 'px';
+                   /!* divProgress.css({
+                    height: divProgressWidth + 'px',
+                    width: '5px'
+                })*!/
+              console.log(divProgress);
+
+                break;
+          /!*  case "min":
+                !this.divProgressMin ?
+                    this.divProgressMin = $('#progress-min') : null;
+                !vertical ? this.divProgressMin.css({
+                    width: divProgressWidth + 'px'
+                }) : this.divProgressMin.css({
+                    height: divProgressWidth + 'px',
+                    width: '5px'
+                });
+                break;
+            case "max":
+                !this.divProgressMax ?
+                    this.divProgressMax = $('#progress-max') : null;
+                !vertical ? this.divProgressMax.css({
+                    width:  (this.divTrack.width() || 0) - divProgressWidth + 'px',
+                    position: 'absolute',
+                    right: '0px',
+                    top: '0px'
+                }) : this.divProgressMax.css({
+                    height:  (this.divTrack.height() || 0) - divProgressWidth + 'px',
+                    width: '5px',
+                    position: 'absolute',
+                    right: '0px',
+                    bottom: '0px'
+                })*!/
+        }*/
+        const thumb = $(divThumb);
+
+        /*if (thumb.is('#thumb-min') ||
+            thumb.is('#thumb-max')){
+
+            if (thumb.is('#thumb-min')){
+                const divProgressMin = (divThumb.previousElementSibling as HTMLElement).
+                    children[0] as HTMLElement;
+                !vertical ? divProgressMin.style.width = divProgressWidth + 'px' :
+                    null;
+            }else {
+                const divProgressMax = thumb.siblings('.slider-track').children(
+                    '#progress-max'
+                );
+                const divTrack = thumb.siblings('.slider-track');
+                !vertical ? divProgressMax.css({
+                        width: (divTrack.width() || 0) - divProgressWidth + 'px',
+                        position: 'absolute',
+                        right: '0px',
+                        top: '0px'
+                }) :
+                    null;
+
+            }
+        }else {
+            const divProgress = (divThumb.previousElementSibling as HTMLElement).
+                children[0] as HTMLElement;
+            !vertical ? divProgress.style.width = divProgressWidth + 'px' :
+                divProgress.style.height = divProgressWidth + 'px';
+        }*/
+        const stylingProgress = {
+            default: ()=>{
+                const divProgress = (divThumb.previousElementSibling as HTMLElement).
+                    children[0] as HTMLElement;
+
+                if (vertical){
+                    divProgress.style.height = divProgressWidth + 'px';
+                    divProgress.style.width = '5px';
+                }else {
+                    divProgress.style.width = divProgressWidth + 'px';
+                }
+            },
+            range: ()=>{
+                if (vertical){
+                    if (thumb.is('#thumb-min')){
+                        const divProgressMin = (divThumb.previousElementSibling as HTMLElement).
+                            children[0] as HTMLElement;
+                        divProgressMin.style.height = divProgressWidth + 'px';
+                        divProgressMin.style.width = '5px';
+                    }else {
+                        const divProgressMax = thumb.siblings('.slider-track').children(
+                            '#progress-max'
+                        );
+                        const divTrack = thumb.siblings('.slider-track');
+                        divProgressMax.css({
+                            height: (divTrack.height() || 0) - divProgressWidth + 'px',
+                            width: '5px',
+                            position: 'absolute',
+                            right: '0px',
+                            bottom: '0px'
+                        });
+                    }
+
+
+
+                }else {
+                    if (thumb.is('#thumb-min')){
+                        const divProgressMin = (divThumb.previousElementSibling as HTMLElement).
+                            children[0] as HTMLElement;
+                        divProgressMin.style.width = divProgressWidth + 'px';
+                    }else {
+                        const divProgressMax = thumb.siblings('.slider-track').children(
+                            '#progress-max'
+                        );
+                        const divTrack = thumb.siblings('.slider-track');
+                        divProgressMax.css({
+                            width: (divTrack.width() || 0) - divProgressWidth + 'px',
+                            position: 'absolute',
+                            right: '0px',
+                            top: '0px'
+                        });
+                    }
+                }
+            }
+        };
+
+        (thumb.is('#thumb-min') ||
+            thumb.is('#thumb-max')) ? stylingProgress.range() :
+            stylingProgress.default()
+
+    }
+
+    makeVertical(range: boolean, wrapper: JQuery){
+
+        /*!this.divTrack ? this.divTrack = $('.slider-track') : null;*/
+        const divTrack = wrapper.find('.slider-track');
+
+
+        const trackWidth: number | undefined = divTrack.width();
+        let trackHeight: number | undefined = divTrack.height();
+
+        divTrack.css({
             width: trackHeight + 'px',
             height: trackWidth + 'px'
         });
 
         if (!range){
-            this.divThumb = $('.slider-thumb');
+            const divThumb = wrapper.find($('.slider-thumb'));
 
-            this.divThumb.css({
+            divThumb.css({
                 left: '-8px',
                 top: '0px'
             })
         }else {
-            const divThumbMin = $('#thumb-min');
-            const divThumbMax = $('#thumb-max');
-            trackHeight = this.divTrack.height();
+            const divThumbMin = wrapper.find('#thumb-min');
+            const divThumbMax = wrapper.find('#thumb-max');
+            trackHeight = divTrack.height();
 
             divThumbMin.css({
                 left: '-8px',

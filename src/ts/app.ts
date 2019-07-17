@@ -31,21 +31,28 @@ const createProgress = (progress: boolean, range: boolean)=>{
     }
 };
 
-const createLabel = (label: boolean, initValue: number, vertical: boolean,
+/*const createLabel = (label: boolean, initValue: number, vertical: boolean,
                      range: boolean, max: number)=>{
     if (label){
-        /*view.createLabel(initValue, vertical, range, max)*/
+        /!*view.createLabel(initValue, vertical, range, max)*!/
     }
-};
+};*/
 
 const createScale = (min: number, max: number, step: number | undefined,
                      vertical: boolean)=>{
     presenter.calculateLeftScaleCoords(min, max, step, vertical);
 };
 
-const makeVertical = (vertical: boolean, range: boolean)=>{
+/*const add=(step, vertical, range, progress)=>{
+    $('.slider-wrapper').each((i, value)=>{
+        presenter.addDnD(step, vertical, range, progress, value);
+    });
+
+};*/
+
+/*const makeVertical = (vertical: boolean, range: boolean)=>{
     vertical ? viewOptional.makeVertical(vertical, range) : null;
-};
+};*/
 
 const initSlider = async (element: JQuery, progress: boolean, min: number,
                           max: number, label: boolean,
@@ -53,10 +60,11 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
                           range: boolean):Promise<void> =>{
 
     await view.createElements(element,range, min, vertical, max);
-    await makeVertical(vertical, range);
+    /*await makeVertical(vertical, range);*/
     await presenter.getMinMax(min, max);
-    await createLabel(label, min, vertical, range, max);
+    /*await createLabel(label, min, vertical, range, max);*/
     await presenter.addDnD(step, vertical, range, progress);
+    /*await presenter.addDnD(step, vertical, range, progress);*/
     await createProgress(progress, range);
     createScale(min, max, step, vertical)
 
@@ -86,8 +94,8 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 }(jQuery));
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: false,
-range: false});
+range: false, step: 100});
 
-$('main').slider({progress: true, min: 100, max: 500, vertical: false,
+$('main').slider({progress: true, min: 100, max: 500, vertical: true,
     range: true});
 

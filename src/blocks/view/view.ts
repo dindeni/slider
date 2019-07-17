@@ -1,42 +1,55 @@
+import {ViewOptional} from "./viewOptional";
 
 class View {
     private divTrack: JQuery;
     private divThumb: JQuery;
-    private divWrapper: JQuery;
     private divThumbMin: JQuery;
     private divThumbMax: JQuery;
     private labelOffsetLeft: number = 8;
     private labelOffsetTop: number = -30;
 
+    viewOptional: ViewOptional;
+
     createElements(element: JQuery, range: boolean, initValue: number,
                    vertical: boolean, max: number){
-        this.divWrapper = $('<div class="slider-wrapper"></div>').
+
+        const divWrapper: JQuery = $('<div class="slider-wrapper"></div>').
         appendTo(element);
         this.divTrack = $('<div class="slider-track"></div>').
-        appendTo(this.divWrapper);
+        appendTo(divWrapper);
 
-        this.createThumb(range);
-        this.stylingElements(range);
-        this.createLabel(initValue, vertical, range, max);
-        this.createProgress(range);
+        this.viewOptional = new ViewOptional();
+
+        this.createThumb(range, vertical, divWrapper);
+        this.stylingElements(range, vertical, divWrapper);
+        this.createLabel(initValue, vertical, range, max, divWrapper);
+        this.viewOptional.createProgress(range, divWrapper);
     }
-    createThumb(range: boolean){
+
+    createThumb(range: boolean, vertical, wrapper){
         if (!range){
-            this.divThumb = $('<div class="slider-thumb" draggable="true"></div>').
-            appendTo(this.divWrapper);
+            vertical ? this.divThumb = $('<div class="slider-thumb vertical"' +
+                ' draggable="true"></div>').
+            appendTo(wrapper) :  this.divThumb = $('<div class="slider-thumb"' +
+                ' draggable="true"></div>').
+            appendTo(wrapper);
         }else {
-            this.divThumbMin = $('<div class="slider-thumb" id="thumb-min" draggable="true">' +
-                '</div>').appendTo(this.divWrapper);
-            this.divThumbMax = $('<div class="slider-thumb" id="thumb-max" draggable="true">' +
-                '</div>').appendTo(this.divWrapper);
+            vertical ? this.divThumbMin = $('<div class="slider-thumb vertical" id="thumb-min" draggable="true">' +
+                '</div>').appendTo(wrapper) :
+                this.divThumbMin = $('<div class="slider-thumb" id="thumb-min" draggable="true">' +
+                '</div>').appendTo(wrapper);
+            vertical ? this.divThumbMax = $('<div class="slider-thumb vertical" id="thumb-max" draggable="true">' +
+                '</div>').appendTo(wrapper) :
+                this.divThumbMax = $('<div class="slider-thumb" id="thumb-max" draggable="true">' +
+                    '</div>').appendTo(wrapper);
         }
     }
-    stylingElements(range: boolean){
-        if (!range){
+    stylingElements(range: boolean, vertical: boolean, wrapper: JQuery){
+        if (!range && !vertical){
             this.divThumb.css({
                 left: 0
             });
-        }else {
+        }else if (range && !vertical) {
             this.divThumbMin.css({
                 left: 0
             });
@@ -45,11 +58,15 @@ class View {
             });
         }
 
+        vertical ? this.viewOptional.makeVertical(range, wrapper) : null;
+
     }
-    createLabel(initValue: number, vertical: boolean, range: boolean, max: number){
+    createLabel(initValue: number, vertical: boolean, range: boolean,
+                max: number, wrapper){
 
         if (!range){
-            const divLabel = $('<div class="slider-label"></div>').appendTo(this.divWrapper);
+            const divLabel = $('<div class="slider-label"></div>').
+            appendTo(wrapper);
             divLabel.text(initValue);
             vertical ? divLabel.css({
                 top: this.labelOffsetTop +'px',
@@ -57,7 +74,7 @@ class View {
             }) : null;
         }else {
             const divLabelMin = $('<div class="slider-label"' +
-                ' id="label-min"></div>').appendTo(this.divWrapper);
+                ' id="label-min"></div>').appendTo(wrapper);
             vertical ? divLabelMin.css({
                 left: this.labelOffsetTop / 2 + 'px',
                 top: this.labelOffsetTop + 'px'
@@ -65,7 +82,7 @@ class View {
             divLabelMin.text(initValue);
 
             const divLabelMax = $('<div class="slider-label"' +
-                ' id="label-max"></div>').appendTo(this.divWrapper);
+                ' id="label-max"></div>').appendTo(wrapper);
             !vertical ? divLabelMax.css({
                 left: (this.divTrack.width() || 0) - this.labelOffsetLeft +'px'
             }) : divLabelMax.css({
@@ -127,87 +144,8 @@ class View {
 
     };
 
-    createProgress(range: boolean){
-        if (!range){
-            $('<div class="slider-progress"></div>').appendTo(this.divTrack);
-        }else {
-            $('<div class="slider-progress" id="progress-min"></div>').appendTo(this.divTrack);
-            $('<div class="slider-progress" id="progress-max"></div>').appendTo(this.divTrack);
-        }
 
-    }
 
-    stylingProgress(divProgressWidth: number, vertical: boolean,
-                    divThumb: HTMLElement){
-
-        /*switch (type || vertical) {
-            case "default" && !vertical:
-                divProgress.style.width = divProgressWidth + 'px';
-                   /!* divProgress.css({
-                    height: divProgressWidth + 'px',
-                    width: '5px'
-                })*!/
-              console.log(divProgress);
-
-                break;
-          /!*  case "min":
-                !this.divProgressMin ?
-                    this.divProgressMin = $('#progress-min') : null;
-                !vertical ? this.divProgressMin.css({
-                    width: divProgressWidth + 'px'
-                }) : this.divProgressMin.css({
-                    height: divProgressWidth + 'px',
-                    width: '5px'
-                });
-                break;
-            case "max":
-                !this.divProgressMax ?
-                    this.divProgressMax = $('#progress-max') : null;
-                !vertical ? this.divProgressMax.css({
-                    width:  (this.divTrack.width() || 0) - divProgressWidth + 'px',
-                    position: 'absolute',
-                    right: '0px',
-                    top: '0px'
-                }) : this.divProgressMax.css({
-                    height:  (this.divTrack.height() || 0) - divProgressWidth + 'px',
-                    width: '5px',
-                    position: 'absolute',
-                    right: '0px',
-                    bottom: '0px'
-                })*!/
-        }*/
-        const thumb = $(divThumb);
-
-        if (thumb.is('#thumb-min') ||
-            thumb.is('#thumb-max')){
-
-            if (thumb.is('#thumb-min')){
-                const divProgressMin = (divThumb.previousElementSibling as HTMLElement).
-                    children[0] as HTMLElement;
-                !vertical ? divProgressMin.style.width = divProgressWidth + 'px' :
-                    null;
-            }else {
-                const divProgressMax = thumb.siblings('.slider-track').children(
-                    '#progress-max'
-                );
-                const divTrack = thumb.siblings('.slider-track');
-                !vertical ? divProgressMax.css({
-                        width: (divTrack.width() || 0) - divProgressWidth + 'px',
-                        position: 'absolute',
-                        right: '0px',
-                        top: '0px'
-                }) :
-                    null;
-
-            }
-        }else {
-            const divProgress = (divThumb.previousElementSibling as HTMLElement).
-                children[0] as HTMLElement;
-            !vertical ? divProgress.style.width = divProgressWidth + 'px' :
-                null;
-        }
-
-    }
 
     /*async createSlider(element: JQuery, range: boolean){
         await this.createElements(element, range);

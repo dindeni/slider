@@ -33,6 +33,8 @@ module.exports = function(config) {
     preprocessors: {
       "src/tests/*.js": ['webpack'],
       "test/**/*.js": ['webpack'],
+        'src/blocks/view/view.scss': ['webpack']
+
     },
 
       webpack: {

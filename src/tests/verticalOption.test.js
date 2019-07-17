@@ -1,28 +1,26 @@
-/*import {View} from "../blocks/view/view";
+import {View} from "../blocks/view/view";
 import {ViewOptional} from "../blocks/view/viewOptional";
 import {Presenter} from "../blocks/presenter/presenter";
 import {dispatchMove} from "./_serviceFunctions";
 
+
 describe('Vertical option', ()=>{
-    let divTrack;
-    let divThumb;
-    let divThumbLeft;
-    let divThumbTop;
-    let divLabel;
+    let divTrack, divThumb, divThumbLeft, divThumbTop, divLabel;
     const moveDistanceX = 0;
     const moveDistanceY = 50;
 
-    const viewOptional = new ViewOptional();
+
 
     const createElements = ()=>{
         const view = new View();
-        view.createSlider($('body'));
-        viewOptional.createLabel(0);
+        view.createElements($('body'), false, 100,
+            true, 500);
+        /*viewOptional.createLabel(0);*/
     };
 
     const addDnd = ()=>{
         const presenter = new Presenter();
-        presenter.addDnD(undefined, true);
+        presenter.addDnD(undefined, true, false, true);
         presenter.getMinMax(100, 500);
     };
 
@@ -38,7 +36,8 @@ describe('Vertical option', ()=>{
     };
 
     const makeVertical = ()=>{
-        viewOptional.makeVertical(true);
+        const viewOptional = new ViewOptional();
+        viewOptional.makeVertical(false, $('.slider-wrapper'));
     };
 
     beforeAll(async ()=>{
@@ -56,10 +55,9 @@ describe('Vertical option', ()=>{
     });
 
     it('should div thumb move a distance', function () {
-
         expect(parseInt(divThumb.style.top)).toBe(moveDistanceY);
     });
     it('should label value to be 176', ()=> {
         expect(divLabel.textContent).toBe('176')
     });
-});*/
+});
