@@ -1,12 +1,13 @@
 import {View} from "../blocks/view/view";
 import {ViewOptional} from "../blocks/view/viewOptional";
 import {Presenter} from "../blocks/presenter/presenter";
+import {ViewDnD} from "../blocks/view/viewDnD";
 
 import '../blocks/view/view.scss';
 
 const view = new View();
 const presenter = new Presenter();
-const viewOptional = new ViewOptional();
+const viewDnd = new ViewDnD();
 
 interface sliderOptions {
     progress?: boolean,
@@ -61,9 +62,9 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 
     await view.createElements(element,range, min, vertical, max);
     /*await makeVertical(vertical, range);*/
-    await presenter.getMinMax(min, max);
+    /*await presenter.getMinMax(min, max);*/
     /*await createLabel(label, min, vertical, range, max);*/
-    await presenter.addDnD(step, vertical, range, progress);
+    await viewDnd.addDnD(step, vertical, range, progress, min, max);
     /*await presenter.addDnD(step, vertical, range, progress);*/
     await createProgress(progress, range);
     createScale(min, max, step, vertical)
@@ -94,7 +95,7 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 }(jQuery));
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: false,
-range: false, step: 100});
+range: false});
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: true,
     range: true});

@@ -1,7 +1,7 @@
 import {View} from "../blocks/view/view";
 import {ViewOptional} from "../blocks/view/viewOptional";
-import {Presenter} from "../blocks/presenter/presenter";
 import {dispatchMove} from "./_serviceFunctions";
+import {ViewDnD} from "../blocks/view/viewDnD";
 
 
 describe('Vertical option', ()=>{
@@ -9,19 +9,16 @@ describe('Vertical option', ()=>{
     const moveDistanceX = 0;
     const moveDistanceY = 50;
 
-
-
     const createElements = ()=>{
         const view = new View();
         view.createElements($('body'), false, 100,
             true, 500);
-        /*viewOptional.createLabel(0);*/
     };
 
     const addDnd = ()=>{
-        const presenter = new Presenter();
-        presenter.addDnD(undefined, true, false, true);
-        presenter.getMinMax(100, 500);
+        const viewDnD = new ViewDnD();
+        viewDnD.addDnD(undefined, true, false, true,
+            100, 500);
     };
 
     const findElements = ()=>{

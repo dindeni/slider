@@ -1,7 +1,6 @@
 import {View} from "../blocks/view/view";
-import {ViewOptional} from "../blocks/view/viewOptional";
-import {Presenter} from "../blocks/presenter/presenter";
 import {dispatchMove} from "./_serviceFunctions";
+import {ViewDnD} from "../blocks/view/viewDnD";
 
 describe('Range', ()=>{
     let divThumbMin,  divThumbMax, divTrack, divThumbLeftMin, divThumbTopMin,
@@ -17,9 +16,9 @@ describe('Range', ()=>{
     };
 
     const addDnd = ()=>{
-        const presenter = new Presenter();
-        presenter.addDnD(undefined, false, true, true);
-        presenter.getMinMax(100, 500);
+        const viewDnd = new ViewDnD();
+        viewDnd.addDnD(undefined, false, true, true,
+            100, 500);
     };
 
     const findElements = ()=>{

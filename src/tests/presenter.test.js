@@ -1,9 +1,6 @@
 const $  = require('jquery');
-
 import {View} from "../blocks/view/view";
 import {Presenter} from "../blocks/presenter/presenter";
-
-import {dispatchMove} from "./_serviceFunctions";
 
 describe('Presenter', ()=>{
 
@@ -11,8 +8,6 @@ describe('Presenter', ()=>{
     let divThumbTop;
     let divThumbWidth;
     let divThumbLeft;
-    const moveDistanceX = 50;
-    const moveDistanceY = 0;
     let presenter;
 
     const createElements = ()=>{
@@ -20,10 +15,6 @@ describe('Presenter', ()=>{
         view.createElements($('body'), false, 0,
             false, 500);
 
-    };
-    const addDnd = ()=>{
-        presenter = new Presenter();
-        presenter.addDnD();
     };
 
     const findElements = ()=>{
@@ -37,19 +28,9 @@ describe('Presenter', ()=>{
         document.body.innerHTML = '';
 
         await createElements();
-        await addDnd();
         await findElements();
-        await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
-            moveDistanceY);
+        presenter = new Presenter();
 
-    });
-
-    it('should div thumb to be draggable',  ()=> {
-        expect(divThumb.hasAttribute('draggable')).toBeTruthy();
-    });
-
-    it('should div thumb move a distance', ()=>{
-        expect(parseInt(divThumb.style.left)).toBe(moveDistanceX)
     });
 
     it('should calculate slider value percent', ()=> {
@@ -58,7 +39,8 @@ describe('Presenter', ()=>{
     });
 
     it('should calculate slider value', ()=>{
-        expect(presenter.calculateSliderValue(100, 500, 50)).
+        expect(presenter.calculateSliderValue(100, 500, 260,
+            131)).
         toBe(300);
     })
 

@@ -1,7 +1,7 @@
 const $  = require('jquery');
 import {View} from "../blocks/view/view.ts";
 import {ViewOptional} from "../blocks/view/viewOptional";
-import {Presenter} from "../blocks/presenter/presenter";
+import {ViewDnD} from "../blocks/view/viewDnD";
 
 import {dispatchMove} from "./_serviceFunctions";
 
@@ -27,12 +27,11 @@ describe('View', ()=>{
     };
 
     const turnOnProgress = ()=>{
-        const presenter = new Presenter();
-        presenter.optionProgress = true;
+        const viewDnD = new ViewDnD();
         divProgress = document.querySelector('.slider-progress');
         divProgress.style.width = 0;
-        presenter.getMinMax(100, 500);
-        presenter.addDnD(undefined, false, false, true);
+        viewDnD.addDnD(undefined, false, false, true,
+            100, 500);
     };
 
     const findElements = ()=>{
@@ -82,5 +81,12 @@ describe('View', ()=>{
 
     it('should scale exist', ()=>{
         expect(divScale).not.toBeNull();
+    });
+    it('should div thumb to be draggable',  ()=> {
+        expect(divThumb.hasAttribute('draggable')).toBeTruthy();
+    });
+
+    it('should div thumb move a distance', ()=>{
+        expect(parseInt(divThumb.style.left)).toBe(moveDistanceX)
     });
 });

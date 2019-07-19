@@ -134,10 +134,10 @@ class ViewOptional{
     }*/
 
     createScale(scaleValue: number[], scaleCoords: number[], vertical: boolean){
+        console.log('hi')
         const scaleTopPositionCorrection = 5;
         !this.divWrapper ? this.divWrapper = $('.slider-wrapper') : null;
         const ul = $('<ul class="slider-scale"></ul>').appendTo(this.divWrapper);
-        console.log('yes')
         scaleValue.map((item, i)=>{
 
                 const itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo(ul);
