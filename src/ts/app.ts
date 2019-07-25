@@ -1,13 +1,8 @@
 import {View} from "../blocks/view/view";
-import {ViewOptional} from "../blocks/view/viewOptional";
-import {Presenter} from "../blocks/presenter/presenter";
-import {ViewDnD} from "../blocks/view/viewDnD";
 
 import '../blocks/view/view.scss';
 
 const view = new View();
-const presenter = new Presenter();
-const viewDnd = new ViewDnD();
 
 interface sliderOptions {
     progress?: boolean,
@@ -25,50 +20,12 @@ declare global {
     }
 }
 
-const createProgress = (progress: boolean, range: boolean)=>{
-    if (progress){
-        /*viewOptional.createProgress(range);*/
-        presenter.optionProgress = true;
-    }
-};
-
-/*const createLabel = (label: boolean, initValue: number, vertical: boolean,
-                     range: boolean, max: number)=>{
-    if (label){
-        /!*view.createLabel(initValue, vertical, range, max)*!/
-    }
-};*/
-
-const createScale = (min: number, max: number, step: number | undefined,
-                     vertical: boolean)=>{
-    presenter.calculateLeftScaleCoords(min, max, step, vertical);
-};
-
-/*const add=(step, vertical, range, progress)=>{
-    $('.slider-wrapper').each((i, value)=>{
-        presenter.addDnD(step, vertical, range, progress, value);
-    });
-
-};*/
-
-/*const makeVertical = (vertical: boolean, range: boolean)=>{
-    vertical ? viewOptional.makeVertical(vertical, range) : null;
-};*/
-
-const initSlider = async (element: JQuery, progress: boolean, min: number,
+const initSlider = (element: JQuery, progress: boolean, min: number,
                           max: number, label: boolean,
                           step: number | undefined, vertical: boolean,
-                          range: boolean):Promise<void> =>{
+                          range: boolean) =>{
 
-    await view.createElements(element,range, min, vertical, max);
-    /*await makeVertical(vertical, range);*/
-    /*await presenter.getMinMax(min, max);*/
-    /*await createLabel(label, min, vertical, range, max);*/
-    await viewDnd.addDnD(step, vertical, range, progress, min, max);
-    /*await presenter.addDnD(step, vertical, range, progress);*/
-    await createProgress(progress, range);
-    createScale(min, max, step, vertical)
-
+    view.createElements(element, range, vertical, min, max, step);
 
 };
 
@@ -95,8 +52,11 @@ const initSlider = async (element: JQuery, progress: boolean, min: number,
 }(jQuery));
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: false,
-range: false});
+range: true});
 
 $('main').slider({progress: true, min: 100, max: 500, vertical: true,
-    range: true});
+    range: true, step:100});
+
+
+
 

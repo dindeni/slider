@@ -1,6 +1,5 @@
 const $  = require('jquery');
 import {View} from "../blocks/view/view.ts";
-import {ViewOptional} from "../blocks/view/viewOptional";
 import {ViewDnD} from "../blocks/view/viewDnD";
 
 import {dispatchMove} from "./_serviceFunctions";
@@ -18,20 +17,13 @@ describe('View', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createElements($('body'), false, 0,
-            false, 500);
-
-        const viewOptional = new ViewOptional();
-        viewOptional.createScale([100, 200, 300, 400, 500],
-            [0, 65, 130, 195, 260], false);
+        view.createElements($('body'), false, false,
+            100, 500, undefined);
     };
 
     const turnOnProgress = ()=>{
-        const viewDnD = new ViewDnD();
         divProgress = document.querySelector('.slider-progress');
         divProgress.style.width = 0;
-        viewDnD.addDnD(undefined, false, false, true,
-            100, 500);
     };
 
     const findElements = ()=>{
@@ -43,6 +35,7 @@ describe('View', ()=>{
         divScale = document.querySelector('.slider-scale');
 
         divTrack.style.width = '260px';
+        divThumb.style.left = '0px';
     };
 
     beforeAll(async ()=>{
@@ -50,8 +43,6 @@ describe('View', ()=>{
        await createElements();
        await turnOnProgress();
        await findElements();
-       await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
-           moveDistanceY);
 
     });
 
@@ -75,18 +66,26 @@ describe('View', ()=>{
         expect(divLabel).not.toBeNull();
     });
 
-    it('should label value to be 176', ()=> {
-        expect(divLabel.textContent).toBe('176')
-    });
-
-    it('should scale exist', ()=>{
-        expect(divScale).not.toBeNull();
-    });
     it('should div thumb to be draggable',  ()=> {
         expect(divThumb.hasAttribute('draggable')).toBeTruthy();
     });
 
-    it('should div thumb move a distance', ()=>{
-        expect(parseInt(divThumb.style.left)).toBe(moveDistanceX)
+    describe('After dispatch', ()=>{
+        beforeAll(()=>{
+            const wrapper = $('.slider-wrapper');
+            const viewDnd = new ViewDnD();
+            viewDnd.addDnD(undefined, false, false, true,
+                100, 500, wrapper);
+            dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
+                moveDistanceY);
+        });
+
+        it('should div thumb move a distance', ()=>{
+            expect(parseInt(divThumb.style.left)).toBe(moveDistanceX)
+        });
+
+        it('should label value to be 176', ()=> {
+            expect(divLabel.textContent).toBe('176')
+        });
     });
 });

@@ -11,15 +11,17 @@ describe('Range', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createElements($('body'), true, 100,
-            false, 500);
+        view.createElements($('body'), true, false,
+            100, 500, 100);
     };
 
     const addDnd = ()=>{
+        const wrapper = $('.slider-wrapper');
         const viewDnd = new ViewDnD();
         viewDnd.addDnD(undefined, false, true, true,
-            100, 500);
+            100, 500, wrapper);
     };
+
 
     const findElements = ()=>{
         divThumbMin = document.querySelector('#thumb-min');
@@ -59,6 +61,7 @@ describe('Range', ()=>{
 
     describe('After dispatch max', ()=>{
         beforeAll(()=>{
+
             divThumbMax.style.left='260px';
             dispatchMove(divThumbMax, divThumbLeftMax, divThumbTopMax, -moveDistanceX,
                 moveDistanceY);

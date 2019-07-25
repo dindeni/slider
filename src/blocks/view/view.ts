@@ -1,4 +1,5 @@
 import {ViewOptional} from "./viewOptional";
+import {ViewDnD} from "./viewDnD";
 
 class View {
     private divTrack: JQuery;
@@ -9,11 +10,15 @@ class View {
     private labelOffsetTop: number = -30;
 
     viewOptional: ViewOptional;
+    viewDnD: ViewDnD;
 
-    createElements(element: JQuery, range: boolean, initValue: number,
-                   vertical: boolean, max: number){
+    createElements(element: JQuery, range: boolean,
+                   vertical: boolean, min: number, max: number,
+                   step: number | undefined){
 
-        const divWrapper: JQuery = $('<div class="slider-wrapper"></div>').
+        let divWrapper: JQuery;
+        step ? divWrapper = $('<div class="slider-wrapper step"></div>').
+        appendTo(element) : divWrapper = $('<div class="slider-wrapper"></div>').
         appendTo(element);
         this.divTrack = $('<div class="slider-track"></div>').
         appendTo(divWrapper);
@@ -22,8 +27,16 @@ class View {
 
         this.createThumb(range, vertical, divWrapper);
         this.stylingElements(range, vertical, divWrapper);
-        this.createLabel(initValue, vertical, range, max, divWrapper);
+        this.createLabel(min, vertical, range, max, divWrapper);
         this.viewOptional.createProgress(range, divWrapper);
+
+        step ? this.viewOptional.createScale(vertical, min, max, step,
+            this.divTrack.width() || 0, this.divTrack.height() || 0,
+            divWrapper) : null;
+
+        this.viewDnD = new ViewDnD();
+        this.viewDnD.addDnD(step, vertical, range, true, min, max,
+            divWrapper);
     }
 
     createThumb(range: boolean, vertical, wrapper){
@@ -91,28 +104,7 @@ class View {
             });
             divLabelMax.text(max);
 
-        }/*else {
-            this.divLabelMin = $('<div class="slider-label" id="label-min">' +
-                '</div>').appendTo(this.divWrapper);
-            this.divLabelMax = $('<div class="slider-label" id="label-max">' +
-                '</div>').appendTo(this.divWrapper);
-
-            !this.divTrack ? this.divTrack = $('.slider-track') : null;
-
-            !vertical ? this.divLabelMax.css({
-                left: (this.divTrack.width() || 0) - this.labelOffsetLeft +'px'
-            }) : this.divLabelMax.css({
-                top: (this.divTrack.height() || 0) + this.labelOffsetTop +'px',
-                left: this.labelOffsetTop / 2 + 'px'
-            });
-            vertical ? this.divLabelMin.css({
-                left: this.labelOffsetTop / 2 + 'px',
-                top: this.labelOffsetTop + 'px'
-            }) : null;
-            this.divLabelMin.text(initValue);
-            this.divLabelMax.text(max);
-        }*/
-
+        }
     }
 
     updateLabelValue(value: number, coord: number, vertical: boolean,
@@ -144,14 +136,6 @@ class View {
 
     };
 
-
-
-
-    /*async createSlider(element: JQuery, range: boolean){
-        await this.createElements(element, range);
-       /!* await this.createThumb(range);*!/
-        /!*await this.stylingElements(range);*!/
-    }*/
 }
 
 export {View}

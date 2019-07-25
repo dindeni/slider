@@ -12,8 +12,8 @@ describe('Presenter', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createElements($('body'), false, 0,
-            false, 500);
+        view.createElements($('body'), false, false,
+            100, 500, undefined);
 
     };
 

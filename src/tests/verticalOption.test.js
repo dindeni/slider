@@ -11,14 +11,15 @@ describe('Vertical option', ()=>{
 
     const createElements = ()=>{
         const view = new View();
-        view.createElements($('body'), false, 100,
-            true, 500);
+        view.createElements($('body'), false, true,
+            100, 500, undefined);
     };
 
     const addDnd = ()=>{
-        const viewDnD = new ViewDnD();
-        viewDnD.addDnD(undefined, true, false, true,
-            100, 500);
+        const wrapper = $('.slider-wrapper');
+        const viewDnd = new ViewDnD();
+        viewDnd.addDnD(undefined, true, false, true,
+            100, 500, wrapper);
     };
 
     const findElements = ()=>{
