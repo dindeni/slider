@@ -1,14 +1,8 @@
-import {View} from "../blocks/view/view";
-import '../blocks/slider/slider'
-import {DemoPage} from "../blocks/demoPage/demoPage";
+import {View} from "../view/view";
 
-import '../blocks/view/view.scss';
-import '../blocks/demoPage/demoPage.scss';
-import '../blocks/demoPage/demoPage';
+const view = new View();
 
-/*const view = new View();*/
-
-/*interface sliderOptions {
+interface sliderOptions {
     progress?: boolean,
     max?: number,
     min?: number,
@@ -25,15 +19,15 @@ declare global {
 }
 
 const initSlider = (element: JQuery, progress: boolean, min: number,
-                          max: number, label: boolean,
-                          step: number | undefined, vertical: boolean,
-                          range: boolean) =>{
+                    max: number, label: boolean,
+                    step: number | undefined, vertical: boolean,
+                    range: boolean) =>{
 
     view.createElements(element, range, vertical, min, max, step);
 
-};*/
+};
 
-/*(function ($){
+(function ($){
     $.fn.slider =  function(options?: sliderOptions): JQuery {
         const optionsDefault= {
             progress: false,
@@ -53,18 +47,4 @@ const initSlider = (element: JQuery, progress: boolean, min: number,
         return this;
     };
 
-}(jQuery));*/
-
-const demoPage = new DemoPage();
-demoPage.initSliders();
-
-
-/*$('main').slider({progress: true, min: 100, max: 500, vertical: false,
-range: true});
-
-$('main').slider({progress: true, min: 100, max: 500, vertical: true,
-    range: true, step:100});*/
-
-
-
-
+}(jQuery));

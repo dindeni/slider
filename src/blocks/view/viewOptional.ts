@@ -23,7 +23,7 @@ class ViewOptional{
             !vertical ? itemElement.css({left: scaleData.coords[i]}) :
                 itemElement.css({top: scaleData.coords[i] -
                         scaleTopPositionCorrection})
-        })
+        });
     }
 
     createProgress(range: boolean, wrapper: JQuery){

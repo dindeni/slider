@@ -1,7 +1,13 @@
+
 doctype html
 html(lang="en")
   head
     title slider
     meta(name="viewport" content="width=device-width,initial-scale=1")
   body
-    main
+    main.main
+      each value in new Array(4)
+        div.main__form-wrapper
+          form.main__form.form
+            //label.form__label-input(for='input-value') value
+            //input.form__input-value(id='input-value')

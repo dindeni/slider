@@ -40,9 +40,9 @@ describe('View', ()=>{
 
     beforeAll(async ()=>{
         document.body.innerHTML = '';
-       await createElements();
-       await turnOnProgress();
-       await findElements();
+        await createElements();
+        await turnOnProgress();
+        await findElements();
 
     });
 
