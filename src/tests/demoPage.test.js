@@ -85,7 +85,6 @@ fdescribe('DemoPage', async ()=>{
             Array.from(document.querySelectorAll('.main__form-wrapper')).
             map((wrapper, index)=>{
                 const thumb = wrapper.querySelectorAll('.slider-thumb');
-
                 switch (index) {
                     case 0:
                         thumbX = thumb[0].getBoundingClientRect().left;
@@ -159,5 +158,36 @@ fdescribe('DemoPage', async ()=>{
         });
     });
 
-   /* describe('')*/
+    it('should change slider value after change input value',
+        ()=>{
+            Array.from(document.querySelectorAll('.main__form-wrapper')).
+            map((wrapper, index)=>{
+                if (!sliderSettings[index].range){
+                    const event = new Event('change');
+                    const input = wrapper.querySelector('.form__input-value');
+                    input.value =  parseInt(input.value, 10) + 100;
+                    const form = wrapper.querySelector('.form');
+                    Object.defineProperty(event, 'target', {writable: false, value: input});
+                    form.dispatchEvent(event);
+                    const labelValue = wrapper.querySelector('.slider-label').textContent;
+                    expect(labelValue).toBe(input.value);
+                }else {
+                    const eventMin = new Event('change');
+                    const eventMax = new Event('change');
+                    const inputMin = wrapper.querySelector('.form__input-value--min');
+                    const inputMax = wrapper.querySelector('.form__input-value--max');
+                    inputMin.value =  parseInt(inputMin.value, 10) + 50;
+                    inputMax.value =  parseInt(inputMax.value, 10) - 50;
+                    const form = wrapper.querySelector('.form');
+                    Object.defineProperty(eventMin, 'target', {writable: false, value: inputMin});
+                    form.dispatchEvent(eventMin);
+                    Object.defineProperty(eventMax, 'target', {writable: false, value: inputMax});
+                    form.dispatchEvent(eventMax);
+                    const labelValueMin = wrapper.querySelector('#label-min').textContent;
+                    const labelValueMax = wrapper.querySelector('#label-max').textContent;
+                    expect(labelValueMin).toBe(inputMin.value);
+                    expect(labelValueMax).toBe(inputMax.value);
+                }
+            })
+    })
 });

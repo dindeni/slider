@@ -49,9 +49,6 @@ class ViewDnD {
                         evt.target as HTMLElement, width, trackHeight, evt,
                         trackWidth, this.shift, scaleCoordStep);
 
-
-
-
                     !vertical ? this.updateData(min, max, trackWidth,
                         parseInt((evt.target as HTMLElement).style.left || '0', 10),
                         vertical, evt.target as HTMLElement) :

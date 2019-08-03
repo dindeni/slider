@@ -42,7 +42,14 @@ describe('Presenter', ()=>{
         expect(presenter.calculateSliderValue(100, 500, 260,
             131)).
         toBe(300);
-    })
+    });
+
+    it('should calculate value to coordinates', ()=> {
+        const oldCoord = parseInt(divThumb.style.left, 10);
+        const coordinates = presenter.calculateFromValueToCoordinates(400,
+             100, 500, 260);
+        expect(coordinates).toBe(195)
+    });
 
 
 });

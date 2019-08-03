@@ -71,6 +71,12 @@ class Presenter {
             default: return  0
         }
     }
+
+    calculateFromValueToCoordinates(value: number, min: number,
+                                    max: number, widthHeight: number): number{
+        const unit = widthHeight / (max - min);
+        return (value - min) * unit
+    }
 }
 
 export {Presenter};
