@@ -14,7 +14,7 @@ fdescribe('DemoPage', async ()=>{
         {progress: false, min: 0, max: 1000, vertical: true, range: false, step: 250}
     ];
 
-    let sliderWrapper, formsList;
+    let sliderWrapper, formsList, sliderTrack;
 
     const createHtml = ()=>{
         const htmlElements = '<div class="main__form-wrapper">' +
@@ -40,6 +40,7 @@ fdescribe('DemoPage', async ()=>{
         await demoPage.initSliders();
 
         sliderWrapper = document.querySelectorAll('.slider-wrapper');
+        sliderTrack = document.querySelectorAll('.slider-track');
         formsList = document.querySelectorAll('.form');
     });
 
@@ -74,6 +75,26 @@ fdescribe('DemoPage', async ()=>{
                 }
             })
         });
+    });
+
+    it('should inputs settings exist', ()=> {
+        Array.from(formsList).map((wrapper)=>{
+            expect(wrapper.querySelector('.form__input-settings--progress')).not.toBeNull();
+            expect(wrapper.querySelector('.form__input-settings--min')).not.toBeNull();
+            expect(wrapper.querySelector('.form__input-settings--max')).not.toBeNull();
+            expect(wrapper.querySelector('.form__input-settings--vertical')).not.toBeNull();
+            expect(wrapper.querySelector('.form__input-settings--range')).not.toBeNull();
+            expect(wrapper.querySelector('.form__input-settings--step')).not.toBeNull();
+        })
+    });
+
+    it('should set inputs value', ()=> {
+        Array.from(formsList).map((wrapper, index)=>{
+            Array.from(wrapper.querySelectorAll('.form__input-settings')).map((input, indexInput)=>{
+                let setting = Object.values(sliderSettings[index])[indexInput];
+                expect(input.value).toBe(String(setting))
+            })
+        })
     });
 
     describe('After dispatch', ()=>{
@@ -189,5 +210,16 @@ fdescribe('DemoPage', async ()=>{
                     expect(labelValueMax).toBe(inputMax.value);
                 }
             })
-    })
+    });
+
+    it('should change first slider from horizontal to vertical' +
+        ' after change input vertical',  ()=> {
+        const inputVertical = formsList[0].querySelector('.form__input-settings--vertical');
+        inputVertical.value = true;
+        const event = new Event('change');
+        Object.defineProperty(event, 'target', {writable: false, value: inputVertical});
+        formsList[0].dispatchEvent(event);
+        expect(sliderTrack[0].clientWidth).not.toBe(260)
+
+    });
 });

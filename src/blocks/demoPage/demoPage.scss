@@ -14,18 +14,31 @@
     margin: 50px 20px 20px 20px;
   }
 }
-.form__input-value{
+.form{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.form__input-wrapper{
+  position: relative;
+  display: inline-block;
+}
+.form__input-value, .form__input-settings{
   background: #e5e5e5;
   border-radius: 5px;
   border: none;
   width: 206px;
   height: 26px;
+  margin: 10px 10px 15px;;
   &.form__input-value--min,
   &.form__input-value--max{
-    width: 103px;
+    width: 91px;
   }
 }
 .form__label-input{
-  font-size: 16px;
+  font-size: 12px;
   margin: 0 10px 0 10px;
+  position: absolute;
+  left: 0;
+  top: -25px;
 }

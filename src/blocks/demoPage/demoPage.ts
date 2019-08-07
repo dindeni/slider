@@ -8,8 +8,11 @@ interface Slider {
 }
 
 class DemoPage {
+    sliderSettings: [Slider, Slider, Slider, Slider];
+    settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'step'];
+
     initSliders(){
-        const sliderSettings: [Slider, Slider, Slider, Slider] = [
+        this.sliderSettings = [
             {progress: true, min: 100, max: 500, vertical: false, range: false},
             {progress: true, min: 0, max: 100, vertical: true, range: true},
             {progress: true, min: 0, max: 500, vertical: false, range: true, step: 100},
@@ -18,34 +21,55 @@ class DemoPage {
 
         Array.from(document.querySelectorAll('.main__form-wrapper')).
         map((formWrapper, index)=>{
-            this.createElements(sliderSettings[index], ((formWrapper as HTMLElement).
+            this.createElements(this.sliderSettings[index], ((formWrapper as HTMLElement).
                 children[0])as HTMLElement);
-            $(formWrapper).slider(sliderSettings[index]);
-            this.setInputValue(formWrapper as HTMLElement, sliderSettings[index].min, sliderSettings[index].max,
-                sliderSettings[index].range);
+            $(formWrapper).slider(this.sliderSettings[index]);
+            this.setInputValue(formWrapper as HTMLElement, this.sliderSettings[index].min,
+                this.sliderSettings[index].max, this.sliderSettings[index].range,
+                this.sliderSettings[index]);
 
-            this.observeLabel(formWrapper as HTMLElement, sliderSettings[index].range);
-            this.observeInput(formWrapper as HTMLElement, sliderSettings[index].range,
-                sliderSettings[index].min, sliderSettings[index].max,
-                sliderSettings[index].vertical, sliderSettings[index].step);
+            this.observeLabel(formWrapper as HTMLElement, this.sliderSettings[index].range);
+            this.observeInput(formWrapper as HTMLElement, this.sliderSettings[index].range,
+                this.sliderSettings[index].min, this.sliderSettings[index].max,
+                this.sliderSettings[index].vertical, this.sliderSettings[index].step);
         });
     }
 
     createElements(setting: Slider, form: HTMLElement){
 
         let inputValue: JQuery;
-        !setting.range ? inputValue = $('<label class="form__label-input"' +
+        !setting.range ? inputValue = $('<div class="form__input-wrapper"><label class="form__label-input"' +
             ' for="input-value">value</label><input class="form__input-value"' +
-            ' id="input-value">') : inputValue = $('<label class="form__label-input"' +
-            ' for="input-value-min">value min</label><input class="form__input-value' +
-            ' form__input-value--min" id="input-value-min"><label class="form__label-input"' +
+            ' id="input-value"></div>') : inputValue = $('<div class="form__input-wrapper">' +
+            '<label class="form__label-input" for="input-value-min">value min</label>' +
+            '<input class="form__input-value form__input-value--min" id="input-value-min"></div>' +
+            '<div class="form__input-wrapper"><label class="form__label-input"' +
             ' for="input-value-max">value max</label><input class="form__input-value' +
-            ' form__input-value--max" id="input-value-min">');
+            ' form__input-value--max" id="input-value-min"></div>');
 
-        inputValue.appendTo($(form))
+        const settingsInputs = $('<div class="form__input-wrapper"><label class="form__label-input"' +
+            ' for="input-progress">progress(true or false)</label><input class="form__input-settings' +
+            ' form__input-settings--progress" id="input-progress"></div>' +
+            '<div class="form__input-wrapper"><label class="form__label-input"' +
+            ' for="input-min">min(number)</label><input class="form__input-settings' +
+            ' form__input-settings--min" id="input-min"></div><div class="form__input-wrapper">' +
+            '<label class="form__label-input" for="input-max">max(number)</label>' +
+            '<input class="form__input-settings form__input-settings--max" id="input-max"></div>' +
+            '<div class="form__input-wrapper"><label class="form__label-input"' +
+            ' for="input-vertical">vertical(true or false)</label><input class="form__input-settings' +
+            ' form__input-settings--vertical" id="input-vertical"></div><div class="form__input-wrapper"><label class="form__label-input"' +
+            ' for="input-range">range(true or false)</label><input class="form__input-settings' +
+            ' form__input-settings--range" id="input-range"></div><div class="form__input-wrapper"><label class="form__label-input"' +
+            ' for="input-step">step(number)</label><input class="form__input-settings' +
+            ' form__input-settings--step" id="input-step"></div>');
+
+        inputValue.appendTo($(form));
+        settingsInputs.appendTo($(form));
+
     }
 
-    setInputValue(element: HTMLElement, min: number, max: number, range: boolean){
+    setInputValue(element: HTMLElement, min: number, max: number, range: boolean,
+                  settings: Slider){
         if (range){
             (element.querySelector('.form__input-value--min') as HTMLInputElement).
                 value = min.toString();
@@ -55,6 +79,10 @@ class DemoPage {
             (element.querySelector('.form__input-value') as HTMLInputElement).
                 value = min.toString();
         }
+
+        Array.from(element.querySelectorAll('.form__input-settings')).map((input, index)=>{
+            (input as HTMLInputElement).value = Object.values(settings)[index]
+        })
     }
 
     observeLabel(element: HTMLElement, range: boolean){
@@ -101,18 +129,21 @@ class DemoPage {
         const viewOptional = new ViewOptional();
         let widthHeightTrack: number, thumbMin: HTMLElement, thumbMax: HTMLElement,
         thumb;
-        !vertical ? widthHeightTrack = (element.
-            querySelector('.slider-track') as HTMLElement).clientWidth :
-            widthHeightTrack = widthHeightTrack = (element.
-            querySelector('.slider-track') as HTMLElement).clientHeight;
-        if(range){
-           thumbMin = element.querySelector('#thumb-min') as HTMLElement;
-           thumbMax = element.querySelector('#thumb-max') as HTMLElement;
-        }else thumb = element.querySelector('.slider-thumb');
 
         (element.querySelector('.form') as HTMLElement).
         addEventListener('change', (evt)=>{
+            !vertical ? widthHeightTrack = (element.
+                querySelector('.slider-track') as HTMLElement).clientWidth :
+                widthHeightTrack = widthHeightTrack = (element.
+                querySelector('.slider-track') as HTMLElement).clientHeight;
+
+            if(range){
+                thumbMin = element.querySelector('#thumb-min') as HTMLElement;
+                thumbMax = element.querySelector('#thumb-max') as HTMLElement;
+            }else thumb = element.querySelector('.slider-thumb');
+
             if ((evt.target as HTMLElement).classList.contains('form__input-value')){
+                console.log(widthHeightTrack)
                     const distance = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
                         min, max, widthHeightTrack);
                     if (!range){
@@ -135,7 +166,34 @@ class DemoPage {
                         viewOptional.stylingProgress(distance, vertical, thumb)
                     }
                 }
+            if ((evt.target as HTMLElement).classList.contains('form__input-settings')){
+                const inputSettings = element.querySelectorAll('.form__input-settings')
+                let settings: any = {};
+                ((evt.currentTarget as HTMLElement).nextElementSibling as HTMLElement).
+                     remove();
+                console.log((evt.currentTarget as HTMLElement).nextElementSibling);
+                Array.from(inputSettings).map((input, index)=>{
+                    const key = this.settingsKeys[index];
+                    const value = this.convertInputValue((input as HTMLInputElement).value)
+                    Object.assign(settings, {[key]: value});
+                });
+                $(element).slider(settings);
+                /*this.observeInput(element, settings.range, settings.min, settings.max,
+                    settings.vertical, settings.step);*/
+            }
         })
+    }
+
+    convertInputValue(value: boolean | number | string | undefined){
+       if (typeof value !== 'number'){
+           switch (value) {
+               case 'true': return true;
+               case 'false': return false;
+               case 'undefined': return undefined;
+               default: return Number(value)
+           }
+       }
+
     }
 }
 

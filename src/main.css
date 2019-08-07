@@ -80,16 +80,34 @@ main {
   .main__form-wrapper .slider-wrapper {
     margin: 50px 20px 20px 20px; }
 
-.form__input-value {
+.form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center; }
+
+.form__input-wrapper {
+  position: relative;
+  display: inline-block; }
+
+.form__input-value, .form__input-settings {
   background: #e5e5e5;
   border-radius: 5px;
   border: none;
   width: 206px;
-  height: 26px; }
-  .form__input-value.form__input-value--min, .form__input-value.form__input-value--max {
-    width: 103px; }
+  height: 26px;
+  margin: 10px 10px 15px; }
+  .form__input-value.form__input-value--min, .form__input-value.form__input-value--max, .form__input-settings.form__input-value--min, .form__input-settings.form__input-value--max {
+    width: 91px; }
 
 .form__label-input {
-  font-size: 16px;
-  margin: 0 10px 0 10px; }
+  font-size: 12px;
+  margin: 0 10px 0 10px;
+  position: absolute;
+  left: 0;
+  top: -25px; }
 
