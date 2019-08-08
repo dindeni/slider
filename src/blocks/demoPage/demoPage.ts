@@ -130,8 +130,7 @@ class DemoPage {
         let widthHeightTrack: number, thumbMin: HTMLElement, thumbMax: HTMLElement,
         thumb;
 
-        (element.querySelector('.form') as HTMLElement).
-        addEventListener('change', (evt)=>{
+        const changeSlider = (evt: MouseEvent)=>{
             !vertical ? widthHeightTrack = (element.
                 querySelector('.slider-track') as HTMLElement).clientWidth :
                 widthHeightTrack = widthHeightTrack = (element.
@@ -143,45 +142,48 @@ class DemoPage {
             }else thumb = element.querySelector('.slider-thumb');
 
             if ((evt.target as HTMLElement).classList.contains('form__input-value')){
-                console.log(widthHeightTrack)
-                    const distance = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                        min, max, widthHeightTrack);
-                    if (!range){
-                        !vertical ? (thumb as HTMLElement).style.left = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                            min, max, widthHeightTrack) + 'px' : (thumb as HTMLElement).style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                            min, max, widthHeightTrack) + 'px';
-                        viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
-                            thumb);
-                        viewOptional.stylingProgress(distance, vertical, thumb)
-                    }else {
-                        let thumb: HTMLElement;
-                        (evt.target as HTMLInputElement).classList.
-                        contains('form__input-value--min') ? thumb = thumbMin :
-                            thumb = thumbMax;
-                        !vertical ? thumb.style.left = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                            min, max, widthHeightTrack) + 'px' : thumb.style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                            min, max, widthHeightTrack) + 'px';
-                        viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
-                            thumb);
-                        viewOptional.stylingProgress(distance, vertical, thumb)
-                    }
+                const distance = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                    min, max, widthHeightTrack);
+                if (!range){
+                    !vertical ? (thumb as HTMLElement).style.left = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                        min, max, widthHeightTrack) + 'px' : (thumb as HTMLElement).style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                        min, max, widthHeightTrack) + 'px';
+                    viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
+                        thumb);
+                    viewOptional.stylingProgress(distance, vertical, thumb)
+                }else {
+                    let thumb: HTMLElement;
+                    (evt.target as HTMLInputElement).classList.
+                    contains('form__input-value--min') ? thumb = thumbMin :
+                        thumb = thumbMax;
+                    !vertical ? thumb.style.left = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                        min, max, widthHeightTrack) + 'px' : thumb.style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                        min, max, widthHeightTrack) + 'px';
+                    viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
+                        thumb);
+                    viewOptional.stylingProgress(distance, vertical, thumb)
                 }
+            }
             if ((evt.target as HTMLElement).classList.contains('form__input-settings')){
                 const inputSettings = element.querySelectorAll('.form__input-settings')
                 let settings: any = {};
                 ((evt.currentTarget as HTMLElement).nextElementSibling as HTMLElement).
-                     remove();
-                console.log((evt.currentTarget as HTMLElement).nextElementSibling);
+                remove();
+                (element.querySelector('.form') as HTMLElement).removeEventListener('change', changeSlider);
+
                 Array.from(inputSettings).map((input, index)=>{
                     const key = this.settingsKeys[index];
                     const value = this.convertInputValue((input as HTMLInputElement).value)
                     Object.assign(settings, {[key]: value});
                 });
                 $(element).slider(settings);
-                /*this.observeInput(element, settings.range, settings.min, settings.max,
-                    settings.vertical, settings.step);*/
+                this.observeInput(element, settings.range, settings.min, settings.max,
+                    settings.vertical, settings.step);
             }
-        })
+        };
+
+        (element.querySelector('.form') as HTMLElement).
+        addEventListener('change', changeSlider);
     }
 
     convertInputValue(value: boolean | number | string | undefined){
