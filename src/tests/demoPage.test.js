@@ -6,7 +6,7 @@ import style from '../blocks/view/view.scss';
 
 import {dispatchMove} from "./_serviceFunctions";
 
-fdescribe('DemoPage', async ()=>{
+describe('DemoPage', async ()=>{
     const sliderSettings = [
         {progress: true, min: 100, max: 500, vertical: false, range: false},
         {progress: true, min: 0, max: 100, vertical: true, range: true},
@@ -179,7 +179,7 @@ fdescribe('DemoPage', async ()=>{
         });
     });
 
-    it('should change slider value after change input value',
+   /* it('should change slider value after change input value',
         ()=>{
             Array.from(document.querySelectorAll('.main__form-wrapper')).
             map((wrapper, index)=>{
@@ -222,4 +222,26 @@ fdescribe('DemoPage', async ()=>{
         expect(sliderTrack[0].clientWidth).not.toBe(260)
 
     });
+
+    it('after change input value more than max value should show error',
+         ()=> {
+        const form = formsList[0];
+        const input = form.querySelector('.form__input-value');
+        input.value = sliderSettings.max + 100;
+        const event = new Event('change');
+        Object.defineProperty(event, 'target', {writable: false, value: input});
+        formsList[0].dispatchEvent(event);
+        expect(form.querySelector('.error')).not.toBeNull();
+    });*/
+
+    /*it('after change input setting progress should show error',
+        ()=> {
+            const form = formsList[1];
+            const input = form.querySelector('.form__input-value');
+            input.value = 100;
+            const event = new Event('change');
+            Object.defineProperty(event, 'target', {writable: false, value: input});
+            form.dispatchEvent(event);
+            expect(form.querySelector('.error')).not.toBeNull();
+        });*/
 });

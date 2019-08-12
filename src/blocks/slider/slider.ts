@@ -23,7 +23,7 @@ const initSlider = (element: JQuery, progress: boolean, min: number,
                     step: number | undefined, vertical: boolean,
                     range: boolean) =>{
 
-    view.createElements(element, range, vertical, min, max, step);
+    view.createElements(element, range, vertical, min, max, step, progress);
 
 };
 

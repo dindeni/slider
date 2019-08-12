@@ -18,7 +18,7 @@ describe('View', ()=>{
     const createElements = ()=>{
         const view = new View();
         view.createElements($('body'), false, false,
-            100, 500, undefined);
+            100, 500, undefined, true);
     };
 
     const turnOnProgress = ()=>{

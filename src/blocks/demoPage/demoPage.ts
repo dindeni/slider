@@ -10,6 +10,7 @@ interface Slider {
 class DemoPage {
     sliderSettings: [Slider, Slider, Slider, Slider];
     settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'step'];
+    errorElement: HTMLElement;
 
     initSliders(){
         this.sliderSettings = [
@@ -31,7 +32,8 @@ class DemoPage {
             this.observeLabel(formWrapper as HTMLElement, this.sliderSettings[index].range);
             this.observeInput(formWrapper as HTMLElement, this.sliderSettings[index].range,
                 this.sliderSettings[index].min, this.sliderSettings[index].max,
-                this.sliderSettings[index].vertical, this.sliderSettings[index].step);
+                this.sliderSettings[index].vertical, this.sliderSettings[index].step,
+                this.sliderSettings[index].progress);
         });
     }
 
@@ -123,7 +125,7 @@ class DemoPage {
     };
 
     observeInput(element: HTMLElement, range: boolean, min: number, max: number,
-                 vertical: boolean, step: number | undefined){
+                 vertical: boolean, step: number | undefined, progress: boolean){
         const presenter = new Presenter();
         const viewDnd = new ViewDnD();
         const viewOptional = new ViewOptional();
@@ -144,14 +146,16 @@ class DemoPage {
             if ((evt.target as HTMLElement).classList.contains('form__input-value')){
                 const distance = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
                     min, max, widthHeightTrack);
-                if (!range){
-                    !vertical ? (thumb as HTMLElement).style.left = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                const evtValue: number | undefined = parseInt((evt.target as HTMLInputElement).value, 10);
+                const inputValue: number | undefined = this.validateValue(evt.target as HTMLElement, element,'value', evtValue,
+                    min, max, range, step);
+                if (!range && inputValue){
+                    !vertical ? (thumb as HTMLElement).style.left = presenter.calculateFromValueToCoordinates(inputValue,
                         min, max, widthHeightTrack) + 'px' : (thumb as HTMLElement).style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
                         min, max, widthHeightTrack) + 'px';
                     viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
-                        thumb);
-                    viewOptional.stylingProgress(distance, vertical, thumb)
-                }else {
+                        thumb, progress);
+                }else if (inputValue){
                     let thumb: HTMLElement;
                     (evt.target as HTMLInputElement).classList.
                     contains('form__input-value--min') ? thumb = thumbMin :
@@ -160,11 +164,14 @@ class DemoPage {
                         min, max, widthHeightTrack) + 'px' : thumb.style.top = presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
                         min, max, widthHeightTrack) + 'px';
                     viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
-                        thumb);
-                    viewOptional.stylingProgress(distance, vertical, thumb)
+                        thumb, progress);
                 }
             }
-            if ((evt.target as HTMLElement).classList.contains('form__input-settings')){
+
+            const settingValue: boolean | number | undefined =
+                this.validateValue(evt.target as HTMLElement, element,'settings', (evt.target as HTMLInputElement).value,
+                min, max, range, step);
+            if ((evt.target as HTMLElement).classList.contains('form__input-settings') && settingValue){
                 const inputSettings = element.querySelectorAll('.form__input-settings')
                 let settings: any = {};
                 ((evt.currentTarget as HTMLElement).nextElementSibling as HTMLElement).
@@ -178,7 +185,7 @@ class DemoPage {
                 });
                 $(element).slider(settings);
                 this.observeInput(element, settings.range, settings.min, settings.max,
-                    settings.vertical, settings.step);
+                    settings.vertical, settings.step, settings.progress);
             }
         };
 
@@ -196,6 +203,74 @@ class DemoPage {
            }
        }
 
+    }
+
+    validateValue(elementTarget: HTMLElement, elementParent: HTMLElement, type: 'value' | 'settings',
+                  value: any, min:number, max: number,
+                  range: boolean, step:number | undefined){
+        const validate = {
+            deleteError: ()=>{
+                elementTarget.nextElementSibling ? elementTarget.nextElementSibling.remove() : null;
+            },
+            value: ()=>{
+                if (typeof value === 'number' && (value >= min && value <= max)){
+                    validate.deleteError();
+                    return value;
+
+
+                }else{
+                    this.createErrorElement(elementTarget, 'invalid value');
+                }
+            },
+            step: ()=>{
+                const stepValue: number | undefined = validate.value();
+                if (stepValue){
+                    validate.deleteError();
+                    let currentValue;
+                    Array.from(elementParent.querySelectorAll('.slider__scale-item')).
+                    map(item=>{
+                        if (item.textContent && stepValue === parseInt(item.textContent, 10)){
+                            currentValue = value
+                        }
+                    });
+                    !currentValue ? this.createErrorElement(elementTarget, 'invalid step value') : null;
+                    return currentValue
+                }
+            },
+            settings: ()=> {
+                switch (true) {
+                    case elementTarget.classList.contains('form__input-settings--progress') ||
+                    elementTarget.classList.contains('form__input-settings--vertical') ||
+                    elementTarget.classList.contains('form__input-settings--range'):
+                        validate.deleteError();
+                        return typeof this.convertInputValue(value) === 'boolean' ? value :
+                            this.createErrorElement(elementTarget, 'value should to be boolean');
+                    case elementTarget.classList.contains('form__input-settings--min') ||
+                    elementTarget.classList.contains('form__input-settings--max'):
+                        validate.deleteError();
+                        return typeof Number(value) === 'number' && !isNaN(Number(value)) ? value :
+                            this.createErrorElement(elementTarget, 'value should to be number');
+                    case elementTarget.classList.contains('form__input-settings--step'):
+                        validate.deleteError();
+                        return value === 'undefined' || typeof Number(value) === 'number' && !isNaN(Number(value)) ? value :
+                            this.createErrorElement(elementTarget, 'value should to be number or undefined');
+                }
+            }
+
+        };
+
+        switch (type) {
+            case 'value': return step ? validate.step() : validate.value();
+            case 'settings': return validate.settings()
+        }
+    };
+
+    createErrorElement(element: HTMLElement, text: string){
+        this.errorElement = document.createElement('span');
+        this.errorElement.textContent = text;
+        this.errorElement.classList.add('error');
+        ((element as HTMLElement).parentElement as HTMLElement).
+        insertBefore(this.errorElement, null);
     }
 }
 

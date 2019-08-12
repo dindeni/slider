@@ -14,7 +14,7 @@ class View {
 
     createElements(element: JQuery, range: boolean,
                    vertical: boolean, min: number, max: number,
-                   step: number | undefined){
+                   step: number | undefined, progress: boolean){
 
         let divWrapper: JQuery;
         step ? divWrapper = $('<div class="slider-wrapper step"></div>').
@@ -28,14 +28,14 @@ class View {
         this.createThumb(range, vertical, divWrapper);
         this.stylingElements(range, vertical, divWrapper);
         this.createLabel(min, vertical, range, max, divWrapper);
-        this.viewOptional.createProgress(range, divWrapper);
+        progress ? this.viewOptional.createProgress(range, divWrapper) : null;
 
         step ? this.viewOptional.createScale(vertical, min, max, step,
             this.divTrack.width() || 0, this.divTrack.height() || 0,
             divWrapper) : null;
 
         this.viewDnD = new ViewDnD();
-        this.viewDnD.addDnD(step, vertical, range, true, min, max,
+        this.viewDnD.addDnD(step, vertical, range, progress, min, max,
             divWrapper);
     }
 

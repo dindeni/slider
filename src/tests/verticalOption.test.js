@@ -12,7 +12,7 @@ describe('Vertical option', ()=>{
     const createElements = ()=>{
         const view = new View();
         view.createElements($('body'), false, true,
-            100, 500, undefined);
+            100, 500, undefined, true);
     };
 
     const addDnd = ()=>{

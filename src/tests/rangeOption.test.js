@@ -12,7 +12,7 @@ describe('Range', ()=>{
     const createElements = ()=>{
         const view = new View();
         view.createElements($('body'), true, false,
-            100, 500, 100);
+            100, 500, 100, true);
     };
 
     const addDnd = ()=>{
