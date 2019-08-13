@@ -45,6 +45,11 @@ const config = {
 
 							}
 						}
+					},
+					{
+						test: /\.(tsx|ts)?$/,
+						loader: 'ts-loader',
+						exclude: /node_modules/,
 					}
 				]
 		},

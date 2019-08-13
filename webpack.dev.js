@@ -55,11 +55,6 @@ module.exports = merge(common, {
 							"sass-loader"
 
 						]
-				},
-				{
-					test: /\.(tsx|ts)?$/,
-					loader: 'ts-loader',
-					exclude: /node_modules/,
 				}
 			]
 	},

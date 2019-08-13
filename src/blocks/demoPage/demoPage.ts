@@ -186,6 +186,7 @@ class DemoPage {
                 $(element).slider(settings);
                 this.observeInput(element, settings.range, settings.min, settings.max,
                     settings.vertical, settings.step, settings.progress);
+                this.observeLabel(element, settings.range);
             }
         };
 
