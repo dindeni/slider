@@ -3,7 +3,7 @@
 [Github pages](https://dindeni.github.io/slider)
 
 Диаграмма плагина:
-![link](./files/uml.jpg)
+![link](./src/files/uml.jpg)
 
 Описание:  
 
