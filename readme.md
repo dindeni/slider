@@ -1,9 +1,9 @@
-#Slider: Jquery plugin
+# Slider: Jquery plugin
 
 [Github pages](https://dindeni.github.io/slider)
 
 Диаграмма плагина:
-![link](./src/files/uml.jpg)
+![link](./uml.jpg)
 
 Описание:  
 
