@@ -3,11 +3,11 @@ import {View} from "./view";
 import {Presenter} from "../presenter/presenter";
 
 class ViewDnD {
-    coordXStart: number;
-    shift: number;
-    coordYStart: number;
-    divThumbLeft: number;
-    divThumbTop: number;
+    private coordXStart: number;
+    private shift: number;
+    private coordYStart: number;
+    private divThumbLeft: number;
+    private divThumbTop: number;
 
     viewOptional: ViewOptional = new ViewOptional();
     view: View = new View();

@@ -1,9 +1,7 @@
 import {Model} from "../model/model";
 
 class Presenter {
-    sliderValuePercent: number;
-    divTrack: HTMLElement;
-    scaleValueCoords: number[] = [];
+    private scaleValueCoords: number[] = [];
 
     model: Model = new Model();
 

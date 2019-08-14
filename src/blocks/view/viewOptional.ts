@@ -1,10 +1,6 @@
 import {Presenter} from "../presenter/presenter";
 
 class ViewOptional{
-    divLabel: JQuery;
-    divLabelMin: JQuery;
-    divLabelMax: JQuery;
-
     private presenter: Presenter = new Presenter();
 
     createScale(vertical: boolean,
