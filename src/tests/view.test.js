@@ -1,5 +1,5 @@
 const $  = require('jquery');
-import {View} from "../blocks/view/view.ts";
+import View from "../blocks/view/view.ts";
 import {ViewDnD} from "../blocks/view/viewDnD";
 
 import {dispatchMove} from "./_serviceFunctions";

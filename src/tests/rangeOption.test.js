@@ -1,4 +1,4 @@
-import {View} from "../blocks/view/view";
+import View from "../blocks/view/view";
 import {dispatchMove} from "./_serviceFunctions";
 import {ViewDnD} from "../blocks/view/viewDnD";
 

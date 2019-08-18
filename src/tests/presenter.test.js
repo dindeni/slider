@@ -1,5 +1,5 @@
 const $  = require('jquery');
-import {View} from "../blocks/view/view";
+import View from "../blocks/view/view";
 import Presenter from "../blocks/presenter/presenter";
 
 describe('Presenter', ()=>{

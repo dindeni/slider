@@ -1,5 +1,5 @@
-import {View} from "../blocks/view/view";
-import {ViewOptional} from "../blocks/view/viewOptional";
+import View from "../blocks/view/view";
+import ViewOptional from "../blocks/view/viewOptional";
 import {dispatchMove} from "./_serviceFunctions";
 import {ViewDnD} from "../blocks/view/viewDnD";
 
@@ -34,8 +34,7 @@ describe('Vertical option', ()=>{
     };
 
     const makeVertical = ()=>{
-        const viewOptional = new ViewOptional();
-        viewOptional.makeVertical(false, $('.slider-wrapper'));
+        ViewOptional.makeVertical(false, $('.slider-wrapper'));
     };
 
     beforeAll(async ()=>{

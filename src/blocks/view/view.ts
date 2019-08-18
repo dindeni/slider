@@ -1,4 +1,4 @@
-import { ViewOptional } from './viewOptional';
+import ViewOptional from './viewOptional';
 import { ViewDnD } from './viewDnD';
 
 class View {
@@ -34,7 +34,7 @@ class View {
       this.stylingElements(range, vertical, divWrapper);
       this.createLabel(min, vertical, range, max, divWrapper);
       if (progress) {
-        this.viewOptional.createProgress(range, divWrapper);
+        ViewOptional.createProgress(range, divWrapper);
       }
       if (step) {
         this.viewOptional.createScale(vertical, min, max, step,
@@ -79,7 +79,7 @@ class View {
         });
       }
       if (vertical) {
-        this.viewOptional.makeVertical(range, wrapper);
+        ViewOptional.makeVertical(range, wrapper);
       }
     }
 

@@ -1,4 +1,4 @@
-import {ViewOptional} from "./viewOptional";
+import ViewOptional from "./viewOptional";
 import View from "./view";
 import Presenter from "../presenter/presenter";
 
@@ -136,7 +136,7 @@ class ViewDnD {
 
             this.view.updateLabelValue(value, distance, vertical, divThumb);
             if (progress){
-                this.viewOptional.stylingProgress(progressWidthHeight, vertical, divThumb)
+                ViewOptional.stylingProgress(progressWidthHeight, vertical, divThumb)
             }
 
     }
