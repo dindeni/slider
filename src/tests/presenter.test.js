@@ -1,6 +1,6 @@
 const $  = require('jquery');
 import {View} from "../blocks/view/view";
-import {Presenter} from "../blocks/presenter/presenter";
+import Presenter from "../blocks/presenter/presenter";
 
 describe('Presenter', ()=>{
 
@@ -46,9 +46,9 @@ describe('Presenter', ()=>{
 
     it('should calculate value to coordinates', ()=> {
         const oldCoord = parseInt(divThumb.style.left, 10);
-        const coordinates = presenter.calculateFromValueToCoordinates(400,
+        const coordinates = Presenter.calculateFromValueToCoordinates(400,
              100, 500, 260);
-        expect(coordinates).toBe(195)
+        expect(coordinates).toBe(195);
     });
 
 

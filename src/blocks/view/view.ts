@@ -139,4 +139,3 @@ class View {
 }
 
 export {View}
-

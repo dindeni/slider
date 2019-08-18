@@ -1,4 +1,4 @@
-import { Presenter } from '../presenter/presenter';
+import Presenter from '../presenter/presenter';
 import { ViewDnD } from '../view/viewDnD';
 
 interface Slider {
@@ -161,7 +161,7 @@ class DemoPage {
         } else thumb = element.querySelector('.slider-thumb');
 
         if ((evt.target as HTMLElement).classList.contains('form__input-value')) {
-          const distance = presenter.calculateFromValueToCoordinates(
+          const distance = Presenter.calculateFromValueToCoordinates(
             parseInt((evt.target as HTMLInputElement).value, 10),
             min, max, widthHeightTrack,
           );
@@ -169,8 +169,8 @@ class DemoPage {
           const inputValue: number | undefined = this.validateValue(evt.target as HTMLInputElement,
             (evt.target as HTMLInputElement).value, min, max);
           if (!range && inputValue) {
-            !vertical ? (thumb as HTMLElement).style.left = `${presenter.calculateFromValueToCoordinates(inputValue,
-              min, max, widthHeightTrack)}px` : (thumb as HTMLElement).style.top = `${presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+            !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(inputValue,
+              min, max, widthHeightTrack)}px` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
               min, max, widthHeightTrack)}px`;
             viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
               thumb, progress, distance);
@@ -179,8 +179,8 @@ class DemoPage {
             (evt.target as HTMLInputElement).classList
               .contains('form__input-value--min') ? thumbMinMax = thumbMin
               : thumbMinMax = thumbMax;
-            !vertical ? thumbMinMax.style.left = `${presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-              min, max, widthHeightTrack)}px` : thumbMinMax.style.top = `${presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+            !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+              min, max, widthHeightTrack)}px` : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
               min, max, widthHeightTrack)}px`;
             viewDnd.updateData(min, max, widthHeightTrack, distance, vertical,
               thumbMinMax, progress, distance);

@@ -1,6 +1,6 @@
 import {ViewOptional} from "./viewOptional";
 import {View} from "./view";
-import {Presenter} from "../presenter/presenter";
+import Presenter from "../presenter/presenter";
 
 class ViewDnD {
     private coordXStart: number;
@@ -39,9 +39,9 @@ class ViewDnD {
                 if (evt.target === value){
 
                     let thumbDistance: number;
-                    vertical ? thumbDistance = this.presenter.calculateThumbDistance(
+                    vertical ? thumbDistance = Presenter.calculateThumbDistance(
                         vertical, step, evt.target as HTMLElement, this.coordYStart,
-                        evt.screenY) : thumbDistance = this.presenter.calculateThumbDistance(
+                        evt.screenY) : thumbDistance = Presenter.calculateThumbDistance(
                         vertical, step, evt.target as HTMLElement, this.coordXStart,
                         evt.screenX);
 
