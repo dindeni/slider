@@ -51,10 +51,10 @@ class ViewDnD {
 
                     !vertical ? this.updateData(min, max, trackWidth,
                         parseInt((evt.target as HTMLElement).style.left || '0', 10),
-                        vertical, evt.target as HTMLElement, progress) :
+                        vertical, evt.target as HTMLElement, progress, this.divThumbLeft) :
                         this.updateData(min, max, trackHeight,
                             parseInt((evt.target as HTMLElement).style.top || '0', 10),
-                            vertical, evt.target as HTMLElement, progress);
+                            vertical, evt.target as HTMLElement, progress, this.divThumbTop);
 
                 }
 
@@ -128,7 +128,7 @@ class ViewDnD {
     }
 
     updateData(min, max, trackWidthHeight: number, distance: number, vertical,
-               divThumb: HTMLElement, progress : boolean){
+               divThumb: HTMLElement, progress: boolean, progressWidthHeight: number) {
         let value: number;
 
             value = this.presenter.calculateSliderValue(min, max,
@@ -136,9 +136,7 @@ class ViewDnD {
 
             this.view.updateLabelValue(value, distance, vertical, divThumb);
             if (progress){
-                !vertical ? this.viewOptional.stylingProgress(this.divThumbLeft, vertical,
-                    divThumb) : this.viewOptional.stylingProgress(this.divThumbTop,
-                    vertical, divThumb)
+                this.viewOptional.stylingProgress(progressWidthHeight, vertical, divThumb)
             }
 
     }

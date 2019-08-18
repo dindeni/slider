@@ -1,4 +1,4 @@
-import {DemoPage} from '../blocks/demoPage/demoPage';
+import DemoPage from '../blocks/demoPage/demoPage';
 import '../blocks/slider/slider';
 
 import style from '../blocks/view/view.scss';
@@ -16,7 +16,7 @@ describe('DemoPage', async ()=>{
 
     let sliderWrapper, formsList, sliderTrack;
 
-    const createHtml = ()=>{
+    const createHtml = () => {
         const htmlElements = '<div class="main__form-wrapper">' +
             '<form class="main__form form"></form>' +
             '</div>';
