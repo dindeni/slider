@@ -1,5 +1,5 @@
 import {ViewOptional} from "./viewOptional";
-import {View} from "./view";
+import View from "./view";
 import Presenter from "../presenter/presenter";
 
 class ViewDnD {
