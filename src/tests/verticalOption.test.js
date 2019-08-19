@@ -1,7 +1,7 @@
 import View from "../blocks/view/view";
 import ViewOptional from "../blocks/view/viewOptional";
 import {dispatchMove} from "./_serviceFunctions";
-import {ViewDnD} from "../blocks/view/viewDnD";
+import ViewDnD from "../blocks/view/viewDnD";
 
 
 describe('Vertical option', ()=>{

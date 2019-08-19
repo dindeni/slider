@@ -1,6 +1,6 @@
 import View from "../blocks/view/view";
 import {dispatchMove} from "./_serviceFunctions";
-import {ViewDnD} from "../blocks/view/viewDnD";
+import ViewDnD from "../blocks/view/viewDnD";
 
 describe('Range', ()=>{
     let divThumbMin,  divThumbMax, divTrack, divThumbLeftMin, divThumbTopMin,

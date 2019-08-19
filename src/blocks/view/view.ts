@@ -1,5 +1,5 @@
 import ViewOptional from './viewOptional';
-import { ViewDnD } from './viewDnD';
+import ViewDnD from './viewDnD';
 
 class View {
     private divTrack: JQuery;

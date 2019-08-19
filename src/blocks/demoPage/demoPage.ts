@@ -1,5 +1,5 @@
 import Presenter from '../presenter/presenter';
-import { ViewDnD } from '../view/viewDnD';
+import ViewDnD from '../view/viewDnD';
 
 interface Slider {
     progress: boolean;
@@ -144,7 +144,6 @@ class DemoPage {
 
     observeInput(element: HTMLElement, range: boolean, min: number, max: number,
       vertical: boolean, step: number | undefined, progress: boolean): void {
-      const presenter = new Presenter();
       const viewDnd = new ViewDnD();
       let widthHeightTrack: number; let thumbMin: HTMLElement; let thumbMax: HTMLElement;
       let thumb;
