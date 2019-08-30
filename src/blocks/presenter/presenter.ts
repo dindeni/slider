@@ -23,14 +23,13 @@ class Presenter {
       distance: number): number {
       this.calculateSliderMovePercent(trackWidthHeight, distance);
 
-      switch (true) {
-        case this.model.sliderValuePercent <= 0
-            || !this.model.sliderValuePercent:
-          this.model.sliderValue = min;
-          break;
-        default:
-          this.model.sliderValue = min + ((max - min)
-                    * this.model.sliderValuePercent) / 100;
+      const isBelow0 = this.model.sliderValuePercent <= 0
+        || !this.model.sliderValuePercent;
+      if (isBelow0) {
+        this.model.sliderValue = min;
+      } else {
+        this.model.sliderValue = min + ((max - min)
+                  * this.model.sliderValuePercent) / 100;
       }
       return this.model.sliderValue;
     }

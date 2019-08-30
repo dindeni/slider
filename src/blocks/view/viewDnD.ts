@@ -20,11 +20,11 @@ class ViewDnD {
     presenter: Presenter = new Presenter();
 
     addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean,
-      min: number, max: number, wrapper: JQuery): void {
+      min: number, max: number, $wrapper: JQuery): void {
       let divThumbMin: HTMLElement; let
         divThumbMax;
 
-      Array.from(wrapper.find('.slider-thumb')).map((value) => {
+      Array.from($wrapper.find('.slider-thumb')).map((value) => {
         this.viewOptional = new ViewOptional();
         this.view = new View();
 
@@ -76,11 +76,12 @@ class ViewDnD {
           evt.preventDefault();
           const isVertical = (evt.target as HTMLElement).classList.contains('vertical');
 
+          const isVerticalMinOrMax = (evt.target === value || evt.target === divThumbMin
+            || evt.target === divThumbMax) && isVertical;
           if (!isVertical) {
             this.coordXStart = evt.screenX;
             this.shift = parseInt((evt.target as HTMLElement).style.left || '0', 10);
-          } else if ((evt.target === value || evt.target === divThumbMin
-                    || evt.target === divThumbMax) && isVertical) {
+          } else if (isVerticalMinOrMax) {
             this.coordYStart = evt.screenY;
 
             this.shift = parseInt((evt.target as HTMLElement).style.top || '0', 10);
@@ -90,9 +91,8 @@ class ViewDnD {
 
         value.addEventListener('mousedown', getDownCoord);
 
-        return value.addEventListener('mouseup', () => {
-          value.removeEventListener('mousemove', moveThumb);
-        });
+        const handlerRemoveMouseup = (): void => value.removeEventListener('mousemove', moveThumb);
+        return value.addEventListener('mouseup', handlerRemoveMouseup);
       });
     }
 
@@ -102,7 +102,10 @@ class ViewDnD {
       trackWidth, shift: number,
       scaleCoordStep: number): void {
       const divThumb: HTMLElement = thumbElement;
-      if (!vertical && !step) {
+      const isNotVerticalStep = !vertical && !step;
+      const isDivThumbStep = step && evt.target === divThumb;
+      const isVerticalNotStep = vertical && !step;
+      if (isNotVerticalStep) {
         switch (true) {
           case thumbDistance + shift > trackWidth:
             divThumb.style.left = `${trackWidth}px`;
@@ -112,14 +115,14 @@ class ViewDnD {
           default: divThumb.style.left = `${shift + thumbDistance}px`;
             this.divThumbLeft = shift + thumbDistance;
         }
-      } else if (step && evt.target === divThumb) {
+      } else if (isDivThumbStep) {
         ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
           divThumb, scaleCoordStep, vertical);
         !vertical ? this.divThumbLeft = parseInt((
                 evt.target as HTMLElement).style.left || '0', 10)
           : this.divThumbTop = parseInt((
                     evt.target as HTMLElement).style.top || '0', 10);
-      } else if (vertical && !step) {
+      } else if (isVerticalNotStep) {
         switch (true) {
           case thumbDistance + shift > trackHeight:
             divThumb.style.top = `${trackHeight}px`;
@@ -152,20 +155,24 @@ class ViewDnD {
         left: (): void => {
           const numberCoordLeft = parseInt(coord.style.left || '0', 10);
 
-          if (thumbDistance > 0 && numberCoordLeft < trackWidth) {
+          const isAbove0 = thumbDistance > 0 && numberCoordLeft < trackWidth;
+          const isBelow0 = thumbDistance <= 0 && numberCoordLeft
+            >= numberTranslation;
+          if (isAbove0) {
             coord.style.left = `${numberCoordLeft + numberTranslation}px`;
-          } else if (thumbDistance <= 0 && numberCoordLeft
-                    >= numberTranslation) {
+          } else if (isBelow0) {
             coord.style.left = `${numberCoordLeft - numberTranslation}px`;
           }
         },
         top: (): void => {
           const numberCoordTop = parseInt(coord.style.top || '0', 10);
 
-          if (thumbDistance > 0 && numberCoordTop < trackHeight) {
+          const isAbove0 = thumbDistance > 0 && numberCoordTop < trackHeight;
+          const isBelow0 = thumbDistance <= 0 && numberCoordTop
+            >= numberTranslation;
+          if (isAbove0) {
             coord.style.top = `${numberCoordTop + numberTranslation}px`;
-          } else if (thumbDistance <= 0 && numberCoordTop
-                    >= numberTranslation) {
+          } else if (isBelow0) {
             coord.style.top = `${numberCoordTop - numberTranslation}px`;
           }
         },
