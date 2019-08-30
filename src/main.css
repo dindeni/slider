@@ -4,9 +4,12 @@
   font-weight: normal;
   font-style: normal; }
 
+html {
+  font: 13px/42px latoblack sans-serif;
+  background: #ffffff; }
+
 main {
-  padding: 15px;
-  font: 13px/42px latoblack sans-serif; }
+  padding: 15px; }
 
 .slider-wrapper {
   position: relative;
@@ -27,7 +30,7 @@ main {
 .slider-label {
   height: 28px;
   width: 35px;
-  background: url(files/c0a5b07c9ff4a5d84f90e2fdc67ea6fa.svg) no-repeat;
+  background: url(files/1c2698e15f09fc633a9552d3c8af4292.svg) no-repeat;
   color: #ffffff;
   text-align: center;
   line-height: 25px;

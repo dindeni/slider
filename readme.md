@@ -2,6 +2,13 @@
 
 [Github pages](https://dindeni.github.io/slider)
 
+Разворачивание и запуск проекта:<br>
+npm install<br>
+npm run develop
+
+Запуск тестов:<br>
+karma start
+
 Диаграмма плагина:
 ![link](./uml.jpg)
 
