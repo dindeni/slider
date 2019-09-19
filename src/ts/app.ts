@@ -1,6 +1,6 @@
-import '../blocks/slider/slider';
-import '../blocks/view/view.scss';
-import '../blocks/demoPage/demoPage.scss';
+const req = require.context('../blocks', true, /\.(scss|js|ts)$/);
+req.keys().forEach(req);
+
 import DemoPage from '../blocks/demoPage/demoPage';
 
 const demoPage = new DemoPage();
