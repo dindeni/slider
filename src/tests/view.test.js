@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../blocks/view/view.ts';
-import ViewDnD from '../blocks/view/viewDnD';
+import View from '../blocks/views/view/view.ts';
+import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
 
 import dispatchMove from './_serviceFunctions';
 
@@ -24,16 +24,16 @@ describe('View', () => {
   };
 
   const turnOnProgress = () => {
-    divProgress = document.querySelector('.slider-progress');
+    divProgress = document.querySelector('.js-slider__progress');
     divProgress.style.width = 0;
   };
 
   const findElements = () => {
-    divThumb = document.querySelector('.slider-thumb');
+    divThumb = document.querySelector('.js-slider__thumb');
     divThumbLeft = divThumb.getBoundingClientRect().left;
     divThumbTop = divThumb.getBoundingClientRect().top;
-    divTrack = document.querySelector('.slider-track');
-    divLabel = document.querySelector('.slider-label');
+    divTrack = document.querySelector('.js-slider__track');
+    divLabel = document.querySelector('.js-slider__label');
 
     divTrack.style.width = '260px';
     divThumb.style.left = '0px';
@@ -72,7 +72,7 @@ describe('View', () => {
 
   describe('After dispatch', () => {
     beforeAll(() => {
-      const wrapper = $('.slider-wrapper');
+      const wrapper = $('.slider');
       const viewDnd = new ViewDnD();
       viewDnd.addDnD(undefined, false, false, true,
         100, 500, wrapper);

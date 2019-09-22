@@ -1,40 +1,23 @@
-@font-face {
-  font-family: 'latoblack';
-  src: url('../fonts/lato-black-webfont.woff') format('woff'),
-  url('../fonts/lato-black-webfont.ttf') format('truetype'),
-  url('../fonts/lato-black-webfont.svg#latoblack') format('svg');
-  font-weight: normal;
-  font-style: normal;
-
-}
-html{
-  font: 13px/42px latoblack sans-serif;
-  background: #ffffff;
-}
-main{
-  padding: 15px;
-  
-}
-.slider-wrapper{
+.slider{
   position: relative;
   padding: 20px 0;
   margin: 20px 20px;
 }
-.slider-track{
+.slider__track{
   width: 260px;
   height: 5px;
   background: #e5e5e5;
   position: relative;
 }
-.slider-progress{
+.slider__progress{
   width: 0;
   height: 5px;
   background: #e75735;
 }
-.slider-label{
+.slider__label{
   height: 28px;
   width: 35px;
-  background: url("./icon-label.svg") no-repeat;
+  background: url("icon-label.svg") no-repeat;
   color: #ffffff;
   text-align: center;
   line-height: 25px;
@@ -51,7 +34,7 @@ main{
   text-align: center;
   width: 21px;
 }
-.slider-thumb{
+.slider__thumb{
   width: 21px;
   height: 21px;
   background: #e75735;

@@ -1,8 +1,8 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../blocks/view/view';
-import ViewOptional from '../blocks/view/viewOptional';
+import View from '../blocks/views/view/view.ts';
+import ViewOptional from '../blocks/views/viewOptional/viewOptional.ts';
 import dispatchMove from './_serviceFunctions';
-import ViewDnD from '../blocks/view/viewDnD';
+import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
 
 
 describe('Vertical option', () => {
@@ -18,25 +18,25 @@ describe('Vertical option', () => {
   };
 
   const addDnd = () => {
-    const wrapper = $('.slider-wrapper');
+    const wrapper = $('.slider__wrapper');
     const viewDnd = new ViewDnD();
     viewDnd.addDnD(undefined, true, false, true,
       100, 500, wrapper);
   };
 
   const findElements = () => {
-    divTrack = document.querySelector('.slider-track');
-    divThumb = document.querySelector('.slider-thumb');
+    divTrack = document.querySelector('.js-slider__track');
+    divThumb = document.querySelector('.js-slider__thumb');
     divThumbLeft = divThumb.getBoundingClientRect().left;
     divThumbTop = divThumb.getBoundingClientRect().top;
-    divLabel = document.querySelector('.slider-label');
+    divLabel = document.querySelector('.js-slider__label');
 
     divTrack.style.width = '260px';
     divTrack.style.height = '5px';
   };
 
   const makeVertical = () => {
-    ViewOptional.makeVertical(false, $('.slider-wrapper'));
+    ViewOptional.makeVertical(false, $('.js-slider'));
   };
 
   beforeAll(async () => {

@@ -1,6 +1,6 @@
-import ViewOptional from './viewOptional';
-import View from './view';
-import Presenter from '../presenter/presenter';
+import ViewOptional from '../viewOptional/viewOptional';
+import View from '../view/view';
+import Presenter from '../../presenter/presenter';
 
 class ViewDnD {
     private coordXStart: number;
@@ -24,14 +24,14 @@ class ViewDnD {
       let divThumbMin: HTMLElement; let
         divThumbMax;
 
-      Array.from($wrapper.find('.slider-thumb')).map((value) => {
+      Array.from($wrapper.find('.js-slider__thumb')).map((value) => {
         this.viewOptional = new ViewOptional();
         this.view = new View();
 
         const trackHeight: number = (((value as HTMLElement).parentElement as HTMLElement)
-          .querySelector('.slider-track') as HTMLElement).getBoundingClientRect().height;
+          .querySelector('.js-slider__track') as HTMLElement).getBoundingClientRect().height;
         const trackWidth: number = (((value as HTMLElement).parentElement as HTMLElement)
-          .querySelector('.slider-track') as HTMLElement).getBoundingClientRect().width;
+          .querySelector('.js-slider__track') as HTMLElement).getBoundingClientRect().width;
 
         let scaleCoordStep: number;
         if (step) {
@@ -74,7 +74,7 @@ class ViewDnD {
 
         const getDownCoord = (evt: MouseEvent): void => {
           evt.preventDefault();
-          const isVertical = (evt.target as HTMLElement).classList.contains('vertical');
+          const isVertical = (evt.target as HTMLElement).classList.contains('js-slider__thumb_vertical');
 
           const isVerticalMinOrMax = (evt.target === value || evt.target === divThumbMin
             || evt.target === divThumbMax) && isVertical;

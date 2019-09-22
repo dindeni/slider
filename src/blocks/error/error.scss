@@ -1,0 +1,18 @@
+.error{
+  background: url("./back-error.svg") no-repeat;
+  position: absolute;
+  width: max-content;
+  height: 28px;
+  background-size: 100% 100%;
+  padding: 0 22px;
+  text-transform: uppercase;
+  color: #ffffff;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  z-index: 10;
+  top: 48px;
+  left: 106%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

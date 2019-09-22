@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../blocks/view/view';
+import View from '../blocks/views/view/view.ts';
 import dispatchMove from './_serviceFunctions';
-import ViewDnD from '../blocks/view/viewDnD';
+import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
 
 describe('Range', () => {
   let divThumbMin; let divThumbMax; let divTrack; let divThumbLeftMin; let divThumbTopMin;
@@ -17,7 +17,7 @@ describe('Range', () => {
   };
 
   const addDnd = () => {
-    const wrapper = $('.slider-wrapper');
+    const wrapper = $('.slider');
     const viewDnd = new ViewDnD();
     viewDnd.addDnD(undefined, false, true, true,
       100, 500, wrapper);
@@ -25,17 +25,17 @@ describe('Range', () => {
 
 
   const findElements = () => {
-    divThumbMin = document.querySelector('#thumb-min');
-    divThumbMax = document.querySelector('#thumb-max');
+    divThumbMin = document.querySelector('.js-slider__thumb_min');
+    divThumbMax = document.querySelector('.js-slider__thumb_max');
     divThumbLeftMin = divThumbMin.getBoundingClientRect().left;
     divThumbTopMin = divThumbMin.getBoundingClientRect().top;
     divThumbLeftMax = divThumbMax.getBoundingClientRect().left;
     divThumbTopMax = divThumbMax.getBoundingClientRect().top;
-    divTrack = document.querySelector('.slider-track');
-    divLabelMin = document.querySelector('#label-min');
-    divLabelMax = document.querySelector('#label-max');
-    divProgressMin = document.querySelector('#progress-min');
-    divProgressMax = document.querySelector('#progress-max');
+    divTrack = document.querySelector('.js-slider__track');
+    divLabelMin = document.querySelector('.js-slider__label_min');
+    divLabelMax = document.querySelector('.js-slider__label_max');
+    divProgressMin = document.querySelector('.js-slider__progress_min');
+    divProgressMax = document.querySelector('.js-slider__progress_max');
 
     divTrack.style.width = '260px';
     divTrack.style.height = '5px';
