@@ -1,6 +1,6 @@
-import ViewOptional from '../viewOptional/viewOptional';
-import View from '../view/view';
-import Presenter from '../../presenter/presenter';
+import ViewOptional from './viewOptional';
+import View from './view';
+import Presenter from '../presenter/presenter';
 
 class ViewDnD {
     private coordXStart: number;

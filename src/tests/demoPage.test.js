@@ -1,8 +1,8 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import DemoPage from '../blocks/demoPage/demoPage.ts';
-import '../blocks/slider/slider.ts';
+import DemoPage from '../slider/demoPage/demoPage.ts';
+import '../slider/sliderInit/sliderInit.ts';
 
-import style from '../blocks/views/view/view.scss';
+import style from '../blocks/slider/slider.scss';
 
 import dispatchMove from './_serviceFunctions';
 
@@ -25,8 +25,8 @@ describe('DemoPage', async () => {
   let formsList;
 
   const createHtml = () => {
-    const htmlElements = '<div class="main__form-wrapper js-main__form-wrapper">'
-            + '<form class="main__form form js-form"></form>'
+    const htmlElements = '<div class="index__wrapper js-index__wrapper">'
+            + '<form class="demo js-demo"></form>'
             + '</div>';
     const main = document.querySelector('body');
 
@@ -47,12 +47,12 @@ describe('DemoPage', async () => {
     await createHtml();
     await demoPage.initSliders();
 
-    formsList = document.querySelectorAll('.js-form');
+    formsList = document.querySelectorAll('.js-demo');
   });
 
   describe('Before dispatch', () => {
     it('should form elements exist', () => {
-      const formElements = document.querySelectorAll('.js-form');
+      const formElements = document.querySelectorAll('.js-demo');
       Array.from(formElements).map((value) => expect(value).not.toBeNull());
     });
 
@@ -63,16 +63,16 @@ describe('DemoPage', async () => {
 
     it('should set input value', () => {
       const inputValueElement = document.querySelectorAll(
-        '.js-form',
+        '.js-demo',
       );
       Array.from(inputValueElement).map((form, index) => {
         if (sliderSettings[index].range) {
-          return expect(form.querySelector('.js-form__input-value_min').value
-                        && form.querySelector('.js-form__input-value_max').value)
+          return expect(form.querySelector('.js-demo__field-value_min').value
+                        && form.querySelector('.js-demo__field-value_max').value)
             .toBe(sliderSettings[index].min.toString()
                         && sliderSettings[index].max.toString());
         }
-        return expect(form.querySelector('.js-form__input-value').value)
+        return expect(form.querySelector('.js-demo__field-value').value)
           .toBe(sliderSettings[index].min.toString());
       });
     });
@@ -80,17 +80,17 @@ describe('DemoPage', async () => {
 
   it('should inputs settings exist', () => {
     Array.from(formsList).map((wrapper) => {
-      expect(wrapper.querySelector('.js-form__input-settings_progress')).not.toBeNull();
-      expect(wrapper.querySelector('.js-form__input-settings_min')).not.toBeNull();
-      expect(wrapper.querySelector('.js-form__input-settings_max')).not.toBeNull();
-      expect(wrapper.querySelector('.js-form__input-settings_vertical')).not.toBeNull();
-      expect(wrapper.querySelector('.js-form__input-settings_range')).not.toBeNull();
-      return expect(wrapper.querySelector('.js-form__input-settings_step')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_progress')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_min')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_max')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_vertical')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_range')).not.toBeNull();
+      return expect(wrapper.querySelector('.js-demo__field-settings_step')).not.toBeNull();
     });
   });
 
   it('should set inputs value', () => {
-    Array.from(formsList).map((wrapper, index) => Array.from(wrapper.querySelectorAll('.form__input-settings')).map((input, indexInput) => {
+    Array.from(formsList).map((wrapper, index) => Array.from(wrapper.querySelectorAll('.demo__field-settings')).map((input, indexInput) => {
       const setting = Object.values(sliderSettings[index])[indexInput];
       return expect(input.value).toBe(String(setting));
     }));
@@ -102,7 +102,7 @@ describe('DemoPage', async () => {
       label = document.querySelectorAll('.js-slider__label');
       let thumbX; let thumbY; let thumbMin; let thumbMinX; let thumbMinY;
       let thumbMax; let thumbMaxX; let thumbMaxY;
-      Array.from(document.querySelectorAll('.js-main__form-wrapper'))
+      Array.from(document.querySelectorAll('.js-index__wrapper'))
         .map((wrapper, index) => {
           const thumb = wrapper.querySelectorAll('.js-slider__thumb');
           switch (index) {
@@ -143,37 +143,37 @@ describe('DemoPage', async () => {
 
     it('should first slider input value to be equal label value',
       () => {
-        const input = formsList[0].querySelector('.js-form__input-value');
+        const input = formsList[0].querySelector('.js-demo__field-value');
         expect(input.value).toBe(label[0].textContent);
       });
 
     it('should second slider input min value to be equal label value',
       () => {
-        const input = formsList[1].querySelector('.js-form__input-value_min');
+        const input = formsList[1].querySelector('.js-demo__field-value_min');
         expect(input.value).toBe(label[1].textContent);
       });
 
     it('should second slider input max value to be equal label value',
       () => {
-        const input = formsList[1].querySelector('.js-form__input-value_max');
+        const input = formsList[1].querySelector('.js-demo__field-value_max');
         expect(input.value).toBe(label[2].textContent);
       });
 
     it('third slider input min value to be equal label value',
       () => {
-        const input = formsList[2].querySelector('.js-form__input-value_min');
+        const input = formsList[2].querySelector('.js-demo__field-value_min');
         expect(input.value).toBe(label[3].textContent);
       });
 
     it('third slider input max value to be equal label value',
       () => {
-        const input = formsList[2].querySelector('.js-form__input-value_max');
+        const input = formsList[2].querySelector('.js-demo__field-value_max');
         expect(input.value).toBe(label[4].textContent);
       });
 
     it('should fourth slider input value to be equal label value',
       () => {
-        const input = formsList[3].querySelector('.js-form__input-value');
+        const input = formsList[3].querySelector('.js-demo__field-value');
         expect(input.value).toBe(label[5].textContent);
       });
   });

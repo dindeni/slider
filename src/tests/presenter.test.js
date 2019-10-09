@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type  */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../blocks/views/view/view.ts';
-import Presenter from '../blocks/presenter/presenter.ts';
+import View from '../slider/views/view.ts';
+import Presenter from '../slider/presenter/presenter.ts';
 
 const $ = require('jquery');
 
@@ -21,12 +21,12 @@ describe('Presenter', () => {
     presenter = new Presenter();
   });
 
-  it('should calculate slider value percent', () => {
+  it('should calculate sliderInit value percent', () => {
     expect(presenter.calculateSliderMovePercent(100, 50))
       .toBe(50);
   });
 
-  it('should calculate slider value', () => {
+  it('should calculate sliderInit value', () => {
     expect(presenter.calculateSliderValue(100, 500, 260,
       131))
       .toBe(300);

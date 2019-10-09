@@ -1,4 +1,4 @@
-import View from '../views/view/view';
+import View from '../views/view';
 
 const view = new View();
 
@@ -45,3 +45,4 @@ const initSlider = (element: JQuery, progress: boolean, min: number,
     return this;
   };
 }(jQuery));
+

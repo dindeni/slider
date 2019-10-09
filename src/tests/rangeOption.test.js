@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../blocks/views/view/view.ts';
+import View from '../slider/views/view.ts';
 import dispatchMove from './_serviceFunctions';
-import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
+import ViewDnD from '../slider/views/viewDnD.ts';
 
 describe('Range', () => {
   let divThumbMin; let divThumbMax; let divTrack; let divThumbLeftMin; let divThumbTopMin;

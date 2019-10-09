@@ -1,3 +1,5 @@
+include ../blocks/index/index
+
 doctype html
 html(lang="en")
   head
@@ -5,7 +7,5 @@ html(lang="en")
     title slider
     meta(name="viewport" content="width=device-width,initial-scale=1")
   body
-    main.main
-      each value in new Array(4)
-        div.main__form-wrapper.js-main__form-wrapper
-          form.main__form.form.js-form
+    +index
+

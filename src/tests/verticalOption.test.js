@@ -1,8 +1,8 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../blocks/views/view/view.ts';
-import ViewOptional from '../blocks/views/viewOptional/viewOptional.ts';
+import View from '../slider/views/view.ts';
+import ViewOptional from '../slider/views/viewOptional.ts';
 import dispatchMove from './_serviceFunctions';
-import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
+import ViewDnD from '../slider/views/viewDnD.ts';
 
 
 describe('Vertical option', () => {

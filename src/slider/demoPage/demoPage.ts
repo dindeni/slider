@@ -1,5 +1,5 @@
 import Presenter from '../presenter/presenter';
-import ViewDnD from '../views/viewDnD/viewDnD';
+import ViewDnD from '../views/viewDnD';
 
 interface Slider {
     progress: boolean;
@@ -9,6 +9,7 @@ interface Slider {
     range: boolean;
     step?: number;
 }
+
 
 class DemoPage {
     sliderSettings: [Slider, Slider, Slider, Slider];
@@ -30,7 +31,7 @@ class DemoPage {
         },
       ];
 
-      Array.from(document.querySelectorAll('.js-main__form-wrapper'))
+      Array.from(document.querySelectorAll('.js-index__wrapper'))
         .map((formWrapper, index) => {
           DemoPage.createElements(this.sliderSettings[index], ((formWrapper as HTMLElement)
             .children[0])as HTMLElement);
@@ -53,7 +54,7 @@ class DemoPage {
       let widthHeightTrack: number; let thumbMin: HTMLElement; let thumbMax: HTMLElement;
       let thumb;
 
-      const formElement = element.querySelector('.js-form') as HTMLElement;
+      const formElement = element.querySelector('.js-demo') as HTMLElement;
 
       const changeSlider = (evt: MouseEvent): void => {
         !vertical ? widthHeightTrack = (element
@@ -66,7 +67,7 @@ class DemoPage {
           thumbMax = element.querySelector('.js-slider__thumb_max') as HTMLElement;
         } else thumb = element.querySelector('.js-slider__thumb');
 
-        if ((evt.target as HTMLElement).classList.contains('js-form__input-value')) {
+        if ((evt.target as HTMLElement).classList.contains('js-demo__field-value')) {
           const distance = Presenter.calculateFromValueToCoordinates(
             parseInt((evt.target as HTMLInputElement).value, 10),
             min, max, widthHeightTrack,
@@ -85,7 +86,7 @@ class DemoPage {
             } else {
               let thumbMinMax: HTMLElement;
               (evt.target as HTMLInputElement).classList
-                .contains('js-form__input-value_min') ? thumbMinMax = thumbMin
+                .contains('js-demo__field-value_min') ? thumbMinMax = thumbMin
                 : thumbMinMax = thumbMax;
               !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
                 min, max, widthHeightTrack)}px` : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
@@ -99,9 +100,9 @@ class DemoPage {
         const settingValue: boolean | number | undefined | null = this.validateSettings(
           (evt.target as HTMLInputElement).value, (evt.target as HTMLElement),
         );
-        const isSettingValueValid = (evt.target as HTMLElement).classList.contains('js-form__input-settings') && settingValue !== null;
+        const isSettingValueValid = (evt.target as HTMLElement).classList.contains('js-demo__field-settings') && settingValue !== null;
         if (isSettingValueValid) {
-          const inputSettings = element.querySelectorAll('.js-form__input-settings');
+          const inputSettings = element.querySelectorAll('.js-demo__field-settings');
           const settings: Slider = {
             progress: true,
             min: 0,
@@ -145,11 +146,11 @@ class DemoPage {
       const convertedValue: boolean | number | undefined | null = DemoPage.convertInputValue(value);
       const isValidStepSetting = (typeof convertedValue === 'undefined' || typeof convertedValue === 'number');
 
-      const isBooleanSetting = element.classList.contains('form__input-settings_progress')
-        || element.classList.contains('js-form__input-settings_vertical')
-        || element.classList.contains('js-form__input-settings_range');
-      const isMinMax = element.classList.contains('js-form__input-settings_min')
-          || element.classList.contains('js-form__input-settings_max');
+      const isBooleanSetting = element.classList.contains('demo__field-settings_progress')
+        || element.classList.contains('js-demo__field-settings_vertical')
+        || element.classList.contains('js-demo__field-settings_range');
+      const isMinMax = element.classList.contains('js-demo__field-settings_min')
+          || element.classList.contains('js-demo__field-settings_max');
       switch (true) {
         case isBooleanSetting:
           DemoPage.deleteErrorElement(element);
@@ -159,7 +160,7 @@ class DemoPage {
           DemoPage.deleteErrorElement(element);
           return typeof convertedValue === 'number' ? convertedValue
             : this.createErrorElement(element, 'value should to be number');
-        case element.classList.contains('form__input-settings_step'):
+        case element.classList.contains('demo__field-settings_step'):
           DemoPage.deleteErrorElement(element);
           return isValidStepSetting ? convertedValue
             : this.createErrorElement(element, 'value should to be number or undefined');
@@ -185,7 +186,7 @@ class DemoPage {
     static observeLabel(element: HTMLElement, range: boolean): void {
       if (!range) {
         const label: HTMLElement = element.querySelector('.js-slider__label') as HTMLElement;
-        const input: HTMLInputElement = element.querySelector('.js-form__input-value') as HTMLInputElement;
+        const input: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
         const mutations = (mutationRecord): void => {
           (input as HTMLInputElement).value = mutationRecord[mutationRecord.length - 1]
             .target.textContent;
@@ -199,14 +200,14 @@ class DemoPage {
         });
       } else {
         const labelMin: HTMLElement = element.querySelector('.js-slider__label_min') as HTMLElement;
-        const inputMin: HTMLInputElement = element.querySelector('.js-form__input-value_min') as HTMLInputElement;
+        const inputMin: HTMLInputElement = element.querySelector('.js-demo__field-value_min') as HTMLInputElement;
         const mutationsMin = (mutationRecord): void => {
           (inputMin as HTMLInputElement).value = mutationRecord[mutationRecord.length - 1]
             .target.textContent;
         };
 
         const labelMax: HTMLElement = element.querySelector('.js-slider__label_max') as HTMLElement;
-        const inputMax: HTMLInputElement = element.querySelector('.js-form__input-value_max') as HTMLInputElement;
+        const inputMax: HTMLInputElement = element.querySelector('.js-demo__field-value_max') as HTMLInputElement;
         const mutationsMax = (mutationRecord): void => {
           (inputMax as HTMLInputElement).value = mutationRecord[mutationRecord.length - 1]
             .target.textContent;
@@ -230,20 +231,20 @@ class DemoPage {
 
     static createElements(setting: Slider, form: HTMLElement): JQuery {
       let $inputValue: JQuery;
-      !setting.range ? $inputValue = $('<div class="form__input-wrapper">' +
-       '<label class="form__label-input">value<input class="form__input-value js-form__input-value"></label></div>')
-      : $inputValue = $('<div class="form__input-wrapper">'
-      + '<label class="form__label-input">value min<input class="form__input-value js-form__input-value  form__input-value_min js-form__input-value_min"></label></div>'
-      + '<div class="form__input-wrapper"><label class="form__label-input">value max<input class="form__input-value js-form__input-value form__input-value_max js-form__input-value_max"></label></div>');
+      !setting.range ? $inputValue = $('<div class="demo__field-wrapper">' +
+       '<label class="demo__mark">value<input class="demo__field-value js-demo__field-value"></label></div>')
+      : $inputValue = $('<div class="demo__field-wrapper">'
+      + '<label class="demo__mark">value min<input class="demo__field-value js-demo__field-value  demo__field-value_min js-demo__field-value_min"></label></div>'
+      + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input class="demo__field-value js-demo__field-value demo__field-value_max js-demo__field-value_max"></label></div>');
 
-      const $settingsInputs = $('<div class="form__input-wrapper"><label class="form__label-input">progress(true or false)' +
-       '<input class="form__input-settings js-form__input-settings form__input-settings_progress js-form__input-settings_progress"></label></div>'
-      + '<div class="form__input-wrapper"><label class="form__label-input">min(number)<input class="form__input-settings js-form__input-settings form__input-settings_min js-form__input-settings_min">' +
-       '</label></div><div class="form__input-wrapper">'
-      + '<label class="form__label-input">max(number)<input class="form__input-settings js-form__input-settings form__input-settings_max js-form__input-settings_max"></label></div>'
-      + '<div class="form__input-wrapper"><label class="form__label-input">vertical(true or false)<input class="form__input-settings js-form__input-settings form__input-settings_vertical js-form__input-settings_vertical"></label></div>' +
-       '<div class="form__input-wrapper"><label class="form__label-input">range(true or false)<input class="form__input-settings js-form__input-settings form__input-settings_range js-form__input-settings_range"></label></div>' +
-        '<div class="form__input-wrapper"><label class="form__label-input">step(number)<input class="form__input-settings js-form__input-settings form__input-settings_step js-form__input-settings_step"></label></div>');
+      const $settingsInputs = $('<div class="demo__field-wrapper"><label class="demo__mark">progress(true or false)' +
+       '<input class="demo__field-settings js-demo__field-settings demo__field-settings_progress js-demo__field-settings_progress"></label></div>'
+      + '<div class="demo__field-wrapper"><label class="demo__mark">min(number)<input class="demo__field-settings js-demo__field-settings demo__field-settings_min js-demo__field-settings_min">' +
+       '</label></div><div class="demo__field-wrapper">'
+      + '<label class="demo__mark">max(number)<input class="demo__field-settings js-demo__field-settings demo__field-settings_max js-demo__field-settings_max"></label></div>'
+      + '<div class="demo__field-wrapper"><label class="demo__mark">vertical(true or false)<input class="demo__field-settings js-demo__field-settings demo__field-settings_vertical js-demo__field-settings_vertical"></label></div>' +
+       '<div class="demo__field-wrapper"><label class="demo__mark">range(true or false)<input class="demo__field-settings js-demo__field-settings demo__field-settings_range js-demo__field-settings_range"></label></div>' +
+        '<div class="demo__field-wrapper"><label class="demo__mark">step(number)<input class="demo__field-settings js-demo__field-settings demo__field-settings_step js-demo__field-settings_step"></label></div>');
       $inputValue.appendTo($(form));
       return $settingsInputs.appendTo($(form));
     }
@@ -264,16 +265,16 @@ class DemoPage {
     static setInputValue(element: HTMLElement, min: number, max: number, range: boolean,
       settings: Slider): void {
       if (range) {
-        const minInput = (element.querySelector('.js-form__input-value_min') as HTMLInputElement);
+        const minInput = (element.querySelector('.js-demo__field-value_min') as HTMLInputElement);
         minInput.value = min.toString();
-        const maxInput = (element.querySelector('.js-form__input-value_max') as HTMLInputElement);
+        const maxInput = (element.querySelector('.js-demo__field-value_max') as HTMLInputElement);
         maxInput.value = max.toString();
       } else {
-        const input = (element.querySelector('.js-form__input-value') as HTMLInputElement);
+        const input = (element.querySelector('.js-demo__field-value') as HTMLInputElement);
         input.value = min.toString();
       }
 
-      Array.from(element.querySelectorAll('.js-form__input-settings')).map((input, index) => {
+      Array.from(element.querySelectorAll('.js-demo__field-settings')).map((input, index) => {
         const inputElement = (input as HTMLInputElement);
         inputElement.value = Object.values(settings)[index];
         return inputElement;

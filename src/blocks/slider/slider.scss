@@ -1,0 +1,49 @@
+.slider{
+  position: relative;
+  padding: 20px 0;
+  margin: 20px 20px;
+
+  &__track{
+    width: 260px;
+    height: 5px;
+    background: #e5e5e5;
+    position: relative;
+  }
+
+  &__progress{
+    width: 0;
+    height: 5px;
+    background: #e75735;
+  }
+
+  &__label{
+    height: 28px;
+    width: 35px;
+    background: url("icon-label.svg") no-repeat;
+    color: #ffffff;
+    text-align: center;
+    line-height: 25px;
+    position: absolute;
+    top: -18px;
+    left: -8px;
+  }
+
+  &__scale-item{
+    position: absolute;
+    list-style: none;
+    font-size: 11px;
+    color: #d1d1d1;
+    letter-spacing: 0.55px;
+    text-align: center;
+    width: 21px;
+  }
+
+  &__thumb{
+    width: 21px;
+    height: 21px;
+    background: #e75735;
+    border-radius: 50%;
+    position: absolute;
+    top: 12px;
+  }
+}

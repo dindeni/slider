@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../blocks/views/view/view.ts';
-import ViewDnD from '../blocks/views/viewDnD/viewDnD.ts';
+import View from '../slider/views/view.ts';
+import ViewDnD from '../slider/views/viewDnD.ts';
 
 import dispatchMove from './_serviceFunctions';
 
@@ -72,7 +72,7 @@ describe('View', () => {
 
   describe('After dispatch', () => {
     beforeAll(() => {
-      const wrapper = $('.slider');
+      const wrapper = $('.sliderInit');
       const viewDnd = new ViewDnD();
       viewDnd.addDnD(undefined, false, false, true,
         100, 500, wrapper);

@@ -1,0 +1,26 @@
+.demo{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  &__field-wrapper{
+    width: 160px;
+    margin: 0 20px 0 0;
+    position: relative;
+  }
+
+  &__field-value, &__field-settings{
+    background: #e5e5e5;
+    border-radius: 5px;
+    border: none;
+    height: 26px;
+    width: 100%;
+    padding: 0 0 0 10px;
+  }
+
+  &__mark{
+    font-size: 12px;
+  }
+
+}

@@ -1,4 +1,4 @@
-import Presenter from '../../presenter/presenter';
+import Presenter from '../presenter/presenter';
 
 class ViewOptional {
     private presenter: Presenter = new Presenter();
