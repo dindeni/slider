@@ -63,22 +63,18 @@ class Presenter {
       };
     }
 
-    static calculateThumbDistance(vertical: boolean, step: number | undefined,
-      divThumb: HTMLElement, coordStart: number,
-      coordMove: number): number {
-      switch (true) {
-        case !vertical:
+    static calculateThumbDistance(coordStart: number, coordMove: number): number {
           return coordMove - coordStart;
-        case vertical:
-          return coordMove - coordStart;
-        default: return 0;
-      }
     }
 
     static calculateFromValueToCoordinates(value: number, min: number,
       max: number, widthHeight: number): number {
       const unit = widthHeight / (max - min);
       return (value - min) * unit;
+    }
+
+    static calculateCoordinatesOfMiddle(start: number, width: number): number {
+      return start + width/2;
     }
 }
 

@@ -1,3 +1,5 @@
+@import "../mixins/hide";
+
 .demo{
   display: flex;
   flex-wrap: wrap;
@@ -8,6 +10,61 @@
     width: 160px;
     margin: 0 20px 0 0;
     position: relative;
+
+    &_for-checkbox{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100px;
+      .demo{
+        &__field-settings, &__field-scale{
+          @include hide;
+          &:checked +.demo__mark{
+            background: url("./background-for-checkbox.svg") no-repeat;
+            &::before{
+              right: 3px;
+            }
+            &::after{
+            content: 'on';
+              left: 15px;
+            }
+          }
+        }
+        &__mark{
+          position: relative;
+          margin-top: 8px;
+          &::before{
+            position: absolute;
+            content: '';
+            width: 19px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            right: 37px;
+            top: 2px;
+          }
+          &::after{
+            position: absolute;
+            content: 'off';
+            font-size: .92rem;
+            width: 20px;
+            height: 15px;
+            color: #ffffff;
+            text-transform: uppercase;
+            top: -9px;
+            left: 29px;
+            letter-spacing: .6px;
+          }
+        }
+      }
+
+      .demo__mark{
+        width: 60px;
+        height: 24px;
+        display: inline-block;
+        background: url("./background-for-checkbox-gray.svg") no-repeat;
+      }
+    }
   }
 
   &__field-value, &__field-settings{

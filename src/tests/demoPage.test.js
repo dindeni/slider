@@ -4,7 +4,7 @@ import '../slider/sliderInit/sliderInit.ts';
 
 import style from '../blocks/slider/slider.scss';
 
-import dispatchMove from './_serviceFunctions';
+import { dispatchMove } from './_serviceFunctions';
 
 describe('DemoPage', async () => {
   const sliderSettings = [
@@ -84,16 +84,8 @@ describe('DemoPage', async () => {
       expect(wrapper.querySelector('.js-demo__field-settings_min')).not.toBeNull();
       expect(wrapper.querySelector('.js-demo__field-settings_max')).not.toBeNull();
       expect(wrapper.querySelector('.js-demo__field-settings_vertical')).not.toBeNull();
-      expect(wrapper.querySelector('.js-demo__field-settings_range')).not.toBeNull();
-      return expect(wrapper.querySelector('.js-demo__field-settings_step')).not.toBeNull();
+      return expect(wrapper.querySelector('.js-demo__field-settings_range')).not.toBeNull();
     });
-  });
-
-  it('should set inputs value', () => {
-    Array.from(formsList).map((wrapper, index) => Array.from(wrapper.querySelectorAll('.demo__field-settings')).map((input, indexInput) => {
-      const setting = Object.values(sliderSettings[index])[indexInput];
-      return expect(input.value).toBe(String(setting));
-    }));
   });
 
   describe('After dispatch', () => {

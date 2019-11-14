@@ -1,6 +1,6 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import View from '../slider/views/view.ts';
-import dispatchMove from './_serviceFunctions';
+import { dispatchMove } from './_serviceFunctions';
 import ViewDnD from '../slider/views/viewDnD.ts';
 
 describe('Range', () => {
@@ -69,7 +69,7 @@ describe('Range', () => {
       expect(parseInt(divThumbMax.style.left, 10))
         .toBe(parseInt(divTrack.style.width, 10) - moveDistanceX);
     });
-    it('should label max value to be 432', () => {
+    it('should label max value to be 420', () => {
       expect(divLabelMax.textContent).toBe('420');
     });
     it('should progress max width to be equal thumb max coordinates left', () => {

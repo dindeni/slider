@@ -27,8 +27,8 @@ class ViewOptional {
       if (!range) {
         $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
       } else {
-        $('<div class="slider__progress slider__progress_min js-slider__progress_min"></div>').appendTo($track);
-        $('<div class="slider__progress slider__progress_max js-slider__progress_max"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress slider__progress_min js-slider__progress_min"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress slider__progress_max js-slider__progress_max"></div>').appendTo($track);
       }
     }
 

@@ -3,7 +3,8 @@
 import View from '../slider/views/view.ts';
 import ViewDnD from '../slider/views/viewDnD.ts';
 
-import dispatchMove from './_serviceFunctions';
+import { dispatchMove, dispatchClick } from './_serviceFunctions';
+import style from '../blocks/slider/slider.scss';
 
 const $ = require('jquery');
 
@@ -44,6 +45,9 @@ describe('View', () => {
     await createElements();
     await turnOnProgress();
     await findElements();
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = style;
+    document.head.appendChild(styleElement);
   });
 
   it('should div thumb exists', () => {
@@ -70,7 +74,7 @@ describe('View', () => {
     expect(divThumb.hasAttribute('draggable')).toBeTruthy();
   });
 
-  describe('After dispatch', () => {
+  describe('After dispatch move', () => {
     beforeAll(() => {
       const wrapper = $('.sliderInit');
       const viewDnd = new ViewDnD();
@@ -86,6 +90,16 @@ describe('View', () => {
 
     it('should label value to be 176', () => {
       expect(divLabel.textContent).toBe('176');
+    });
+
+    it('after track click should thumb move a distance', () => {
+      divThumbLeft = parseInt(divThumb.style.left, 10);
+      const coordX = divTrack.getBoundingClientRect().left + 100;
+      const coordY = divTrack.getBoundingClientRect().top;
+      dispatchClick(divTrack, coordX, coordY);
+      const divThumbLeftAfterClick = parseInt(divThumb.style.left, 10);
+
+      expect(divThumbLeft).not.toEqual(divThumbLeftAfterClick);
     });
   });
 });

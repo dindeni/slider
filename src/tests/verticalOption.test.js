@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import View from '../slider/views/view.ts';
 import ViewOptional from '../slider/views/viewOptional.ts';
-import dispatchMove from './_serviceFunctions';
+import {dispatchMove} from './_serviceFunctions';
 import ViewDnD from '../slider/views/viewDnD.ts';
 
 
