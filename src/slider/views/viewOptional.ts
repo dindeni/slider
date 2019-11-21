@@ -6,17 +6,18 @@ class ViewOptional {
     createScale(vertical: boolean,
       min: number, max: number, step: number, trackWidth: number,
       trackHeight: number, wrapper: JQuery): void {
-      const scaleData: {coords: number[]; value: number[]} = this.presenter
-        .calculateLeftScaleCoords(min, max, step, vertical, trackWidth, trackHeight);
+      const scaleData: {coords: number[]; value: number[];
+       shortCoords: number[]; shortValue: number[];} = this.presenter
+         .calculateLeftScaleCoords(min, max, step, vertical, trackWidth, trackHeight);
 
       const scaleTopPositionCorrection = 5;
       const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
-      scaleData.value.map((item, i) => {
+      scaleData.shortValue.map((item, i) => {
         const $itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo($ul);
 
-        return !vertical ? $itemElement.css({ left: scaleData.coords[i] })
+        return !vertical ? $itemElement.css({ left: scaleData.shortCoords[i] })
           : $itemElement.css({
-            top: scaleData.coords[i]
+            top: scaleData.shortCoords[i]
                         - scaleTopPositionCorrection,
           });
       });

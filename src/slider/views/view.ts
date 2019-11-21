@@ -101,7 +101,7 @@ class View {
         }
       } else {
         const $divLabelMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
-        .appendTo(wrapper);
+          .appendTo(wrapper);
         if (vertical) {
           $divLabelMin.css({
             left: `${this.labelOffsetTop / 2}px`,
@@ -111,7 +111,7 @@ class View {
         $divLabelMin.text(initValue);
 
         const $divLabelMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
-        .appendTo(wrapper);
+          .appendTo(wrapper);
         !vertical ? $divLabelMax.css({
           left: `${(this.$divTrack.width() || 0) - this.labelOffsetLeft}px`,
         }) : $divLabelMax.css({

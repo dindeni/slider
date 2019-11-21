@@ -36,11 +36,15 @@ class Presenter {
 
     calculateLeftScaleCoords(min: number, max: number, step: number | undefined,
       vertical: boolean, trackWidth: number,
-      trackHeight: number): {value: number[]; coords: number[]} {
-      const scaleValue: {value: number[]; coords: number[]} = {
-        coords: [],
-        value: [],
-      };
+      trackHeight: number): {value: number[]; coords: number[]; shortValue: number[];
+       shortCoords: number[];} {
+      const scaleValue: {value: number[]; coords: number[]; shortValue: number[];
+        shortCoords: number[];} = {
+          coords: [],
+          value: [],
+          shortValue: [],
+          shortCoords: [],
+        };
 
       if (step) {
         let stepCount = 0;
@@ -50,21 +54,55 @@ class Presenter {
                     * trackWidth : coordsItems = (stepCount / (max - min))
                         * trackHeight;
           scaleValue.value.push(i);
-          scaleValue.coords.push(coordsItems);
+          scaleValue.coords.push(Math.floor(coordsItems));
           this.scaleValueCoords.push(coordsItems);
           stepCount += step;
         }
+        console.log(scaleValue)
 
+        const isNotVerticalLastCoord = !vertical && scaleValue.coords[scaleValue.coords.length - 1]
+        !== trackWidth;
+        const isVerticalLastCoord = vertical && scaleValue.coords[scaleValue.coords.length - 1]
+          !== trackHeight;
+        if (isNotVerticalLastCoord) {
+          scaleValue.coords.push(trackWidth);
+        }
+        if (isVerticalLastCoord) {
+          scaleValue.coords.push(trackHeight);
+        }
+
+        scaleValue.shortValue = scaleValue.value;
+        scaleValue.shortCoords = scaleValue.coords;
+
+        while (scaleValue.shortValue.length > 10) {
+          scaleValue.shortValue = scaleValue.shortValue.filter((value, index) => {
+            const isIndex0OrEven = index === 0 || index % 2 === 0;
+            if (isIndex0OrEven) {
+              return true;
+            } return false;
+          });
+        }
+
+        while (scaleValue.shortCoords.length > 10) {
+          scaleValue.shortCoords = scaleValue.shortCoords.filter((value, index) => {
+            const isIndex0OrEven = index === 0 || index % 2 === 0;
+            if (isIndex0OrEven) {
+              return true;
+            } return false;
+          });
+        }
 
         return scaleValue;
       } return {
         coords: [],
         value: [],
+        shortCoords: [],
+        shortValue: [],
       };
     }
 
     static calculateThumbDistance(coordStart: number, coordMove: number): number {
-          return coordMove - coordStart;
+      return coordMove - coordStart;
     }
 
     static calculateFromValueToCoordinates(value: number, min: number,
@@ -74,7 +112,7 @@ class Presenter {
     }
 
     static calculateCoordinatesOfMiddle(start: number, width: number): number {
-      return start + width/2;
+      return start + width / 2;
     }
 }
 

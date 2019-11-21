@@ -13,6 +13,8 @@ class ViewDnD {
 
     private divThumbTop: number;
 
+    private coordsStep: number[];
+
     viewOptional: ViewOptional = new ViewOptional();
 
     view: View = new View();
@@ -35,7 +37,10 @@ class ViewDnD {
           const { coords } = this.presenter.calculateLeftScaleCoords(min, max, step, vertical,
             trackWidth, trackHeight);
           [, scaleCoordStep] = coords;
+
+          this.coordsStep = coords;
         }
+
 
         return document.addEventListener('mousedown', (evt) => this.getDownCoord(evt,
           divThumbMin, divThumbMax, value, vertical, step, trackWidth, trackHeight,
@@ -264,25 +269,25 @@ class ViewDnD {
           switch (true) {
             case thumbElement === thumbMin && !vertical && (shift + thumbDistance
              < thumbMaxLeft - scaleCoordStep):
-              ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
+              this.setStepPosition(thumbDistance, trackWidth, trackHeight,
                 divThumb, scaleCoordStep, vertical, evt);
               this.divThumbLeft = parseInt(thumbElement.style.left || '0', 10);
               break;
             case thumbElement === thumbMax && !vertical && (shift + thumbDistance
              > thumbMinLeft + scaleCoordStep):
-              ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
+              this.setStepPosition(thumbDistance, trackWidth, trackHeight,
                 divThumb, scaleCoordStep, vertical, evt);
               this.divThumbLeft = parseInt(thumbElement.style.left || '0', 10);
               break;
             case thumbElement === thumbMin && vertical && (shift + thumbDistance
              < thumbMaxTop - scaleCoordStep):
-              ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
+              this.setStepPosition(thumbDistance, trackWidth, trackHeight,
                 divThumb, scaleCoordStep, vertical, evt);
               this.divThumbTop = parseInt(thumbElement.style.top || '0', 10);
               break;
             case thumbElement === thumbMax && vertical && (shift + thumbDistance
              > thumbMinTop + scaleCoordStep):
-              ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
+              this.setStepPosition(thumbDistance, trackWidth, trackHeight,
                 divThumb, scaleCoordStep, vertical, evt);
               this.divThumbTop = parseInt(thumbElement.style.top || '0', 10);
               break;
@@ -295,8 +300,10 @@ class ViewDnD {
         switch (true) {
           case thumbDistance + shift >= trackWidth && thumbElement !== thumbMin:
             divThumb.style.left = `${trackWidth}px`;
+            this.divThumbLeft = trackWidth;
             break;
           case thumbDistance + shift < 0 && thumbElement !== thumbMax: divThumb.style.left = `${0}px`;
+            this.divThumbLeft = 0;
             break;
           case thumbElement === thumbMin && (shift + thumbDistance
            > thumbMaxLeft - thumbMinWidth): return;
@@ -306,7 +313,7 @@ class ViewDnD {
             this.divThumbLeft = shift + thumbDistance;
         }
       } else if (isStepNotRange) {
-        ViewDnD.setStepPosition(thumbDistance, trackWidth, trackHeight,
+        this.setStepPosition(thumbDistance, trackWidth, trackHeight,
           divThumb, scaleCoordStep, vertical, evt);
         !vertical ? this.divThumbLeft = parseInt(thumbElement.style.left || '0', 10)
           : this.divThumbTop = parseInt(thumbElement.style.top || '0', 10);
@@ -314,9 +321,11 @@ class ViewDnD {
         switch (true) {
           case thumbDistance + shift > trackHeight && thumbElement !== thumbMin:
             divThumb.style.top = `${trackHeight}px`;
+            this.divThumbTop = trackHeight;
             break;
           case thumbDistance + shift < 0 && thumbElement !== thumbMax:
             divThumb.style.top = `${0}px`;
+            this.divThumbTop = 0;
             break;
           case thumbElement === thumbMin && (shift + thumbDistance
            > thumbMaxTop - thumbMinWidth * 2): return;
@@ -333,19 +342,45 @@ class ViewDnD {
       const value: number = this.presenter.calculateSliderValue(min, max,
         trackWidthHeight, distance);
 
-      this.view.updateLabelValue(value, distance, vertical, divThumb);
+      this.view.updateLabelValue(Math.floor(value), distance, vertical, divThumb);
       if (progress) {
         ViewOptional.stylingProgress(progressWidthHeight, vertical, divThumb);
       }
     }
 
-    static setStepPosition(thumbDistance: number, trackWidth: number,
+    setStepPosition(thumbDistance: number, trackWidth: number,
       trackHeight: number, coordElement: HTMLElement,
       numberTranslation: number, vertical: boolean, evt: MouseEvent): void {
       const coord = coordElement;
+
+      const setCoords = (type: 'above' | 'below', indexOfCoord: number): number => {
+        let index = indexOfCoord;
+        const set = {
+          above: (): number => {
+            if (this.coordsStep[index] === this.coordsStep[index + 1]) {
+              do {
+                index += 1;
+              } while (this.coordsStep[index] === this.coordsStep[index + 1]);
+            }
+            return this.coordsStep[index + 1];
+          },
+
+          below: (): number => {
+            if (this.coordsStep[index] === this.coordsStep[index - 1]) {
+              do {
+                index += 1;
+              } while (this.coordsStep[index] === this.coordsStep[index - 1]);
+            }
+            return this.coordsStep[index - 1];
+          },
+        };
+
+        return type === 'above' ? set.above() : set.below();
+      };
       const stepPosition = {
         left: (): void => {
           const numberCoordLeft = parseInt(coord.style.left || '0', 10);
+          const index = this.coordsStep.findIndex((value) => value === numberCoordLeft);
 
           const isAbove0 = numberCoordLeft < trackWidth
             && evt.pageX >= coordElement.getBoundingClientRect().left + numberTranslation / 2;
@@ -353,22 +388,24 @@ class ViewDnD {
             >= numberTranslation && evt.pageX <= coordElement.getBoundingClientRect().left
              - numberTranslation / 2;
           if (isAbove0) {
-            coord.style.left = `${numberCoordLeft + numberTranslation}px`;
+            coord.style.left = `${setCoords('above', index)}px`;
           } else if (isBelow0) {
-            coord.style.left = `${numberCoordLeft - numberTranslation}px`;
+            coord.style.left = `${setCoords('below', index)}px`;
           }
         },
         top: (): void => {
           const numberCoordTop = parseInt(coord.style.top || '0', 10);
+          const index = this.coordsStep.findIndex((value) => value === numberCoordTop);
 
           const isAbove0 = numberCoordTop < trackHeight && evt.pageY
            >= coordElement.getBoundingClientRect().top + window.scrollY + numberTranslation / 2;
           const isBelow0 = numberCoordTop <= trackHeight && numberCoordTop !== 0 && evt.pageY
            <= coordElement.getBoundingClientRect().top + window.scrollY - numberTranslation / 2;
+
           if (isAbove0) {
-            coord.style.top = `${numberCoordTop + numberTranslation}px`;
+            coord.style.top = `${setCoords('above', index)}px`;
           } else if (isBelow0) {
-            coord.style.top = `${numberCoordTop - numberTranslation}px`;
+            coord.style.top = `${setCoords('below', index)}px`;
           }
         },
       };
