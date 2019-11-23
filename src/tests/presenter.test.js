@@ -28,13 +28,13 @@ describe('Presenter', () => {
 
   it('should calculate sliderInit value', () => {
     expect(presenter.calculateSliderValue(100, 500, 260,
-      131))
+      130))
       .toBe(300);
   });
 
   it('should calculate value to coordinates', () => {
     const coordinates = Presenter.calculateFromValueToCoordinates(400,
       100, 500, 260);
-    expect(coordinates).toBe(195);
+    expect(coordinates).toBe(15.015);
   });
 });

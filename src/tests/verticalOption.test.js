@@ -15,6 +15,7 @@ describe('Vertical option', () => {
     const view = new View();
     view.createElements($('body'), false, true,
       100, 500, undefined, true);
+    document.documentElement.style.fontSize = '13px';
   };
 
   const addDnd = () => {
@@ -31,12 +32,13 @@ describe('Vertical option', () => {
     divThumbTop = divThumb.getBoundingClientRect().top;
     divLabel = document.querySelector('.js-slider__label');
 
-    divTrack.style.width = '260px';
-    divTrack.style.height = '5px';
+    divTrack.style.width = '20.02rem';
+    divTrack.style.height = '0.385rem';
   };
 
   const makeVertical = () => {
-    ViewOptional.makeVertical(false, $('.js-slider'));
+    const viewOptional = new ViewOptional();
+    viewOptional.makeVertical(false, $('.js-slider'));
   };
 
   beforeAll(async () => {
@@ -49,14 +51,14 @@ describe('Vertical option', () => {
       moveDistanceY);
   });
 
-  it('should track height to be 260px', () => {
-    expect(divTrack.style.height).toBe('260px');
+  it('should track height to be 20rem', () => {
+    expect(parseInt(divTrack.style.height, 10)).toBe(20);
   });
 
   it('should div thumb move a distance', () => {
-    expect(parseInt(divThumb.style.top, 10)).toBe(moveDistanceY);
+    expect(parseFloat(divThumb.style.top)).toBe(moveDistanceY * 0.077);
   });
-  it('should label value to be 176', () => {
-    expect(divLabel.textContent).toBe('176');
+  it('should label value to be 177', () => {
+    expect(divLabel.textContent).toBe('177');
   });
 });

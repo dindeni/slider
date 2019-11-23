@@ -4,63 +4,63 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.54rem;
 
   &__field-wrapper{
-    width: 160px;
-    margin: 0 20px 0 0;
+    width: 12.32rem;
+    margin: 0 1.54rem 0 0;
     position: relative;
 
     &_for-checkbox{
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100px;
+      width: 7.7rem;
       .demo{
         &__field-settings, &__field-scale{
           @include hide;
           &:checked +.demo__mark{
             background: url("./background-for-checkbox.svg") no-repeat;
             &::before{
-              right: 3px;
+              right: 0.231rem;
             }
             &::after{
             content: 'on';
-              left: 15px;
+              left: 1.16rem;
             }
           }
         }
         &__mark{
           position: relative;
-          margin-top: 8px;
+          margin-top: 0.616rem;
           &::before{
             position: absolute;
             content: '';
-            width: 19px;
-            height: 20px;
+            width: 1.46rem;
+            height: 1.54rem;
             background: #ffffff;
             border-radius: 50%;
-            right: 37px;
-            top: 2px;
+            right: 2.85rem;
+            top: 0.154rem;
           }
           &::after{
             position: absolute;
             content: 'off';
             font-size: .92rem;
-            width: 20px;
-            height: 15px;
+            width: 1.54rem;
+            height: 1.16rem;
             color: #ffffff;
             text-transform: uppercase;
-            top: -9px;
-            left: 29px;
+            top: -0.7rem;
+            left: 2.23rem;
             letter-spacing: .6px;
           }
         }
       }
 
       .demo__mark{
-        width: 60px;
-        height: 24px;
+        width: 4.62rem;
+        height: 1.85rem;
         display: inline-block;
         background: url("./background-for-checkbox-gray.svg") no-repeat;
       }
@@ -69,15 +69,15 @@
 
   &__field-value, &__field-settings{
     background: #e5e5e5;
-    border-radius: 5px;
+    border-radius: 0.385rem;
     border: none;
-    height: 26px;
+    height: 2rem;
     width: 100%;
-    padding: 0 0 0 10px;
+    padding: 0 0 0 0.77rem;
   }
 
   &__mark{
-    font-size: 12px;
+    font-size: 0.92rem;
   }
 
 }

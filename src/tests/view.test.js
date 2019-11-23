@@ -26,7 +26,7 @@ describe('View', () => {
 
   const turnOnProgress = () => {
     divProgress = document.querySelector('.js-slider__progress');
-    divProgress.style.width = 0;
+    divProgress.style.width = '0rem';
   };
 
   const findElements = () => {
@@ -36,8 +36,8 @@ describe('View', () => {
     divTrack = document.querySelector('.js-slider__track');
     divLabel = document.querySelector('.js-slider__label');
 
-    divTrack.style.width = '260px';
-    divThumb.style.left = '0px';
+    divTrack.style.width = '20.02rem';
+    divThumb.style.left = '0rem';
   };
 
   beforeAll(async () => {
@@ -85,11 +85,11 @@ describe('View', () => {
     });
 
     it('should div thumb move a distance', () => {
-      expect(parseInt(divThumb.style.left, 10)).toBe(moveDistanceX);
+      expect(parseFloat(divThumb.style.left)).toBe(moveDistanceX * 0.077);
     });
 
-    it('should label value to be 176', () => {
-      expect(divLabel.textContent).toBe('176');
+    it('should label value to be 177', () => {
+      expect(divLabel.textContent).toBe('177');
     });
 
     it('after track click should thumb move a distance', () => {

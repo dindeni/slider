@@ -10,9 +10,11 @@ class View {
 
     private $divThumbMax: JQuery;
 
-    private labelOffsetLeft = 8;
+    private labelOffsetLeft = 0.62;
 
-    private labelOffsetTop = -30;
+    private labelOffsetTop = -2.31;
+
+    private rem = 0.077;
 
     viewOptional: ViewOptional;
 
@@ -78,12 +80,13 @@ class View {
         this.$divThumbMin.css({
           left: 0,
         });
+
         this.$divThumbMax.css({
-          left: `${this.$divTrack.width()}px`,
+          left: `${(this.$divTrack.width() as number) * this.rem}rem`,
         });
       }
       if (vertical) {
-        ViewOptional.makeVertical(range, wrapper);
+        this.viewOptional.makeVertical(range, wrapper);
       }
     }
 
@@ -95,8 +98,8 @@ class View {
         $divLabel.text(initValue);
         if (vertical) {
           $divLabel.css({
-            top: `${this.labelOffsetTop}px`,
-            left: `${this.labelOffsetTop / 2}px`,
+            top: `${this.labelOffsetTop}rem`,
+            left: `${this.labelOffsetTop / 2}rem`,
           });
         }
       } else {
@@ -104,8 +107,8 @@ class View {
           .appendTo(wrapper);
         if (vertical) {
           $divLabelMin.css({
-            left: `${this.labelOffsetTop / 2}px`,
-            top: `${this.labelOffsetTop}px`,
+            left: `${this.labelOffsetTop / 2}rem`,
+            top: `${this.labelOffsetTop}rem`,
           });
         }
         $divLabelMin.text(initValue);
@@ -113,10 +116,10 @@ class View {
         const $divLabelMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
           .appendTo(wrapper);
         !vertical ? $divLabelMax.css({
-          left: `${(this.$divTrack.width() || 0) - this.labelOffsetLeft}px`,
+          left: `${(this.$divTrack.width() || 0) * this.rem - this.labelOffsetLeft}rem`,
         }) : $divLabelMax.css({
-          top: `${(this.$divTrack.height() || 0) + this.labelOffsetTop}px`,
-          left: `${this.labelOffsetTop / 2}px`,
+          top: `${(this.$divTrack.height() || 0) * this.rem + this.labelOffsetTop}rem`,
+          left: `${this.labelOffsetTop / 2}rem`,
         });
         $divLabelMax.text(max);
       }
@@ -131,20 +134,20 @@ class View {
         if ($thumb.is('.slider__thumb_min')) {
           const labelMin: JQuery = $(divThumb).siblings('.js-slider__label_min');
           labelMin.text(value);
-          !vertical ? labelMin.css({ left: coord - this.labelOffsetLeft })
-            : labelMin.css({ top: coord + this.labelOffsetTop });
+          !vertical ? labelMin.css({ left: `${coord - this.labelOffsetLeft}rem` })
+            : labelMin.css({ top: `${coord + this.labelOffsetTop}rem` });
         } else {
           const $labelMax: JQuery = $(divThumb).siblings('.js-slider__label_max');
           $labelMax.text(value);
-          !vertical ? $labelMax.css({ left: coord - this.labelOffsetLeft })
-            : $labelMax.css({ top: coord + this.labelOffsetTop });
+          !vertical ? $labelMax.css({ left: `${coord - this.labelOffsetLeft}rem` })
+            : $labelMax.css({ top: `${coord + this.labelOffsetTop}rem` });
         }
       } else {
         const $label = $(divThumb).next();
         $label.text(value);
 
-        !vertical ? $label.css({ left: coord - this.labelOffsetLeft })
-          : $label.css({ top: coord + this.labelOffsetTop });
+        !vertical ? $label.css({ left: `${coord - this.labelOffsetLeft}rem` })
+          : $label.css({ top: `${coord + this.labelOffsetTop}rem` });
       }
     }
 }

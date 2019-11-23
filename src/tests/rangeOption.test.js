@@ -14,6 +14,7 @@ describe('Range', () => {
     const view = new View();
     view.createElements($('body'), true, false,
       100, 500, 100, true);
+    document.documentElement.style.fontSize = '13px';
   };
 
   const addDnd = () => {
@@ -37,8 +38,8 @@ describe('Range', () => {
     divProgressMin = document.querySelector('.js-slider__progress_min');
     divProgressMax = document.querySelector('.js-slider__progress_max');
 
-    divTrack.style.width = '260px';
-    divTrack.style.height = '5px';
+    divTrack.style.width = '20.02rem';
+    divTrack.style.height = '0.385rem';
   };
 
   beforeAll(async () => {
@@ -60,22 +61,20 @@ describe('Range', () => {
 
   describe('After dispatch max', () => {
     beforeAll(() => {
-      divThumbMax.style.left = '260px';
+      divThumbMax.style.left = '20.02rem';
       dispatchMove(divThumbMax, divThumbLeftMax, divThumbTopMax, -moveDistanceX,
         moveDistanceY);
     });
 
     it('should div thumb max move a distance', () => {
-      expect(parseInt(divThumbMax.style.left, 10))
-        .toBe(parseInt(divTrack.style.width, 10) - moveDistanceX);
+      expect(parseFloat(divThumbMax.style.left))
+        .toBe((Number((parseFloat(divTrack.style.width) - moveDistanceX * 0.077).toFixed(2))));
     });
-    it('should label max value to be 420', () => {
-      expect(divLabelMax.textContent).toBe('420');
+    it('should label max value to be 423', () => {
+      expect(divLabelMax.textContent).toBe('423');
     });
     it('should progress max width to be equal thumb max coordinates left', () => {
-      const progressWidth = `${parseInt(divTrack.style.width, 10)
-               - parseInt(divThumbMax.style.left, 10)}px`;
-      expect(divProgressMax.style.width).toBe(progressWidth);
+      expect(parseFloat(divProgressMax.style.width).toFixed(2)).toBe('3.87');
     });
   });
 
@@ -86,10 +85,10 @@ describe('Range', () => {
     });
 
     it('should div thumb min move a distance', () => {
-      expect(parseInt(divThumbMin.style.left, 10)).toBe(moveDistanceX);
+      expect(parseFloat(divThumbMin.style.left)).toBe(moveDistanceX * 0.077);
     });
-    it('should label min value to be 176', () => {
-      expect(divLabelMin.textContent).toBe('176');
+    it('should label min value to be 177', () => {
+      expect(divLabelMin.textContent).toBe('177');
     });
     it('should progress min width to be equal thumb min coordinates left', () => {
       expect(divProgressMin.style.width).toBe(divThumbMin.style.left);

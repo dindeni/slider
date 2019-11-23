@@ -6,7 +6,7 @@ class Presenter {
     model: Model = new Model();
 
     calculateSliderMovePercent(trackWidthHeight: number, distance: number): number {
-      this.model.sliderValuePercent = Math.floor((distance / trackWidthHeight) * 100);
+      this.model.sliderValuePercent = (distance / trackWidthHeight) * 100;
       switch (true) {
         case this.model.sliderValuePercent < 0:
           this.model.sliderValuePercent = 0;
@@ -45,6 +45,8 @@ class Presenter {
           shortValue: [],
           shortCoords: [],
         };
+      const height = Math.round(trackHeight);
+      const width = Math.round(trackWidth);
 
       if (step) {
         let stepCount = 0;
@@ -52,23 +54,22 @@ class Presenter {
           let coordsItems;
           !vertical ? coordsItems = (stepCount / (max - min))
                     * trackWidth : coordsItems = (stepCount / (max - min))
-                        * trackHeight;
+                        * height;
           scaleValue.value.push(i);
-          scaleValue.coords.push(Math.floor(coordsItems));
+          scaleValue.coords.push(Math.round(coordsItems));
           this.scaleValueCoords.push(coordsItems);
           stepCount += step;
         }
-        console.log(scaleValue)
 
         const isNotVerticalLastCoord = !vertical && scaleValue.coords[scaleValue.coords.length - 1]
-        !== trackWidth;
+        !== width;
         const isVerticalLastCoord = vertical && scaleValue.coords[scaleValue.coords.length - 1]
-          !== trackHeight;
+          !== height;
         if (isNotVerticalLastCoord) {
-          scaleValue.coords.push(trackWidth);
+          scaleValue.coords.push(width);
         }
         if (isVerticalLastCoord) {
-          scaleValue.coords.push(trackHeight);
+          scaleValue.coords.push(height);
         }
 
         scaleValue.shortValue = scaleValue.value;
@@ -108,7 +109,8 @@ class Presenter {
     static calculateFromValueToCoordinates(value: number, min: number,
       max: number, widthHeight: number): number {
       const unit = widthHeight / (max - min);
-      return (value - min) * unit;
+      const rem = 0.077;
+      return (value - min) * unit * rem;
     }
 
     static calculateCoordinatesOfMiddle(start: number, width: number): number {

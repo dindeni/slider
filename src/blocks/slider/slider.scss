@@ -1,49 +1,49 @@
 .slider{
   position: relative;
-  padding: 20px 0;
-  margin: 20px 20px;
+  padding: 1.54rem 0;
+  margin: 1.5rem 1.54rem;
 
   &__track{
-    width: 260px;
-    height: 5px;
+    width: 20rem;
+    height: 0.38rem;
     background: #e5e5e5;
     position: relative;
   }
 
   &__progress{
     width: 0;
-    height: 5px;
+    height: 0.38rem;
     background: #e75735;
   }
 
   &__label{
-    height: 28px;
-    width: 35px;
+    height: 2.15rem;
+    width: 2.69rem;
     background: url("icon-label.svg") no-repeat;
     color: #ffffff;
     text-align: center;
-    line-height: 25px;
+    line-height: 1.92rem;
     position: absolute;
-    top: -18px;
-    left: -8px;
+    top: -1.38rem;
+    left: -0.62rem;
   }
 
   &__scale-item{
     position: absolute;
     list-style: none;
-    font-size: 11px;
+    font-size: 0.85rem;
     color: #d1d1d1;
     letter-spacing: 0.55px;
     text-align: center;
-    width: 21px;
+    width: 1.62rem;
   }
 
   &__thumb{
-    width: 21px;
-    height: 21px;
+    width: 1.62rem;
+    height: 1.62rem;
     background: #e75735;
     border-radius: 50%;
     position: absolute;
-    top: 12px;
+    top: 0.92rem;
   }
 }

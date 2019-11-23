@@ -18,6 +18,8 @@ class DemoPage {
 
     errorElement: HTMLElement;
 
+    rem = 0.077;
+
     viewDnD: ViewDnD = new ViewDnD();
 
     initSliders(): void {
@@ -82,8 +84,8 @@ class DemoPage {
           if (inputValueCondition) {
             if (!range) {
               !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(inputValue || 0,
-                min, max, widthHeightTrack)}px` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}px`;
+                min, max, widthHeightTrack)}rem` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                min, max, widthHeightTrack)}rem`;
               this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
                 thumb, progress, distance);
             } else {
@@ -92,8 +94,8 @@ class DemoPage {
                 .contains('js-demo__field-value_min') ? thumbMinMax = thumbMin
                 : thumbMinMax = thumbMax;
               !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}px` : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}px`;
+                min, max, widthHeightTrack)}rem` : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
+                min, max, widthHeightTrack)}rem`;
               this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
                 thumbMinMax, progress, distance);
             }
@@ -196,7 +198,7 @@ class DemoPage {
       }
 
       let isValueValid;
-      const isValidStepValue = step && valueToNumber % step === 0;
+      const isValidStepValue = step && (valueToNumber - min) % step === 0;
 
       !range ? isValueValid = valueToNumber > min && valueToNumber < max
         : isValueValid = valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid;
@@ -417,15 +419,15 @@ class DemoPage {
             const distance = Presenter.calculateFromValueToCoordinates(value.notRange,
               min, max, widthHeightTrack);
             !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(value.notRange,
-              min, max, widthHeightTrack)}px` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(value.notRange,
-              min, max, widthHeightTrack)}px`;
+              min, max, widthHeightTrack)}rem` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(value.notRange,
+              min, max, widthHeightTrack)}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
               thumb, progress, distance);
           } else if (value.min) {
             const distance = Presenter.calculateFromValueToCoordinates(value.min,
               min, max, widthHeightTrack);
-            !vertical ? (thumb as HTMLElement).style.left = `${distance}px`
-              : (thumb as HTMLElement).style.top = `${distance}px`;
+            !vertical ? (thumb as HTMLElement).style.left = `${distance}rem`
+              : (thumb as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
               thumb, progress, distance);
           }
@@ -436,7 +438,7 @@ class DemoPage {
           if (value.notRange) {
             const distance = Presenter.calculateFromValueToCoordinates(value.notRange,
               min, max, widthHeightTrack);
-            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}px` : (thumbMin as HTMLElement).style.top = `${distance}px`;
+            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem` : (thumbMin as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
               thumbMin, progress, distance);
           }
@@ -446,16 +448,16 @@ class DemoPage {
           if (value.min) {
             const distance = Presenter.calculateFromValueToCoordinates(value.min,
               min, max, widthHeightTrack);
-            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}px`
-              : (thumbMin as HTMLElement).style.top = `${distance}px`;
+            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem`
+              : (thumbMin as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
               thumbMin, progress, distance);
           }
           if (value.max) {
             const distance = Presenter.calculateFromValueToCoordinates(value.max,
               min, max, widthHeightTrack);
-            !vertical ? (thumbMax as HTMLElement).style.left = `${distance}px`
-              : (thumbMax as HTMLElement).style.top = `${distance}px`;
+            !vertical ? (thumbMax as HTMLElement).style.left = `${distance}rem`
+              : (thumbMax as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
               thumbMax, progress, distance);
           }
