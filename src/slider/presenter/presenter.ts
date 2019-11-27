@@ -58,7 +58,6 @@ class Presenter {
           this.scaleValueCoords.push(coordsItems);
           stepCount += step;
         }
-        console.log(scaleValue)
 
         const isNotVerticalLastCoord = !vertical && scaleValue.coords[scaleValue.coords.length - 1]
         !== trackWidth;
