@@ -45,4 +45,3 @@ const initSlider = (element: JQuery, progress: boolean, min: number,
     return this;
   };
 }(jQuery));
-
