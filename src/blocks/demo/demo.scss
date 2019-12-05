@@ -8,7 +8,7 @@
 
   &__field-wrapper{
     width: 12.32rem;
-    margin: 0 1.54rem 0 0;
+    margin: 0 1.54rem 1rem 0;
     position: relative;
 
     &_for-checkbox{
@@ -16,6 +16,7 @@
       flex-direction: column;
       align-items: center;
       width: 7.7rem;
+      line-height: 1.5rem;
       .demo{
         &__field-settings, &__field-scale{
           @include hide;
@@ -32,7 +33,7 @@
         }
         &__mark{
           position: relative;
-          margin-top: 0.616rem;
+          margin-top: 0.1rem;
           &::before{
             position: absolute;
             content: '';
@@ -51,7 +52,7 @@
             height: 1.16rem;
             color: #ffffff;
             text-transform: uppercase;
-            top: -0.7rem;
+            top: 0.3rem;
             left: 2.23rem;
             letter-spacing: .005rem;
           }
@@ -78,6 +79,9 @@
 
   &__mark{
     font-size: 0.92rem;
+    line-height: 1.5rem;
+    display: inline-block;
+    width: 100%;
   }
 
 }

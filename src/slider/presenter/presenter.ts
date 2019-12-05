@@ -110,7 +110,7 @@ class Presenter {
       max: number, widthHeight: number): number {
       const unit = widthHeight / (max - min);
       const rem = 0.077;
-      return (value - min) * unit * rem;
+      return (Math.round((value - min) * unit)) * rem;
     }
 
     static calculateCoordinatesOfMiddle(start: number, width: number): number {
