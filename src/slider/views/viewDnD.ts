@@ -361,8 +361,9 @@ class ViewDnD {
         left: (): void => {
           const numberCoordLeft = parseFloat(coord.style.left);
 
-          const index = this.coordsStep.findIndex((value) => parseFloat((value * this.rem)
-            .toFixed(3)) === numberCoordLeft);
+          const index = this.coordsStep.findIndex((value) => value === Math.round(
+            numberCoordLeft / this.rem,
+          ));
 
           const distanceOfPageX = evt.pageX - (((coord as HTMLElement)
             .parentElement as HTMLElement).querySelector('.slider__track') as HTMLElement).getBoundingClientRect().left;

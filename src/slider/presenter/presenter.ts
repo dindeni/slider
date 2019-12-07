@@ -29,7 +29,7 @@ class Presenter {
         this.model.sliderValue = min;
       } else {
         this.model.sliderValue = min + ((max - min)
-                  * this.model.sliderValuePercent) / 100;
+                  * (this.model.sliderValuePercent)) / 100;
       }
       return this.model.sliderValue;
     }
@@ -110,7 +110,7 @@ class Presenter {
       max: number, widthHeight: number): number {
       const unit = widthHeight / (max - min);
       const rem = 0.077;
-      return (Math.round((value - min) * unit)) * rem;
+      return ((value - min) * unit) * rem;
     }
 
     static calculateCoordinatesOfMiddle(start: number, width: number): number {
