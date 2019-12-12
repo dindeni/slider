@@ -200,7 +200,7 @@ class DemoPage {
       let isValueValid;
       const isValidStepValue = step && (valueToNumber - min) % step === 0;
 
-      !range ? isValueValid = valueToNumber > min && valueToNumber < max
+      !range ? isValueValid = valueToNumber >= min && valueToNumber < max
         : isValueValid = valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid;
       const validate = {
         minMax: (): number | undefined => {
@@ -410,9 +410,12 @@ class DemoPage {
       let thumbMin;
       let thumbMax;
       let thumb;
+      let stepCoords;
+      let stepIndex;
 
-      const widthHeightTrack = vertical ? (wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().height
-        : (wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().width;
+      const widthHeightTrack = vertical ? Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().height)
+        : Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().width);
+
       if (range) {
         thumbMin = wrapper.querySelector('.js-slider__thumb_min') as HTMLElement;
         thumbMax = wrapper.querySelector('.js-slider__thumb_max') as HTMLElement;
@@ -428,8 +431,9 @@ class DemoPage {
             } else if (validValue > max) {
               validValue = max;
             }
-
-            validValue = update.validateStep(validValue);
+            if (step) {
+              validValue = update.validateStep(validValue);
+            }
 
             const input = wrapper.querySelector('.js-demo__field-value');
             (input as HTMLInputElement).value = validValue.toString();
@@ -452,17 +456,27 @@ class DemoPage {
         },
 
         validateStep: (checkedValue: number): number => {
-          const isValidStep = step && (checkedValue - min) % step !== 0;
-          if (isValidStep) {
-            const presenter = new Presenter();
-            const coords = presenter.calculateLeftScaleCoords(min, max, step, vertical,
-              widthHeightTrack, widthHeightTrack);
-            return coords.value.find((item: number) => {
-              if (item !== coords.value[coords.value.length - 1]) {
-                return item > checkedValue;
-              } return max;
-            }) || checkedValue;
-          } return checkedValue;
+          const isNotValidStep = step && (checkedValue - min) % step !== 0;
+          const presenter = new Presenter();
+          stepCoords = presenter.calculateLeftScaleCoords(min, max, step, vertical,
+            widthHeightTrack, widthHeightTrack);
+          /* eslint-disable array-callback-return, consistent-return */
+          if (isNotValidStep) {
+            return stepCoords.value.find((item: number, index) => {
+              const isGreaterValue = item > checkedValue || index === stepCoords.value.length - 1;
+              if (isGreaterValue) {
+                stepIndex = index;
+                return item;
+              }
+            });
+          }
+          return stepCoords.value.find((item: number, index) => {
+            if (item === checkedValue) {
+              stepIndex = index;
+              return checkedValue;
+            }
+          });
+          /* eslint-enable array-callback-return, consistent-return */
         },
 
         setMin: (): void => {
@@ -478,6 +492,7 @@ class DemoPage {
 
         range: (): void => {
           if (value.min) {
+            let distance;
             let validValue = value.min;
             if (validValue < min) {
               validValue = min;
@@ -485,9 +500,14 @@ class DemoPage {
               validValue = max;
             }
 
-            validValue = update.validateStep(validValue);
-            const distance = Presenter.calculateFromValueToCoordinates(validValue,
-              min, max, widthHeightTrack);
+            if (step) {
+              validValue = update.validateStep(validValue);
+              distance = stepCoords.coords[stepIndex] * this.rem;
+            } else {
+              distance = Presenter.calculateFromValueToCoordinates(validValue,
+                min, max, widthHeightTrack);
+            }
+
             !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem`
               : (thumbMin as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
@@ -503,10 +523,15 @@ class DemoPage {
             } else if (validValue > max) {
               validValue = max;
             }
+            let distance;
+            if (step) {
+              validValue = update.validateStep(validValue);
+              distance = stepCoords.coords[stepIndex] * this.rem;
+            } else {
+              distance = Presenter.calculateFromValueToCoordinates(validValue,
+                min, max, widthHeightTrack);
+            }
 
-            validValue = update.validateStep(validValue);
-            const distance = Presenter.calculateFromValueToCoordinates(validValue,
-              min, max, widthHeightTrack);
             !vertical ? (thumbMax as HTMLElement).style.left = `${distance}rem`
               : (thumbMax as HTMLElement).style.top = `${distance}rem`;
             this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
