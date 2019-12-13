@@ -5,7 +5,8 @@ class Presenter {
 
     model: Model = new Model();
 
-    calculateSliderMovePercent(trackWidthHeight: number, distance: number): number {
+    calculateSliderMovePercent(options: {trackWidthHeight: number; distance: number}): number {
+      const { trackWidthHeight, distance } = options;
       this.model.sliderValuePercent = (distance / trackWidthHeight) * 100;
       switch (true) {
         case this.model.sliderValuePercent < 0:
@@ -19,9 +20,12 @@ class Presenter {
       return this.model.sliderValuePercent;
     }
 
-    calculateSliderValue(min: number, max: number, trackWidthHeight: number,
-      distance: number): number {
-      this.calculateSliderMovePercent(trackWidthHeight, distance);
+    calculateSliderValue(options: {min: number; max: number; trackWidthHeight: number;
+      distance: number;}): number {
+      const {
+        min, max, trackWidthHeight, distance,
+      } = options;
+      this.calculateSliderMovePercent({ trackWidthHeight, distance });
 
       const isBelow0 = this.model.sliderValuePercent <= 0
         || !this.model.sliderValuePercent;
@@ -34,10 +38,13 @@ class Presenter {
       return this.model.sliderValue;
     }
 
-    calculateLeftScaleCoords(min: number, max: number, step: number | undefined,
-      vertical: boolean, trackWidth: number,
-      trackHeight: number): {value: number[]; coords: number[]; shortValue: number[];
-       shortCoords: number[];} {
+    calculateLeftScaleCoords(options: {min: number; max: number; step: number | undefined;
+      vertical: boolean; trackWidth: number; trackHeight: number;}):
+       {value: number[]; coords: number[]; shortValue: number[]; shortCoords: number[]} {
+      const {
+        min, max, step, vertical, trackWidth, trackHeight,
+      } = options;
+
       const scaleValue: {value: number[]; coords: number[]; shortValue: number[];
         shortCoords: number[];} = {
           coords: [],
@@ -102,19 +109,24 @@ class Presenter {
       };
     }
 
-    static calculateThumbDistance(coordStart: number, coordMove: number): number {
+    static calculateThumbDistance(options: {coordStart: number; coordMove: number}): number {
+      const { coordStart, coordMove } = options;
       return coordMove - coordStart;
     }
 
-    static calculateFromValueToCoordinates(value: number, min: number,
-      max: number, widthHeight: number): number {
+    static calculateFromValueToCoordinates(options: {value: number; min: number;
+      max: number; widthHeight: number;}): number {
+      const {
+        value, min, max, widthHeight,
+      } = options;
       const unit = widthHeight / (max - min);
       const rem = 0.077;
       return ((value - min) * unit) * rem;
     }
 
-    static calculateCoordinatesOfMiddle(start: number, width: number): number {
-      return start + width / 2;
+    static calculateCoordinatesOfMiddle(options: {start: number; itemSize: number}): number {
+      const { start, itemSize } = options;
+      return start + itemSize / 2;
     }
 }
 

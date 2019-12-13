@@ -25,8 +25,12 @@ class ViewDnD {
 
     presenter: Presenter = new Presenter();
 
-    addDnD(step: number | undefined, vertical: boolean, range: boolean, progress: boolean,
-      min: number, max: number, $wrapper: JQuery): void {
+    addDnD(options: {step: number | undefined; vertical: boolean; range: boolean; progress: boolean;
+      min: number; max: number; $wrapper: JQuery;}): void {
+      const {
+        step, vertical, range, progress, min, max, $wrapper,
+      } = options;
+
       let divThumbMin: HTMLElement; let
         divThumbMax;
 
@@ -38,8 +42,14 @@ class ViewDnD {
 
         let scaleCoordStep: number;
         if (step) {
-          const stepData = this.presenter.calculateLeftScaleCoords(min, max, step, vertical,
-            trackWidth, trackHeight);
+          const stepData = this.presenter.calculateLeftScaleCoords({
+            min,
+            max,
+            step,
+            vertical,
+            trackWidth,
+            trackHeight,
+          });
 
           [, scaleCoordStep] = stepData.coords;
 
@@ -48,45 +58,94 @@ class ViewDnD {
         }
 
 
-        return document.addEventListener('mousedown', (evt) => this.getDownCoord(evt,
-          divThumbMin, divThumbMax, value, vertical, step, trackWidth, trackHeight,
-          min, max, scaleCoordStep, progress, range));
+        return document.addEventListener('mousedown', (evt) => this.getDownCoord({
+          evt,
+          divThumbMin,
+          divThumbMax,
+          value,
+          vertical,
+          step,
+          trackWidth,
+          trackHeight,
+          min,
+          max,
+          scaleCoordStep,
+          progress,
+          range,
+        }));
       });
 
       Array.from($wrapper.find('.js-slider__track')).map((value) => value
-        .addEventListener('click', (evt) => this.handlerClick(evt,
-          value, vertical, step, range, progress, min, max)));
+        .addEventListener('click', (evt) => this.handlerClick({
+          evt,
+          track: value,
+          vertical,
+          step,
+          range,
+          progress,
+          min,
+          max,
+        })));
 
 
       this.viewOptional = new ViewOptional();
       this.view = new View();
     }
 
-    moveThumb(evt: MouseEvent, value: HTMLElement, vertical: boolean, step,
-      trackWidth: number, trackHeight: number, min: number, max: number,
-      scaleCoordStep: number, progress: boolean, range: boolean): void {
+    moveThumb(options: {evt: MouseEvent; value: HTMLElement; vertical: boolean; step;
+      trackWidth: number; trackHeight: number; min: number; max: number;
+      scaleCoordStep: number; progress: boolean; range: boolean;}): void {
+      const {
+        evt, value, vertical, step, trackWidth, trackHeight, min, max, scaleCoordStep,
+        progress, range,
+      } = options;
+
       evt.preventDefault();
 
       let thumbDistance: number;
-      vertical ? thumbDistance = Presenter.calculateThumbDistance(this.coordYStart,
-        evt.screenY) : thumbDistance = Presenter.calculateThumbDistance(
-        this.coordXStart, evt.screenX,
+      vertical ? thumbDistance = Presenter.calculateThumbDistance({
+        coordStart: this.coordYStart,
+        coordMove: evt.screenY,
+      }) : thumbDistance = Presenter.calculateThumbDistance(
+        { coordStart: this.coordXStart, coordMove: evt.screenX },
       );
 
-      this.updateThumbCoordinates(vertical, step, thumbDistance,
-        value, trackHeight, evt,
-        trackWidth, this.shift, scaleCoordStep, range);
+      this.updateThumbCoordinates({
+        vertical,
+        step,
+        thumbDistance,
+        thumbElement: value,
+        trackHeight,
+        evt,
+        trackWidth,
+        shift: this.shift,
+        scaleCoordStep,
+        range,
+      });
 
-      !vertical ? this.updateData(min, max, trackWidth, this.divThumbLeft,
-        vertical, value, progress, this.divThumbLeft)
-        : this.updateData(min, max, trackHeight, parseFloat(value.style.top),
-          vertical, value, progress, this.divThumbTop);
+      const optionsForData = {
+        min,
+        max,
+        trackSize: vertical ? trackHeight : trackWidth,
+        distance: vertical ? parseFloat(value.style.top) : this.divThumbLeft,
+        vertical,
+        divThumb: value,
+        progress,
+        progressSize: vertical ? this.divThumbTop : this.divThumbLeft,
+      };
+
+      this.updateData(optionsForData);
     }
 
-    getDownCoord(evt: MouseEvent, divThumbMin: HTMLElement, divThumbMax: HTMLElement,
-      value: HTMLElement, vertical: boolean, step: number | undefined, trackWidth: number,
-      trackHeight: number, min: number, max: number,
-      scaleCoordStep: number, progress: boolean, range: boolean): void {
+    getDownCoord(options: {evt: MouseEvent; divThumbMin: HTMLElement; divThumbMax: HTMLElement;
+      value: HTMLElement; vertical: boolean; step: number | undefined; trackWidth: number;
+      trackHeight: number; min: number; max: number;
+      scaleCoordStep: number; progress: boolean; range: boolean;}): void {
+      const {
+        evt, divThumbMin, divThumbMax, value, vertical, step, trackWidth, trackHeight, min, max,
+        scaleCoordStep, progress, range,
+      } = options;
+
       if (evt.target === value) {
         const isVertical = (evt.target as HTMLElement).classList.contains('js-slider__thumb_vertical');
 
@@ -100,9 +159,19 @@ class ViewDnD {
           this.shift = parseFloat((evt.target as HTMLElement).style.top);
         }
 
-        const handlerMousemove = (evtMove): void => this.moveThumb(evtMove,
-          value, vertical, step, trackWidth, trackHeight, min, max,
-          scaleCoordStep, progress, range);
+        const handlerMousemove = (evtMove): void => this.moveThumb({
+          evt: evtMove,
+          value,
+          vertical,
+          step,
+          trackWidth,
+          trackHeight,
+          min,
+          max,
+          scaleCoordStep,
+          progress,
+          range,
+        });
 
         document.addEventListener('mousemove', handlerMousemove);
 
@@ -112,7 +181,12 @@ class ViewDnD {
       }
     }
 
-    handlerClick(evt: MouseEvent, track, vertical, step, range, progress, min, max): void {
+    handlerClick(options: {evt: MouseEvent; track; vertical; step; range; progress;
+     min; max;}): void {
+      const {
+        evt, track, vertical, step, range, progress, min, max,
+      } = options;
+
       const target = evt.target as HTMLElement;
       const wrapper = target.parentElement as HTMLElement;
 
@@ -138,8 +212,14 @@ class ViewDnD {
         let coordStep;
 
         const updateStepThumbLabel = (thumbElement: HTMLElement): void => {
-          const scaleCoordsStep = this.presenter.calculateLeftScaleCoords(min, max,
-            step, vertical, trackWidth, trackHeight);
+          const scaleCoordsStep = this.presenter.calculateLeftScaleCoords({
+            min,
+            max,
+            step,
+            vertical,
+            trackWidth,
+            trackHeight,
+          });
 
           const stepDistance = distance + thumbElement.getBoundingClientRect().width;
           scaleCoordsStep.coords.forEach((value, index, array) => {
@@ -165,20 +245,45 @@ class ViewDnD {
           !vertical ? this.divThumbLeft = coordStep * this.rem : this.divThumbTop = coordStep
            * this.rem;
 
-          !vertical ? this.updateData(min, max, trackWidth, coordStep * this.rem, vertical,
-            thumbElement, progress, this.divThumbLeft, true)
-            : this.updateData(min, max, trackHeight, coordStep * this.rem, vertical, thumbElement,
-              progress, this.divThumbTop, true);
+          const optionsForData = {
+            min,
+            max,
+            trackSize: vertical ? trackHeight : trackWidth,
+            distance: coordStep * this.rem,
+            vertical,
+            divThumb: thumbElement,
+            progress,
+            progressSize: vertical ? this.divThumbTop : this.divThumbLeft,
+            step: true,
+          };
+          this.updateData(optionsForData);
         };
 
         const updateThumbLabel = (thumbElement: HTMLElement): void => {
-          this.updateThumbCoordinates(vertical, step, distance, thumbElement,
-            trackHeight, evt, trackWidth, 0, coordStep, false);
+          this.updateThumbCoordinates({
+            vertical,
+            step,
+            thumbDistance: distance,
+            thumbElement,
+            trackHeight,
+            evt,
+            trackWidth,
+            shift: 0,
+            scaleCoordStep: coordStep,
+            range: false,
+          });
 
-          !vertical ? this.updateData(min, max, trackWidth, distance * this.rem, vertical,
-            thumbElement, progress, this.divThumbLeft)
-            : this.updateData(min, max, trackHeight * this.rem, distance * this.rem, vertical,
-              thumbElement, progress, this.divThumbTop);
+          const optionsForData = {
+            min,
+            max,
+            trackSize: vertical ? trackHeight : trackWidth,
+            distance: distance * this.rem,
+            vertical,
+            divThumb: thumbElement,
+            progress,
+            progressSize: vertical ? this.divThumbTop : this.divThumbLeft,
+          };
+          this.updateData(optionsForData);
         };
 
         const isNotRangeStep = !range && !step;
@@ -199,10 +304,10 @@ class ViewDnD {
           const thumbHeight = thumb.getBoundingClientRect().height;
 
           const coordsOfMiddle = !vertical ? Presenter.calculateCoordinatesOfMiddle(
-            track.getBoundingClientRect().left, trackWidth,
+            { start: track.getBoundingClientRect().left, itemSize: trackWidth },
           )
             : Presenter.calculateCoordinatesOfMiddle(
-              track.getBoundingClientRect().top, trackHeight,
+              { start: track.getBoundingClientRect().top, itemSize: trackHeight },
             );
 
           const isStepNotVertical = step && !vertical;
@@ -250,9 +355,14 @@ class ViewDnD {
       }
     }
 
-    updateThumbCoordinates(vertical: boolean, step: number | undefined,
-      thumbDistance: number, thumbElement: HTMLElement, trackHeight: number,
-      evt: MouseEvent, trackWidth, shift: number, scaleCoordStep: number, range: boolean): void {
+    updateThumbCoordinates(options: {vertical: boolean; step: number | undefined;
+      thumbDistance: number; thumbElement: HTMLElement; trackHeight: number;
+      evt: MouseEvent; trackWidth; shift: number; scaleCoordStep: number; range: boolean;}): void {
+      const {
+        vertical, step, thumbDistance, thumbElement, trackHeight, evt, trackWidth, shift,
+        scaleCoordStep, range,
+      } = options;
+
       const distance = thumbDistance * this.rem;
       const divThumb: HTMLElement = thumbElement;
       const isNotVerticalStep = !vertical && !step;
@@ -288,8 +398,16 @@ class ViewDnD {
             this.divThumbLeft = shift + distance;
         }
       } else if (step) {
-        this.setStepPosition(thumbDistance, trackWidth, trackHeight,
-          divThumb, scaleCoordStep, vertical, evt, range);
+        this.setStepPosition({
+          thumbDistance,
+          trackWidth,
+          trackHeight,
+          coordElement: divThumb,
+          numberTranslation: scaleCoordStep,
+          vertical,
+          evt,
+          range,
+        });
         !vertical ? this.divThumbLeft = parseFloat(thumbElement.style.left)
           : this.divThumbTop = parseFloat(thumbElement.style.top);
       } else if (isVerticalNotStep) {
@@ -312,24 +430,50 @@ class ViewDnD {
       }
     }
 
-    updateData(min, max, trackWidthHeight: number, distance: number, vertical,
-      divThumb: HTMLElement, progress: boolean, progressWidthHeight: number, step?: boolean): void {
+    updateData(options: {min; max; trackSize: number; distance: number; vertical;
+      divThumb: HTMLElement; progress: boolean; progressSize: number;
+      step?: boolean;}): void {
+      const {
+        min, max, trackSize, distance, vertical, divThumb, progress, progressSize,
+        step,
+      } = options;
+
       const isUpdateEnabled = step || !this.coordsStep;
 
       if (isUpdateEnabled) {
-        const value: number = this.presenter.calculateSliderValue(min, max,
-          Math.round(trackWidthHeight), distance / this.rem);
-        this.view.updateLabelValue(Math.round(value), distance, vertical, divThumb);
+        const valueOptions = {
+          min,
+          max,
+          trackWidthHeight: Math.round(trackSize),
+          distance: distance / this.rem,
+        };
+        const value: number = this.presenter.calculateSliderValue(valueOptions);
+        const optionsForLabel = {
+          value: Math.round(value),
+          coord: distance,
+          vertical,
+          divThumb,
+        };
+        this.view.updateLabelValue(optionsForLabel);
       }
 
       if (progress) {
-        this.viewOptional.stylingProgress(progressWidthHeight, vertical, divThumb);
+        this.viewOptional.stylingProgress({
+          divProgressWidth: progressSize,
+          vertical,
+          divThumb,
+        });
       }
     }
 
-    setStepPosition(thumbDistance: number, trackWidth: number,
-      trackHeight: number, coordElement: HTMLElement,
-      numberTranslation: number, vertical: boolean, evt: MouseEvent, range: boolean): void {
+    setStepPosition(options: {thumbDistance: number; trackWidth: number;
+      trackHeight: number; coordElement: HTMLElement;
+      numberTranslation: number; vertical: boolean; evt: MouseEvent; range: boolean;}): void {
+      const {
+        thumbDistance, trackWidth, trackHeight, coordElement, numberTranslation, vertical,
+        evt, range,
+      } = options;
+
       const coord = coordElement;
 
       const setCoords = (type: 'above' | 'below', indexOfCoord: number): number => {
@@ -398,12 +542,22 @@ class ViewDnD {
 
           if (isAbove0) {
             coord.style.left = `${setCoords('above', index) * this.rem}rem`;
-            this.view.updateLabelValue(this.stepValues[index + 1],
-              this.coordsStep[index + 1] * this.rem, vertical, coord);
+            const optionsForLabel = {
+              value: this.stepValues[index + 1],
+              coord: this.coordsStep[index + 1] * this.rem,
+              vertical,
+              divThumb: coord,
+            };
+            this.view.updateLabelValue(optionsForLabel);
           } else if (isBelow0) {
             coord.style.left = `${setCoords('below', index) * this.rem}rem`;
-            this.view.updateLabelValue(this.stepValues[index - 1],
-              this.coordsStep[index - 1] * this.rem, vertical, coord);
+            const optionsForLabel = {
+              value: this.stepValues[index - 1],
+              coord: this.coordsStep[index - 1] * this.rem,
+              vertical,
+              divThumb: coord,
+            };
+            this.view.updateLabelValue(optionsForLabel);
           }
         },
         top: (): void => {
@@ -444,12 +598,22 @@ class ViewDnD {
 
           if (isAbove0) {
             coord.style.top = `${(setCoords('above', index)) * this.rem}rem`;
-            this.view.updateLabelValue(this.stepValues[index + 1],
-              this.coordsStep[index + 1] * this.rem, vertical, coord);
+            const optionsForLabel = {
+              value: this.stepValues[index + 1],
+              coord: this.coordsStep[index + 1] * this.rem,
+              vertical,
+              divThumb: coord,
+            };
+            this.view.updateLabelValue(optionsForLabel);
           } else if (isBelow0) {
             coord.style.top = `${(setCoords('below', index)) * this.rem}rem`;
-            this.view.updateLabelValue(this.stepValues[index - 1],
-              this.coordsStep[index - 1] * this.rem, vertical, coord);
+            const optionsForLabel = {
+              value: this.stepValues[index - 1],
+              coord: this.coordsStep[index - 1] * this.rem,
+              vertical,
+              divThumb: coord,
+            };
+            this.view.updateLabelValue(optionsForLabel);
           }
         },
       };

@@ -39,31 +39,49 @@ class DemoPage {
         .map((formWrapper, index) => {
           const scale = this.sliderSettings[index].step !== undefined;
 
-          DemoPage.createElements(this.sliderSettings[index], ((formWrapper as HTMLElement)
-            .children[0]) as HTMLElement, scale);
+          const optionsForElements = {
+            settings: this.sliderSettings[index],
+            form: ((formWrapper as HTMLElement).children[0]) as HTMLElement,
+            scale,
+          };
+          DemoPage.createElements(optionsForElements);
           $(formWrapper).slider(this.sliderSettings[index]);
-          DemoPage.setInputValue(formWrapper as HTMLElement, this.sliderSettings[index]);
+          DemoPage.setInputValue({
+            element: formWrapper as HTMLElement,
+            settings: this.sliderSettings[index],
+          });
 
-          DemoPage.observeLabel(formWrapper as HTMLElement, this.sliderSettings[index].range);
-          return this.observeInput(formWrapper as HTMLElement, this.sliderSettings[index].range,
-            this.sliderSettings[index].min, this.sliderSettings[index].max,
-            this.sliderSettings[index].vertical, this.sliderSettings[index].step,
-            this.sliderSettings[index].progress);
+          const optionsForInput = {
+            element: formWrapper as HTMLElement,
+            range: this.sliderSettings[index].range,
+            min: this.sliderSettings[index].min,
+            max: this.sliderSettings[index].max,
+            vertical: this.sliderSettings[index].vertical,
+            step: this.sliderSettings[index].step,
+            progress: this.sliderSettings[index].progress,
+          };
+          DemoPage.observeLabel({
+            element: formWrapper as HTMLElement,
+            range: this.sliderSettings[index].range,
+          });
+          return this.observeInput(optionsForInput);
         });
     }
 
-    observeInput(element: HTMLElement, range: boolean, min: number, max: number,
-      vertical: boolean, step: number | undefined, progress: boolean): void {
-      let widthHeightTrack: number; let thumbMin: HTMLElement; let thumbMax: HTMLElement;
+    observeInput(options: {element: HTMLElement; range: boolean; min: number; max: number;
+      vertical: boolean; step: number | undefined; progress: boolean;}): void {
+      const {
+        element, range, min, max, vertical, step, progress,
+      } = options;
+
+      let trackWidth: number; let trackHeight; let thumbMin: HTMLElement; let thumbMax: HTMLElement;
       let thumb;
 
       const formElement = element.querySelector('.js-demo') as HTMLElement;
 
       const changeSlider = (evt: MouseEvent): void => {
-        !vertical ? widthHeightTrack = (element
-          .querySelector('.js-slider__track') as HTMLElement).clientWidth
-          : widthHeightTrack = (element
-            .querySelector('.js-slider__track') as HTMLElement).clientHeight;
+        trackWidth = (element.querySelector('.js-slider__track') as HTMLElement).clientWidth;
+        trackHeight = (element.querySelector('.js-slider__track') as HTMLElement).clientHeight;
 
         if (range) {
           thumbMin = element.querySelector('.js-slider__thumb_min') as HTMLElement;
@@ -71,46 +89,91 @@ class DemoPage {
         } else thumb = element.querySelector('.js-slider__thumb');
 
         if ((evt.target as HTMLElement).classList.contains('js-demo__field-value')) {
-          const distance = Presenter.calculateFromValueToCoordinates(
-            parseInt((evt.target as HTMLInputElement).value, 10),
-            min, max, widthHeightTrack,
-          );
+          const optionsForDistance = {
+            value: parseInt((evt.target as HTMLInputElement).value, 10),
+            min,
+            max,
+            widthHeight: vertical ? trackHeight : trackWidth,
+          };
+          const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
 
-          const inputValue: number | undefined = this.validateValue(evt.target as HTMLInputElement,
-            (evt.target as HTMLInputElement).value, min, max, step, range,
-             evt.currentTarget as HTMLElement);
+          const optionsForValue = {
+            element: evt.target as HTMLInputElement,
+            value: (evt.target as HTMLInputElement).value,
+            min,
+            max,
+            step,
+            range,
+            wrapper: evt.currentTarget as HTMLElement,
+          };
+          const inputValue: number | undefined = this.validateValue(optionsForValue);
           const inputValueCondition = inputValue || inputValue === 0;
 
           if (inputValueCondition) {
             if (!range) {
-              !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(inputValue || 0,
-                min, max, widthHeightTrack)}rem` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}rem`;
-              this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-                thumb, progress, distance);
+              const optionsForThumbPosition = {
+                value: vertical ? parseInt((evt.target as HTMLInputElement).value, 10)
+                  : inputValue || 0,
+                min,
+                max,
+                widthHeight: vertical ? trackHeight : trackWidth,
+              };
+              !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`
+                : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`;
+              const optionsForData = {
+                min,
+                max,
+                trackSize: vertical ? trackHeight : trackWidth,
+                distance,
+                vertical,
+                divThumb: thumb,
+                progress,
+                progressSize: distance,
+              };
+              this.viewDnD.updateData(optionsForData);
             } else {
               let thumbMinMax: HTMLElement;
               (evt.target as HTMLInputElement).classList
                 .contains('js-demo__field-value_min') ? thumbMinMax = thumbMin
                 : thumbMinMax = thumbMax;
-              !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}rem` : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(parseInt((evt.target as HTMLInputElement).value, 10),
-                min, max, widthHeightTrack)}rem`;
-              this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-                thumbMinMax, progress, distance);
+              const optionsForThumbPosition = {
+                value: parseInt((evt.target as HTMLInputElement).value, 10),
+                min,
+                max,
+                widthHeight: vertical ? trackHeight : trackWidth,
+              };
+              !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`
+                : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`;
+              const optionsForData = {
+                min,
+                max,
+                trackSize: vertical ? trackHeight : trackWidth,
+                distance,
+                vertical,
+                divThumb: thumbMinMax,
+                progress,
+                progressSize: distance,
+              };
+              this.viewDnD.updateData(optionsForData);
             }
           }
         }
 
+        const optionForSetting = {
+          value: (evt.target as HTMLInputElement).value,
+          element: evt.target as HTMLElement,
+          min,
+          max,
+        };
         const settingValue: boolean | number | undefined | null = this.validateSettings(
-          (evt.target as HTMLInputElement).value, (evt.target as HTMLElement), min, max,
+          optionForSetting,
         );
 
         if (settingValue !== null) {
           const scaleElement = element.querySelector('.js-demo__field-scale');
 
           if (evt.target === scaleElement && (evt.target as HTMLInputElement).checked) {
-            DemoPage.createStepSetting(evt.currentTarget as HTMLElement, min, max);
+            DemoPage.createStepSetting({ form: evt.currentTarget as HTMLElement, min, max });
           } else if (evt.target === scaleElement && !(evt.target as HTMLInputElement).checked) {
             ((evt.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_step') as HTMLElement).remove();
           }
@@ -162,18 +225,33 @@ class DemoPage {
           }
 
           const scale = settings.step !== undefined;
-          DemoPage.createElements(settings, evt.currentTarget as HTMLElement, scale);
-          DemoPage.setInputValue(evt.currentTarget as HTMLElement, settings, sliderValue);
+          DemoPage.createElements({ settings, form: evt.currentTarget as HTMLElement, scale });
+          DemoPage.setInputValue({
+            element: evt.currentTarget as HTMLElement,
+            settings,
+            value: sliderValue,
+          });
 
           $(element).slider(settings);
 
-          this.updateValue(settings.range, settings.min, settings.max, settings.vertical,
-            settings.progress, element, sliderValue, settings.step);
+          const optionsForUpdate = {
+            ...settings,
+            wrapper: element,
+            value: sliderValue,
+          };
+          this.updateValue(optionsForUpdate);
 
-
-          this.observeInput(element, settings.range, settings.min, settings.max,
-            settings.vertical, settings.step, settings.progress);
-          DemoPage.observeLabel(element, settings.range);
+          const optionsForInput = {
+            element,
+            range: settings.range,
+            min: settings.min,
+            max: settings.max,
+            vertical: settings.vertical,
+            step: settings.step,
+            progress: settings.progress,
+          };
+          this.observeInput(optionsForInput);
+          DemoPage.observeLabel({ element, range: settings.range });
         }
       };
 
@@ -181,9 +259,12 @@ class DemoPage {
     }
 
 
-    validateValue(element: HTMLElement, value: string, min: number, max: number,
-      step: number | undefined, range: boolean, wrapper: HTMLElement):
+    validateValue(options: {element: HTMLElement; value: string; min: number; max: number;
+      step: number | undefined; range: boolean; wrapper: HTMLElement;}):
     number | undefined {
+      const {
+        element, value, min, max, step, range, wrapper,
+      } = options;
       const valueToNumber = Number(value);
       let isValueMinMaxValid;
 
@@ -209,7 +290,7 @@ class DemoPage {
             return valueToNumber;
           }
           DemoPage.deleteErrorElement(element);
-          this.createErrorElement(element, 'invalid value');
+          this.createErrorElement({ element, text: 'invalid value' });
           return undefined;
         },
 
@@ -219,7 +300,7 @@ class DemoPage {
             return valueToNumber;
           }
           DemoPage.deleteErrorElement(element);
-          this.createErrorElement(element, 'value must be a multiple of step');
+          this.createErrorElement({ element, text: 'value must be a multiple of step' });
           return undefined;
         },
       };
@@ -230,8 +311,12 @@ class DemoPage {
       } return validate.minMax();
     }
 
-    validateSettings(value: string, element: HTMLElement, min: number, max: number):
+    validateSettings(options: {value: string; element: HTMLElement; min: number; max: number}):
      boolean | number | undefined | null {
+      const {
+        value, element, min, max,
+      } = options;
+
       const convertedValue: boolean | number | undefined | null = DemoPage.convertInputValue(value);
       const isMin = element.classList.contains('js-demo__field-settings_min');
       const isMax = element.classList.contains('js-demo__field-settings_max');
@@ -241,18 +326,22 @@ class DemoPage {
         case isMin:
           DemoPage.deleteErrorElement(element);
           return Number(value) < max ? convertedValue
-            : this.createErrorElement(element, 'must be less than max');
+            : this.createErrorElement({ element, text: 'must be less than max' });
         case isMax:
           DemoPage.deleteErrorElement(element);
           return Number(value) > min ? convertedValue
-            : this.createErrorElement(element, 'must be greater than min');
+            : this.createErrorElement({ element, text: 'must be greater than min' });
         case isStep: return convertedValue;
         case isCheckbox: return (element as HTMLInputElement).checked;
         default: return null;
       }
     }
 
-    createErrorElement(element: HTMLElement, text: string): null {
+    createErrorElement(options: {element: HTMLElement; text: string}): null {
+      const {
+        element, text,
+      } = options;
+
       this.errorElement = document.createElement('span');
       this.errorElement.textContent = text;
       this.errorElement.classList.add('error');
@@ -267,7 +356,11 @@ class DemoPage {
       }
     }
 
-    static observeLabel(element: HTMLElement, range: boolean): void {
+    static observeLabel(options: {element: HTMLElement; range: boolean}): void {
+      const {
+        element, range,
+      } = options;
+
       if (!range) {
         const label: HTMLElement = element.querySelector('.js-slider__label') as HTMLElement;
         const input: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
@@ -313,7 +406,11 @@ class DemoPage {
       }
     }
 
-    static createElements(setting: Slider, form: HTMLElement, scale: boolean): void {
+    static createElements(options: {settings: Slider; form: HTMLElement; scale: boolean}): void {
+      const {
+        settings, form, scale,
+      } = options;
+
       let $inputValue: JQuery;
       let formIndex;
       Array.from(document.querySelectorAll('.js-demo')).map((value, index) => {
@@ -321,7 +418,7 @@ class DemoPage {
           formIndex = index;
         } return undefined;
       });
-      !setting.range ? $inputValue = $('<div class="demo__field-wrapper">'
+      !settings.range ? $inputValue = $('<div class="demo__field-wrapper">'
        + '<label class="demo__mark">value<input type="number" class="demo__field-value js-demo__field-value"></label></div>')
         : $inputValue = $('<div class="demo__field-wrapper">'
       + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_min js-demo__field-value_min"></label></div>'
@@ -346,7 +443,11 @@ class DemoPage {
       }
     }
 
-    static createStepSetting(form: HTMLElement, min: number, max: number): void {
+    static createStepSetting(options: {form: HTMLElement; min: number; max: number}): void {
+      const {
+        form, min, max,
+      } = options;
+
       const step = (max - min) / 5;
       const $stepElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_step js-demo__field-settings_step"></label></div>');
       $stepElement.find('.js-demo__field-settings_step').val(step);
@@ -366,8 +467,12 @@ class DemoPage {
       } return valueToNumber;
     }
 
-    static setInputValue(element: HTMLElement, settings: Slider,
-      value?: {notRange?: number; min?: number; max?: number}): void {
+    static setInputValue(options: {element: HTMLElement; settings: Slider;
+      value?: {notRange?: number; min?: number; max?: number};}): void {
+      const {
+        element, settings, value,
+      } = options;
+
       const { range, min, max } = settings;
 
       if (range) {
@@ -404,17 +509,22 @@ class DemoPage {
       });
     }
 
-    updateValue(range: boolean, min: number, max: number, vertical: boolean, progress: boolean,
-      wrapper: HTMLElement, value: {notRange?: number; min?: number; max?: number},
-      step?: number | undefined): void {
+    updateValue(options: {range: boolean; min: number; max: number; vertical: boolean;
+     progress: boolean; wrapper: HTMLElement;
+     value: {notRange?: number; min?: number; max?: number};},
+    step?: number | undefined): void {
+      const {
+        range, min, max, vertical, progress, wrapper, value,
+      } = options;
+
       let thumbMin;
       let thumbMax;
       let thumb;
       let stepCoords;
       let stepIndex;
 
-      const widthHeightTrack = vertical ? Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().height)
-        : Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().width);
+      const trackWidth = Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().width);
+      const trackHeight = Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().height);
 
       if (range) {
         thumbMin = wrapper.querySelector('.js-slider__thumb_min') as HTMLElement;
@@ -438,28 +548,61 @@ class DemoPage {
             const input = wrapper.querySelector('.js-demo__field-value');
             (input as HTMLInputElement).value = validValue.toString();
 
-            const distance = Presenter.calculateFromValueToCoordinates(validValue,
-              min, max, widthHeightTrack);
-            !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(validValue,
-              min, max, widthHeightTrack)}rem` : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(validValue,
-              min, max, widthHeightTrack)}rem`;
-            this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-              thumb, progress, distance);
+            const optionsForDistance = {
+              value: validValue,
+              min,
+              max,
+              widthHeight: vertical ? trackHeight : trackWidth,
+            };
+            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
+            vertical ? (thumb as HTMLElement).style.top = `${distance}rem`
+              : (thumb as HTMLElement).style.left = `${distance}rem`;
+            const optionsForData = {
+              min,
+              max,
+              trackSize: vertical ? trackHeight : trackWidth,
+              distance,
+              vertical,
+              divThumb: thumb,
+              progress,
+              progressSize: distance,
+            };
+            this.viewDnD.updateData(optionsForData);
           } else if (value.min) {
-            const distance = Presenter.calculateFromValueToCoordinates(value.min,
-              min, max, widthHeightTrack);
+            const optionsForDistance = {
+              value: value.min,
+              min,
+              max,
+              widthHeight: vertical ? trackHeight : trackWidth,
+            };
+            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
             !vertical ? (thumb as HTMLElement).style.left = `${distance}rem`
               : (thumb as HTMLElement).style.top = `${distance}rem`;
-            this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-              thumb, progress, distance);
+            const optionsForData = {
+              min,
+              max,
+              trackSize: vertical ? trackHeight : trackWidth,
+              distance,
+              vertical,
+              divThumb: thumb,
+              progress,
+              progressSize: distance,
+            };
+            this.viewDnD.updateData(optionsForData);
           }
         },
 
         validateStep: (checkedValue: number): number => {
           const isNotValidStep = step && (checkedValue - min) % step !== 0;
           const presenter = new Presenter();
-          stepCoords = presenter.calculateLeftScaleCoords(min, max, step, vertical,
-            widthHeightTrack, widthHeightTrack);
+          stepCoords = presenter.calculateLeftScaleCoords({
+            min,
+            max,
+            step,
+            vertical,
+            trackWidth,
+            trackHeight,
+          });
           /* eslint-disable array-callback-return, consistent-return */
           if (isNotValidStep) {
             return stepCoords.value.find((item: number, index) => {
@@ -482,11 +625,25 @@ class DemoPage {
         setMin: (): void => {
           thumbMin = wrapper.querySelector('.js-slider__thumb_min') as HTMLElement;
           if (value.notRange) {
-            const distance = Presenter.calculateFromValueToCoordinates(value.notRange,
-              min, max, widthHeightTrack);
+            const optionsForDistance = {
+              value: value.notRange,
+              min,
+              max,
+              widthHeight: vertical ? trackHeight : trackWidth,
+            };
+            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
             !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem` : (thumbMin as HTMLElement).style.top = `${distance}rem`;
-            this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-              thumbMin, progress, distance);
+            const optionsForData = {
+              min,
+              max,
+              trackSize: vertical ? trackHeight : trackWidth,
+              distance,
+              vertical,
+              divThumb: thumbMin,
+              progress,
+              progressSize: distance,
+            };
+            this.viewDnD.updateData(optionsForData);
           }
         },
 
@@ -504,14 +661,28 @@ class DemoPage {
               validValue = update.validateStep(validValue);
               distance = stepCoords.coords[stepIndex] * this.rem;
             } else {
-              distance = Presenter.calculateFromValueToCoordinates(validValue,
-                min, max, widthHeightTrack);
+              const optionsForDistance = {
+                value: validValue,
+                min,
+                max,
+                widthHeight: vertical ? trackHeight : trackWidth,
+              };
+              distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
             }
 
             !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem`
               : (thumbMin as HTMLElement).style.top = `${distance}rem`;
-            this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-              thumbMin, progress, distance);
+            const optionsForData = {
+              min,
+              max,
+              trackSize: vertical ? trackHeight : trackWidth,
+              distance,
+              vertical,
+              divThumb: thumbMin,
+              progress,
+              progressSize: distance,
+            };
+            this.viewDnD.updateData(optionsForData);
 
             const input = wrapper.querySelector('.js-demo__field-value_min');
             (input as HTMLInputElement).value = validValue.toString();
@@ -528,14 +699,28 @@ class DemoPage {
               validValue = update.validateStep(validValue);
               distance = stepCoords.coords[stepIndex] * this.rem;
             } else {
-              distance = Presenter.calculateFromValueToCoordinates(validValue,
-                min, max, widthHeightTrack);
+              const optionsForDistance = {
+                value: validValue,
+                min,
+                max,
+                widthHeight: vertical ? trackHeight : trackWidth,
+              };
+              distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
             }
 
             !vertical ? (thumbMax as HTMLElement).style.left = `${distance}rem`
               : (thumbMax as HTMLElement).style.top = `${distance}rem`;
-            this.viewDnD.updateData(min, max, widthHeightTrack, distance, vertical,
-              thumbMax, progress, distance);
+            const optionsForData = {
+              min,
+              max,
+              trackSize: vertical ? trackHeight : trackWidth,
+              distance,
+              vertical,
+              divThumb: thumbMax,
+              progress,
+              progressSize: distance,
+            };
+            this.viewDnD.updateData(optionsForData);
 
             const input = wrapper.querySelector('.js-demo__field-value_max');
             (input as HTMLInputElement).value = validValue.toString();

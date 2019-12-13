@@ -3,26 +3,34 @@ import View from '../views/view';
 const view = new View();
 
 interface SliderOptions {
-    progress?: boolean;
-    max?: number;
-    min?: number;
-    label?: boolean;
-    step?: number;
-    vertical?: boolean;
-    range?: boolean;
+  progress?: boolean;
+  max?: number;
+  min?: number;
+  label?: boolean;
+  step?: number;
+  vertical?: boolean;
+  range?: boolean;
+}
+
+interface SliderOptionsForInit {
+  $element: JQuery;
+  progress: boolean;
+  min: number;
+  max: number;
+  label: boolean;
+  step: number | undefined;
+  vertical: boolean;
+  range: boolean;
 }
 
 declare global {
-    interface JQuery {
-        slider(options?: SliderOptions): JQuery;
+  interface JQuery {
+    slider(options?: SliderOptions): JQuery;
     }
 }
 
-const initSlider = (element: JQuery, progress: boolean, min: number,
-  max: number, label: boolean,
-  step: number | undefined, vertical: boolean,
-  range: boolean): void => {
-  view.createElements(element, range, vertical, min, max, step, progress);
+const initSlider = (options: SliderOptionsForInit): void => {
+  view.createElements(options);
 };
 
 (function ($): void {
@@ -35,13 +43,15 @@ const initSlider = (element: JQuery, progress: boolean, min: number,
       step: undefined,
       vertical: false,
       range: false,
+      $element: this,
     };
 
     const config = $.extend({}, optionsDefault, options);
 
-    initSlider(this, config.progress, config.min, config.max, config.label,
-      config.step, config.vertical, config.range);
+    initSlider(config);
 
     return this;
   };
 }(jQuery));
+
+export default SliderOptionsForInit;

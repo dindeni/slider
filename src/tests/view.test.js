@@ -20,8 +20,16 @@ describe('View', () => {
 
   const createElements = () => {
     const view = new View();
-    view.createElements($('body'), false, false,
-      100, 500, undefined, true);
+    const optionsForElements = {
+      $element: $('body'),
+      range: false,
+      vertical: false,
+      min: 100,
+      max: 500,
+      step: undefined,
+      progress: true,
+    };
+    view.createElements(optionsForElements);
   };
 
   const turnOnProgress = () => {
@@ -76,10 +84,18 @@ describe('View', () => {
 
   describe('After dispatch move', () => {
     beforeAll(() => {
-      const wrapper = $('.sliderInit');
+      const $wrapper = $('.sliderInit');
       const viewDnd = new ViewDnD();
-      viewDnd.addDnD(undefined, false, false, true,
-        100, 500, wrapper);
+      const optionsForDnD = {
+        step: undefined,
+        vertical: false,
+        range: false,
+        progress: true,
+        min: 100,
+        max: 500,
+        $wrapper,
+      };
+      viewDnd.addDnD(optionsForDnD);
       dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
         moveDistanceY);
     });

@@ -12,16 +12,32 @@ describe('Range', () => {
 
   const createElements = () => {
     const view = new View();
-    view.createElements($('body'), true, false,
-      100, 500, 100, true);
+    const optionsForElements = {
+      $element: $('body'),
+      range: true,
+      vertical: false,
+      min: 100,
+      max: 500,
+      step: 100,
+      progress: true,
+    };
+    view.createElements(optionsForElements);
     document.documentElement.style.fontSize = '13px';
   };
 
   const addDnd = () => {
-    const wrapper = $('.slider');
+    const $wrapper = $('.slider');
     const viewDnd = new ViewDnD();
-    viewDnd.addDnD(undefined, false, true, true,
-      100, 500, wrapper);
+    const optionsForDnD = {
+      step: undefined,
+      vertical: false,
+      range: true,
+      progress: true,
+      min: 100,
+      max: 500,
+      $wrapper,
+    };
+    viewDnd.addDnD(optionsForDnD);
   };
 
 

@@ -5,12 +5,17 @@ class ViewOptional {
 
     private rem = 0.077;
 
-    createScale(vertical: boolean,
-      min: number, max: number, step: number, trackWidth: number,
-      trackHeight: number, wrapper: JQuery): void {
+    createScale(options: {vertical: boolean; min: number; max: number; step: number;
+     trackWidth: number; trackHeight: number; wrapper: JQuery;}): void {
+      const {
+        vertical, min, max, step, trackWidth, trackHeight, wrapper,
+      } = options;
+
       const scaleData: {coords: number[]; value: number[];
        shortCoords: number[]; shortValue: number[];} = this.presenter
-         .calculateLeftScaleCoords(min, max, step, vertical, trackWidth, trackHeight);
+         .calculateLeftScaleCoords({
+           min, max, step, vertical, trackWidth, trackHeight,
+         });
 
       const scaleTopPositionCorrection = 5;
       const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
@@ -25,8 +30,12 @@ class ViewOptional {
       });
     }
 
-    stylingProgress(divProgressWidth: number, vertical: boolean,
-      divThumb: HTMLElement): void {
+    stylingProgress(options: {divProgressWidth: number; vertical: boolean;
+      divThumb: HTMLElement;}): void {
+      const {
+        divProgressWidth, vertical, divThumb,
+      } = options;
+
       const $thumb = $(divThumb);
 
       const stylingProgress = {
@@ -85,7 +94,11 @@ class ViewOptional {
         : stylingProgress.default();
     }
 
-    static createProgress(range: boolean, wrapper: JQuery): void {
+    static createProgress(options: {range: boolean | undefined; wrapper: JQuery}): void {
+      const {
+        range, wrapper,
+      } = options;
+
       const $track = wrapper.find('.js-slider__track');
       if (!range) {
         $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
@@ -95,7 +108,11 @@ class ViewOptional {
       }
     }
 
-    makeVertical(range: boolean, wrapper: JQuery): void {
+    makeVertical(options: {range: boolean; wrapper: JQuery}): void {
+      const {
+        range, wrapper,
+      } = options;
+
       const divTrack = wrapper.find('.js-slider__track');
 
       const trackWidth: number | undefined = divTrack.width();

@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import View from '../slider/views/view.ts';
 import ViewOptional from '../slider/views/viewOptional.ts';
-import {dispatchMove} from './_serviceFunctions';
+import { dispatchMove } from './_serviceFunctions';
 import ViewDnD from '../slider/views/viewDnD.ts';
 
 
@@ -13,16 +13,32 @@ describe('Vertical option', () => {
 
   const createElements = () => {
     const view = new View();
-    view.createElements($('body'), false, true,
-      100, 500, undefined, true);
+    const optionsForElements = {
+      $element: $('body'),
+      range: false,
+      vertical: true,
+      min: 100,
+      max: 500,
+      step: undefined,
+      progress: true,
+    };
+    view.createElements(optionsForElements);
     document.documentElement.style.fontSize = '13px';
   };
 
   const addDnd = () => {
-    const wrapper = $('.slider__wrapper');
+    const $wrapper = $('.slider__wrapper');
     const viewDnd = new ViewDnD();
-    viewDnd.addDnD(undefined, true, false, true,
-      100, 500, wrapper);
+    const optionsForDnD = {
+      step: undefined,
+      vertical: true,
+      range: false,
+      progress: true,
+      min: 100,
+      max: 500,
+      $wrapper,
+    };
+    viewDnd.addDnD(optionsForDnD);
   };
 
   const findElements = () => {
@@ -38,7 +54,7 @@ describe('Vertical option', () => {
 
   const makeVertical = () => {
     const viewOptional = new ViewOptional();
-    viewOptional.makeVertical(false, $('.js-slider'));
+    viewOptional.makeVertical({ range: false, wrapper: $('.js-slider') });
   };
 
   beforeAll(async () => {

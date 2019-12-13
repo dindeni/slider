@@ -1,5 +1,6 @@
 import ViewOptional from './viewOptional';
 import ViewDnD from './viewDnD';
+import SliderOptionsForInit from '../sliderInit/sliderInit';
 
 class View {
     private $divTrack: JQuery;
@@ -20,35 +21,55 @@ class View {
 
     viewDnD: ViewDnD;
 
-    createElements(element: JQuery, range: boolean,
-      vertical: boolean, min: number, max: number,
-      step: number | undefined, progress: boolean): void {
+    createElements(options: SliderOptionsForInit): void {
+      const {
+        $element, range, vertical, min, max, step, progress,
+      } = options;
+
       let $divWrapper: JQuery;
       step ? $divWrapper = $('<div class="slider js-slider slider_step js-slider_step"></div>')
-        .appendTo(element) : $divWrapper = $('<div class="slider js-slider"></div>')
-        .appendTo(element);
+        .appendTo($element) : $divWrapper = $('<div class="slider js-slider"></div>')
+        .appendTo($element);
       this.$divTrack = $('<div class="slider__track js-slider__track"></div>')
         .appendTo($divWrapper);
 
       this.viewOptional = new ViewOptional();
 
-      this.createThumb(range, vertical, $divWrapper);
-      this.stylingElements(range, vertical, $divWrapper);
-      this.createLabel(min, vertical, range, max, $divWrapper);
+      this.createThumb({ range, vertical, wrapper: $divWrapper });
+      this.stylingElements({ range, vertical, wrapper: $divWrapper });
+      this.createLabel({
+        initValue: min, vertical, range, max, wrapper: $divWrapper,
+      });
       if (progress) {
-        ViewOptional.createProgress(range, $divWrapper);
+        ViewOptional.createProgress({ range, wrapper: $divWrapper });
       }
       if (step) {
-        this.viewOptional.createScale(vertical, min, max, step,
-          this.$divTrack.width() || 0, this.$divTrack.height() || 0,
-          $divWrapper);
+        const optionsForScale = {
+          vertical,
+          min,
+          max,
+          step,
+          trackWidth: this.$divTrack.width() || 0,
+          trackHeight: this.$divTrack.height() || 0,
+          wrapper: $divWrapper,
+        };
+        this.viewOptional.createScale(optionsForScale);
       }
       this.viewDnD = new ViewDnD();
-      this.viewDnD.addDnD(step, vertical, range, progress, min, max,
-        $divWrapper);
+      this.viewDnD.addDnD({
+        step,
+        vertical,
+        range,
+        progress,
+        min,
+        max,
+        $wrapper: $divWrapper,
+      });
     }
 
-    createThumb(range: boolean, vertical, wrapper): void {
+    createThumb(options: {range: boolean; vertical; wrapper}): void {
+      const { range, vertical, wrapper } = options;
+
       if (!range) {
         vertical ? this.$divThumb = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical"'
                 + ' draggable="true"></div>')
@@ -67,7 +88,9 @@ class View {
       }
     }
 
-    stylingElements(range: boolean, vertical: boolean, wrapper: JQuery): void {
+    stylingElements(options: {range: boolean; vertical: boolean; wrapper: JQuery}): void {
+      const { range, vertical, wrapper } = options;
+
       const isRangeVertical = range && !vertical;
       if (!isRangeVertical) {
         this.$divThumb = wrapper.find('.js-slider__thumb');
@@ -86,12 +109,16 @@ class View {
         });
       }
       if (vertical) {
-        this.viewOptional.makeVertical(range, wrapper);
+        this.viewOptional.makeVertical({ range, wrapper });
       }
     }
 
-    createLabel(initValue: number, vertical: boolean, range: boolean,
-      max: number, wrapper): void {
+    createLabel(options: {initValue: number; vertical: boolean; range: boolean;
+      max: number; wrapper;}): void {
+      const {
+        initValue, vertical, range, max, wrapper,
+      } = options;
+
       if (!range) {
         const $divLabel = $('<div class="slider__label js-slider__label"></div>')
           .appendTo(wrapper);
@@ -125,8 +152,12 @@ class View {
       }
     }
 
-    updateLabelValue(value: number, coord: number, vertical: boolean,
-      divThumb: HTMLElement | JQuery): void {
+    updateLabelValue(options: {value: number; coord: number; vertical: boolean;
+      divThumb: HTMLElement | JQuery;}): void {
+      const {
+        value, coord, vertical, divThumb,
+      } = options;
+
       const $thumb = $(divThumb);
       const isThumbMinOrMax = $thumb.is('.slider__thumb_min')
         || $thumb.is('.slider__thumb_max');
