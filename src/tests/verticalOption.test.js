@@ -2,12 +2,15 @@
 import View from '../slider/views/view.ts';
 import ViewOptional from '../slider/views/viewOptional.ts';
 import { dispatchMove } from './_serviceFunctions';
-import ViewDnD from '../slider/views/viewDnD.ts';
+import ViewUpdating from '../slider/views/viewUpdating';
 
 
 describe('Vertical option', () => {
-  let divTrack; let divThumb; let divThumbLeft; let divThumbTop; let
-    divLabel;
+  let divTrack;
+  let divThumb;
+  let divThumbLeft;
+  let divThumbTop;
+  let divLabel;
   const moveDistanceX = 0;
   const moveDistanceY = 50;
 
@@ -28,7 +31,7 @@ describe('Vertical option', () => {
 
   const addDnd = () => {
     const $wrapper = $('.slider__wrapper');
-    const viewDnd = new ViewDnD();
+    const viewDnd = new ViewUpdating();
     const optionsForDnD = {
       step: undefined,
       vertical: true,
@@ -38,7 +41,7 @@ describe('Vertical option', () => {
       max: 500,
       $wrapper,
     };
-    viewDnd.addDnD(optionsForDnD);
+    viewDnd.addDragAndDrop(optionsForDnD);
   };
 
   const findElements = () => {

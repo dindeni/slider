@@ -11,51 +11,51 @@ class ViewOptional {
         vertical, min, max, step, trackWidth, trackHeight, wrapper,
       } = options;
 
-      const scaleData: {coords: number[]; value: number[];
-       shortCoords: number[]; shortValue: number[];} = this.presenter
+      const scaleData: {coordinates: number[]; value: number[];
+       shortCoordinates: number[]; shortValue: number[];} = this.presenter
          .calculateLeftScaleCoords({
            min, max, step, vertical, trackWidth, trackHeight,
          });
 
       const scaleTopPositionCorrection = 5;
       const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
-      scaleData.shortValue.map((item, i) => {
+      scaleData.shortValue.map((item, index) => {
         const $itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo($ul);
 
-        return !vertical ? $itemElement.css({ left: `${scaleData.shortCoords[i] * this.rem}rem` })
+        return !vertical ? $itemElement.css({ left: `${scaleData.shortCoordinates[index] * this.rem}rem` })
           : $itemElement.css({
-            top: `${(scaleData.shortCoords[i]
+            top: `${(scaleData.shortCoordinates[index]
                         - scaleTopPositionCorrection) * this.rem}rem`,
           });
       });
     }
 
-    stylingProgress(options: {divProgressWidth: number; vertical: boolean;
-      divThumb: HTMLElement;}): void {
+    stylingProgress(options: {progressSize: number; vertical: boolean;
+      thumbElement: HTMLElement;}): void {
       const {
-        divProgressWidth, vertical, divThumb,
+        progressSize, vertical, thumbElement,
       } = options;
 
-      const $thumb = $(divThumb);
+      const $thumb = $(thumbElement);
 
-      const stylingProgress = {
-        default: (): void => {
-          const divProgress = (divThumb.previousElementSibling as HTMLElement)
+      const progress = {
+        makeDefault: (): void => {
+          const progressElement = (thumbElement.previousElementSibling as HTMLElement)
             .children[0] as HTMLElement;
 
           if (vertical) {
-            divProgress.style.height = `${divProgressWidth}rem`;
-            divProgress.style.width = '0.38rem';
+            progressElement.style.height = `${progressSize}rem`;
+            progressElement.style.width = '0.38rem';
           } else {
-            divProgress.style.width = `${divProgressWidth}rem`;
+            progressElement.style.width = `${progressSize}rem`;
           }
         },
-        range: (): void => {
+        makeRange: (): void => {
           if (vertical) {
             if ($thumb.is('.js-slider__thumb_min')) {
-              const divProgressMin = (divThumb.previousElementSibling as HTMLElement)
+              const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
                 .children[0] as HTMLElement;
-              divProgressMin.style.height = `${divProgressWidth}rem`;
+              divProgressMin.style.height = `${progressSize}rem`;
               divProgressMin.style.width = '0.38rem';
             } else {
               const divProgressMax = $thumb.siblings('.js-slider__track').children(
@@ -63,7 +63,7 @@ class ViewOptional {
               );
               const divTrack = $thumb.siblings('.js-slider__track');
               divProgressMax.css({
-                height: `${(divTrack.height() || 0) * this.rem - divProgressWidth}rem`,
+                height: `${(divTrack.height() || 0) * this.rem - progressSize}rem`,
                 width: '0.38rem',
                 position: 'absolute',
                 right: '0rem',
@@ -71,16 +71,16 @@ class ViewOptional {
               });
             }
           } else if ($thumb.is('.js-slider__thumb_min')) {
-            const divProgressMin = (divThumb.previousElementSibling as HTMLElement)
+            const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
               .children[0] as HTMLElement;
-            divProgressMin.style.width = `${divProgressWidth}rem`;
+            divProgressMin.style.width = `${progressSize}rem`;
           } else {
             const divProgressMax = $thumb.siblings('.js-slider__track').children(
               '.js-slider__progress_max',
             );
             const divTrack = $thumb.siblings('.js-slider__track');
             divProgressMax.css({
-              width: `${(divTrack.width() || 0) * this.rem - divProgressWidth}rem`,
+              width: `${(divTrack.width() || 0) * this.rem - progressSize}rem`,
               position: 'absolute',
               right: '0rem',
               top: '0rem',
@@ -90,8 +90,8 @@ class ViewOptional {
       };
 
       ($thumb.is('.js-slider__thumb_min')
-      || $thumb.is('.js-slider__thumb_max')) ? stylingProgress.range()
-        : stylingProgress.default();
+      || $thumb.is('.js-slider__thumb_max')) ? progress.makeRange()
+        : progress.makeDefault();
     }
 
     static createProgress(options: {range: boolean | undefined; wrapper: JQuery}): void {
@@ -113,31 +113,31 @@ class ViewOptional {
         range, wrapper,
       } = options;
 
-      const divTrack = wrapper.find('.js-slider__track');
+      const $trackElement = wrapper.find('.js-slider__track');
 
-      const trackWidth: number | undefined = divTrack.width();
-      let trackHeight: number | undefined = divTrack.height();
+      const trackWidth: number | undefined = $trackElement.width();
+      let trackHeight: number | undefined = $trackElement.height();
 
-      divTrack.css({
+      $trackElement.css({
         width: `${(trackHeight as number) * this.rem}rem`,
         height: `${(trackWidth as number) * this.rem}rem`,
       });
       if (!range) {
-        const $divThumb = wrapper.find($('.js-slider__thumb'));
-        $divThumb.css({
+        const $thumbElement = wrapper.find($('.js-slider__thumb'));
+        $thumbElement.css({
           left: '-0.62rem',
           top: '0rem',
         });
       } else {
-        const divThumbMin = wrapper.find('.js-slider__thumb_min');
-        const divThumbMax = wrapper.find('.js-slider__thumb_max');
-        trackHeight = divTrack.height();
+        const $thumbElementMin = wrapper.find('.js-slider__thumb_min');
+        const $thumbElementMax = wrapper.find('.js-slider__thumb_max');
+        trackHeight = $trackElement.height();
 
-        divThumbMin.css({
+        $thumbElementMin.css({
           left: '-0.62rem',
           top: '0rem',
         });
-        divThumbMax.css({
+        $thumbElementMax.css({
           left: '-0.62rem',
           top: `${Math.round((trackHeight as number)) * this.rem}rem`,
         });

@@ -45,7 +45,7 @@ describe('DemoPage', async () => {
     const demoPage = new DemoPage();
 
     await createHtml();
-    await demoPage.initSliders();
+    await demoPage.loadSliders();
 
     formsList = document.querySelectorAll('.js-demo');
   });
@@ -92,8 +92,14 @@ describe('DemoPage', async () => {
     let label;
     beforeAll(() => {
       label = document.querySelectorAll('.js-slider__label');
-      let thumbX; let thumbY; let thumbMin; let thumbMinX; let thumbMinY;
-      let thumbMax; let thumbMaxX; let thumbMaxY;
+      let thumbX;
+      let thumbY;
+      let thumbMin;
+      let thumbMinX;
+      let thumbMinY;
+      let thumbMax;
+      let thumbMaxX;
+      let thumbMaxY;
       Array.from(document.querySelectorAll('.js-index__wrapper'))
         .map((wrapper, index) => {
           const thumb = wrapper.querySelectorAll('.js-slider__thumb');

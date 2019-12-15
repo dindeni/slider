@@ -1,15 +1,15 @@
 import ViewOptional from './viewOptional';
-import ViewDnD from './viewDnD';
+import ViewUpdating from './viewUpdating';
 import SliderOptionsForInit from '../sliderInit/sliderInit';
 
 class View {
-    private $divTrack: JQuery;
+    private $trackElement: JQuery;
 
-    private $divThumb: JQuery;
+    private $thumbElement: JQuery;
 
-    private $divThumbMin: JQuery;
+    private $thumbElementMin: JQuery;
 
-    private $divThumbMax: JQuery;
+    private $thumbElementMax: JQuery;
 
     private labelOffsetLeft = 0.62;
 
@@ -19,29 +19,29 @@ class View {
 
     viewOptional: ViewOptional;
 
-    viewDnD: ViewDnD;
+    viewUpdating: ViewUpdating;
 
     createElements(options: SliderOptionsForInit): void {
       const {
         $element, range, vertical, min, max, step, progress,
       } = options;
 
-      let $divWrapper: JQuery;
-      step ? $divWrapper = $('<div class="slider js-slider slider_step js-slider_step"></div>')
-        .appendTo($element) : $divWrapper = $('<div class="slider js-slider"></div>')
+      let $wrapper: JQuery;
+      step ? $wrapper = $('<div class="slider js-slider slider_step js-slider_step"></div>')
+        .appendTo($element) : $wrapper = $('<div class="slider js-slider"></div>')
         .appendTo($element);
-      this.$divTrack = $('<div class="slider__track js-slider__track"></div>')
-        .appendTo($divWrapper);
+      this.$trackElement = $('<div class="slider__track js-slider__track"></div>')
+        .appendTo($wrapper);
 
       this.viewOptional = new ViewOptional();
 
-      this.createThumb({ range, vertical, wrapper: $divWrapper });
-      this.stylingElements({ range, vertical, wrapper: $divWrapper });
+      this.createThumb({ range, vertical, wrapper: $wrapper });
+      this.stylingElements({ range, vertical, wrapper: $wrapper });
       this.createLabel({
-        initValue: min, vertical, range, max, wrapper: $divWrapper,
+        initialValue: min, vertical, range, max, wrapper: $wrapper,
       });
       if (progress) {
-        ViewOptional.createProgress({ range, wrapper: $divWrapper });
+        ViewOptional.createProgress({ range, wrapper: $wrapper });
       }
       if (step) {
         const optionsForScale = {
@@ -49,21 +49,21 @@ class View {
           min,
           max,
           step,
-          trackWidth: this.$divTrack.width() || 0,
-          trackHeight: this.$divTrack.height() || 0,
-          wrapper: $divWrapper,
+          trackWidth: this.$trackElement.width() || 0,
+          trackHeight: this.$trackElement.height() || 0,
+          wrapper: $wrapper,
         };
         this.viewOptional.createScale(optionsForScale);
       }
-      this.viewDnD = new ViewDnD();
-      this.viewDnD.addDnD({
+      this.viewUpdating = new ViewUpdating();
+      this.viewUpdating.addDragAndDrop({
         step,
         vertical,
         range,
         progress,
         min,
         max,
-        $wrapper: $divWrapper,
+        $wrapper,
       });
     }
 
@@ -71,19 +71,19 @@ class View {
       const { range, vertical, wrapper } = options;
 
       if (!range) {
-        vertical ? this.$divThumb = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical"'
+        vertical ? this.$thumbElement = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical"'
                 + ' draggable="true"></div>')
-          .appendTo(wrapper) : this.$divThumb = $('<div class="slider__thumb js-slider__thumb"'
+          .appendTo(wrapper) : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"'
                 + ' draggable="true"></div>')
           .appendTo(wrapper);
       } else {
-        vertical ? this.$divThumbMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_min js-slider__thumb_min" draggable="true">'
+        vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_min js-slider__thumb_min" draggable="true">'
                 + '</div>').appendTo(wrapper)
-          : this.$divThumbMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_min js-slider__thumb_min" draggable="true">'
+          : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_min js-slider__thumb_min" draggable="true">'
                 + '</div>').appendTo(wrapper);
-        vertical ? this.$divThumbMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_max js-slider__thumb_max" draggable="true">'
+        vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_max js-slider__thumb_max" draggable="true">'
                 + '</div>').appendTo(wrapper)
-          : this.$divThumbMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_max js-slider__thumb_max" draggable="true">'
+          : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_max js-slider__thumb_max" draggable="true">'
                     + '</div>').appendTo(wrapper);
       }
     }
@@ -93,19 +93,19 @@ class View {
 
       const isRangeVertical = range && !vertical;
       if (!isRangeVertical) {
-        this.$divThumb = wrapper.find('.js-slider__thumb');
-        this.$divThumb.css({
+        this.$thumbElement = wrapper.find('.js-slider__thumb');
+        this.$thumbElement.css({
           left: 0,
         });
       } else if (isRangeVertical) {
-        this.$divThumbMin = wrapper.find('.js-slider__thumb_min');
-        this.$divThumbMax = wrapper.find('.js-slider__thumb_max');
-        this.$divThumbMin.css({
+        this.$thumbElementMin = wrapper.find('.js-slider__thumb_min');
+        this.$thumbElementMax = wrapper.find('.js-slider__thumb_max');
+        this.$thumbElementMin.css({
           left: 0,
         });
 
-        this.$divThumbMax.css({
-          left: `${(this.$divTrack.width() as number) * this.rem}rem`,
+        this.$thumbElementMax.css({
+          left: `${(this.$trackElement.width() as number) * this.rem}rem`,
         });
       }
       if (vertical) {
@@ -113,72 +113,72 @@ class View {
       }
     }
 
-    createLabel(options: {initValue: number; vertical: boolean; range: boolean;
+    createLabel(options: {initialValue: number; vertical: boolean; range: boolean;
       max: number; wrapper;}): void {
       const {
-        initValue, vertical, range, max, wrapper,
+        initialValue, vertical, range, max, wrapper,
       } = options;
 
       if (!range) {
-        const $divLabel = $('<div class="slider__label js-slider__label"></div>')
+        const $labelElement = $('<div class="slider__label js-slider__label"></div>')
           .appendTo(wrapper);
-        $divLabel.text(initValue);
+        $labelElement.text(initialValue);
         if (vertical) {
-          $divLabel.css({
+          $labelElement.css({
             top: `${this.labelOffsetTop}rem`,
             left: `${this.labelOffsetTop / 2}rem`,
           });
         }
       } else {
-        const $divLabelMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
+        const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
           .appendTo(wrapper);
         if (vertical) {
-          $divLabelMin.css({
+          $labelElementMin.css({
             left: `${this.labelOffsetTop / 2}rem`,
             top: `${this.labelOffsetTop}rem`,
           });
         }
-        $divLabelMin.text(initValue);
+        $labelElementMin.text(initialValue);
 
-        const $divLabelMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
+        const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
           .appendTo(wrapper);
-        !vertical ? $divLabelMax.css({
-          left: `${(this.$divTrack.width() || 0) * this.rem - this.labelOffsetLeft}rem`,
-        }) : $divLabelMax.css({
-          top: `${(this.$divTrack.height() || 0) * this.rem + this.labelOffsetTop}rem`,
+        !vertical ? $labelElementMax.css({
+          left: `${(this.$trackElement.width() || 0) * this.rem - this.labelOffsetLeft}rem`,
+        }) : $labelElementMax.css({
+          top: `${(this.$trackElement.height() || 0) * this.rem + this.labelOffsetTop}rem`,
           left: `${this.labelOffsetTop / 2}rem`,
         });
-        $divLabelMax.text(max);
+        $labelElementMax.text(max);
       }
     }
 
-    updateLabelValue(options: {value: number; coord: number; vertical: boolean;
-      divThumb: HTMLElement | JQuery;}): void {
+    updateLabelValue(options: {value: number; coordinate: number; vertical: boolean;
+      thumbElement: HTMLElement | JQuery;}): void {
       const {
-        value, coord, vertical, divThumb,
+        value, coordinate, vertical, thumbElement,
       } = options;
 
-      const $thumb = $(divThumb);
+      const $thumb = $(thumbElement);
       const isThumbMinOrMax = $thumb.is('.slider__thumb_min')
         || $thumb.is('.slider__thumb_max');
       if (isThumbMinOrMax) {
         if ($thumb.is('.slider__thumb_min')) {
-          const labelMin: JQuery = $(divThumb).siblings('.js-slider__label_min');
-          labelMin.text(value);
-          !vertical ? labelMin.css({ left: `${coord - this.labelOffsetLeft}rem` })
-            : labelMin.css({ top: `${coord + this.labelOffsetTop}rem` });
+          const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_min');
+          labelElementMin.text(value);
+          !vertical ? labelElementMin.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
+            : labelElementMin.css({ top: `${coordinate + this.labelOffsetTop}rem` });
         } else {
-          const $labelMax: JQuery = $(divThumb).siblings('.js-slider__label_max');
-          $labelMax.text(value);
-          !vertical ? $labelMax.css({ left: `${coord - this.labelOffsetLeft}rem` })
-            : $labelMax.css({ top: `${coord + this.labelOffsetTop}rem` });
+          const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_max');
+          $labelElementMax.text(value);
+          !vertical ? $labelElementMax.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
+            : $labelElementMax.css({ top: `${coordinate + this.labelOffsetTop}rem` });
         }
       } else {
-        const $label = $(divThumb).next();
-        $label.text(value);
+        const $labelElement = $(thumbElement).next();
+        $labelElement.text(value);
 
-        !vertical ? $label.css({ left: `${coord - this.labelOffsetLeft}rem` })
-          : $label.css({ top: `${coord + this.labelOffsetTop}rem` });
+        !vertical ? $labelElement.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
+          : $labelElement.css({ top: `${coordinate + this.labelOffsetTop}rem` });
       }
     }
 }

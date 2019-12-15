@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import View from '../slider/views/view.ts';
-import ViewDnD from '../slider/views/viewDnD.ts';
+import ViewUpdating from '../slider/views/viewUpdating.ts';
 
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
@@ -85,7 +85,7 @@ describe('View', () => {
   describe('After dispatch move', () => {
     beforeAll(() => {
       const $wrapper = $('.sliderInit');
-      const viewDnd = new ViewDnD();
+      const viewDnd = new ViewUpdating();
       const optionsForDnD = {
         step: undefined,
         vertical: false,
@@ -95,7 +95,7 @@ describe('View', () => {
         max: 500,
         $wrapper,
       };
-      viewDnd.addDnD(optionsForDnD);
+      viewDnd.addDragAndDrop(optionsForDnD);
       dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
         moveDistanceY);
     });

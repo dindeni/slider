@@ -1,13 +1,13 @@
 import Model from '../model/model';
 
 class Presenter {
-    private scaleValueCoords: number[] = [];
+    private dataForScale: number[] = [];
 
     model: Model = new Model();
 
-    calculateSliderMovePercent(options: {trackWidthHeight: number; distance: number}): number {
-      const { trackWidthHeight, distance } = options;
-      this.model.sliderValuePercent = (distance / trackWidthHeight) * 100;
+    calculateSliderMovePercent(options: {trackSize: number; distance: number}): number {
+      const { trackSize, distance } = options;
+      this.model.sliderValuePercent = (distance / trackSize) * 100;
       switch (true) {
         case this.model.sliderValuePercent < 0:
           this.model.sliderValuePercent = 0;
@@ -20,12 +20,12 @@ class Presenter {
       return this.model.sliderValuePercent;
     }
 
-    calculateSliderValue(options: {min: number; max: number; trackWidthHeight: number;
+    calculateSliderValue(options: {min: number; max: number; trackSize: number;
       distance: number;}): number {
       const {
-        min, max, trackWidthHeight, distance,
+        min, max, trackSize, distance,
       } = options;
-      this.calculateSliderMovePercent({ trackWidthHeight, distance });
+      this.calculateSliderMovePercent({ trackSize, distance });
 
       const isBelow0 = this.model.sliderValuePercent <= 0
         || !this.model.sliderValuePercent;
@@ -40,17 +40,17 @@ class Presenter {
 
     calculateLeftScaleCoords(options: {min: number; max: number; step: number | undefined;
       vertical: boolean; trackWidth: number; trackHeight: number;}):
-       {value: number[]; coords: number[]; shortValue: number[]; shortCoords: number[]} {
+       {value: number[]; coordinates: number[]; shortValue: number[]; shortCoordinates: number[]} {
       const {
         min, max, step, vertical, trackWidth, trackHeight,
       } = options;
 
-      const scaleValue: {value: number[]; coords: number[]; shortValue: number[];
-        shortCoords: number[];} = {
-          coords: [],
+      const scaleValue: {value: number[]; coordinates: number[]; shortValue: number[];
+        shortCoordinates: number[];} = {
+          coordinates: [],
           value: [],
           shortValue: [],
-          shortCoords: [],
+          shortCoordinates: [],
         };
       const height = Math.round(trackHeight);
       const width = Math.round(trackWidth);
@@ -58,29 +58,29 @@ class Presenter {
       if (step) {
         let stepCount = 0;
         for (let i = min; i <= max; i += step) {
-          let coordsItems;
-          !vertical ? coordsItems = (stepCount / (max - min))
-                    * trackWidth : coordsItems = (stepCount / (max - min))
+          let coordinatesItems;
+          !vertical ? coordinatesItems = (stepCount / (max - min))
+                    * trackWidth : coordinatesItems = (stepCount / (max - min))
                         * height;
           scaleValue.value.push(i);
-          scaleValue.coords.push(Math.round(coordsItems));
-          this.scaleValueCoords.push(coordsItems);
+          scaleValue.coordinates.push(Math.round(coordinatesItems));
+          this.dataForScale.push(coordinatesItems);
           stepCount += step;
         }
 
-        const isNotVerticalLastCoord = !vertical && scaleValue.coords[scaleValue.coords.length - 1]
-        !== width;
-        const isVerticalLastCoord = vertical && scaleValue.coords[scaleValue.coords.length - 1]
-          !== height;
-        if (isNotVerticalLastCoord) {
-          scaleValue.coords.push(width);
+        const isNotVerticalLastCoordinate = !vertical && scaleValue.coordinates[
+          scaleValue.coordinates.length - 1] !== width;
+        const isVerticalLastCoordinate = vertical && scaleValue.coordinates[
+          scaleValue.coordinates.length - 1] !== height;
+        if (isNotVerticalLastCoordinate) {
+          scaleValue.coordinates.push(width);
         }
-        if (isVerticalLastCoord) {
-          scaleValue.coords.push(height);
+        if (isVerticalLastCoordinate) {
+          scaleValue.coordinates.push(height);
         }
 
         scaleValue.shortValue = scaleValue.value;
-        scaleValue.shortCoords = scaleValue.coords;
+        scaleValue.shortCoordinates = scaleValue.coordinates;
 
         while (scaleValue.shortValue.length > 10) {
           scaleValue.shortValue = scaleValue.shortValue.filter((value, index) => {
@@ -91,8 +91,8 @@ class Presenter {
           });
         }
 
-        while (scaleValue.shortCoords.length > 10) {
-          scaleValue.shortCoords = scaleValue.shortCoords.filter((value, index) => {
+        while (scaleValue.shortCoordinates.length > 10) {
+          scaleValue.shortCoordinates = scaleValue.shortCoordinates.filter((value, index) => {
             const isIndex0OrEven = index === 0 || index % 2 === 0;
             if (isIndex0OrEven) {
               return true;
@@ -102,24 +102,25 @@ class Presenter {
 
         return scaleValue;
       } return {
-        coords: [],
+        coordinates: [],
         value: [],
-        shortCoords: [],
+        shortCoordinates: [],
         shortValue: [],
       };
     }
 
-    static calculateThumbDistance(options: {coordStart: number; coordMove: number}): number {
-      const { coordStart, coordMove } = options;
-      return coordMove - coordStart;
+    static calculateThumbDistance(options: {coordinateStart: number;
+     coordinateMove: number;}): number {
+      const { coordinateStart, coordinateMove } = options;
+      return coordinateMove - coordinateStart;
     }
 
     static calculateFromValueToCoordinates(options: {value: number; min: number;
-      max: number; widthHeight: number;}): number {
+      max: number; trackSize: number;}): number {
       const {
-        value, min, max, widthHeight,
+        value, min, max, trackSize,
       } = options;
-      const unit = widthHeight / (max - min);
+      const unit = trackSize / (max - min);
       const rem = 0.077;
       return ((value - min) * unit) * rem;
     }

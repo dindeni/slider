@@ -29,7 +29,7 @@ describe('Presenter', () => {
   });
 
   it('should calculate sliderInit value percent', () => {
-    expect(presenter.calculateSliderMovePercent({ trackWidthHeight: 100, distance: 50 }))
+    expect(presenter.calculateSliderMovePercent({ trackSize: 100, distance: 50 }))
       .toBe(50);
   });
 
@@ -37,7 +37,7 @@ describe('Presenter', () => {
     expect(presenter.calculateSliderValue({
       min: 100,
       max: 500,
-      trackWidthHeight: 260,
+      trackSize: 260,
       distance: 130,
     }))
       .toBe(300);
@@ -48,7 +48,7 @@ describe('Presenter', () => {
       value: 400,
       min: 100,
       max: 500,
-      widthHeight: 260,
+      trackSize: 260,
     });
     expect(coordinates).toBe(15.015);
   });
