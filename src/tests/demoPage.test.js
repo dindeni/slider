@@ -1,9 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import DemoPage from '../DemoPage/DemoPage';
 import '../slider/sliderInit/sliderInit.ts';
-
 import style from '../blocks/slider/slider.scss';
-
 import { dispatchMove } from './_serviceFunctions';
 
 describe('DemoPage', async () => {
