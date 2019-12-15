@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type  */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../slider/views/view.ts';
-import Presenter from '../slider/presenter/presenter.ts';
+import View from '../slider/views/View/View';
+import Presenter from '../slider/Presenter/Presenter';
 
 const $ = require('jquery');
 

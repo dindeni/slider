@@ -1,4 +1,4 @@
-import View from '../views/view';
+import View from '../views/View/View';
 
 const view = new View();
 

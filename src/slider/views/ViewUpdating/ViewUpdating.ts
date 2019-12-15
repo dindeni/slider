@@ -1,6 +1,6 @@
-import ViewOptional from './viewOptional';
-import View from './view';
-import Presenter from '../presenter/presenter';
+import ViewOptional from '../ViewOptional/ViewOptional';
+import View from '../View/View';
+import Presenter from '../../Presenter/Presenter';
 
 class ViewUpdating {
     private coordinateXStart: number;
