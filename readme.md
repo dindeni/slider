@@ -12,6 +12,8 @@
 
 `karma start`
 
+`npm test`
+
 #### Создание production версии проекта:
 
 `npm run build`

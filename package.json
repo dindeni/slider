@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "develop": "webpack-dev-server --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "test": "karma start"
   },
   "author": "",
   "license": "ISC",
