@@ -1,4 +1,4 @@
-import Model from '../model/model';
+import Model from '../Model/Model';
 
 class Presenter {
     private dataForScale: number[] = [];

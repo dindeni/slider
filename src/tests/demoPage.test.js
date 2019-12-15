@@ -1,5 +1,5 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import DemoPage from '../demoPage/demoPage.ts';
+import DemoPage from '../DemoPage/DemoPage.js';
 import '../slider/sliderInit/sliderInit.ts';
 
 import style from '../blocks/slider/slider.scss';

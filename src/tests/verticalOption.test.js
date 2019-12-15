@@ -1,8 +1,8 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../slider/views/view.ts';
-import ViewOptional from '../slider/views/viewOptional.ts';
+import View from '../slider/views/View/view.js';
+import ViewOptional from '../slider/views/ViewOptional.js';
 import { dispatchMove } from './_serviceFunctions';
-import ViewUpdating from '../slider/views/viewUpdating';
+import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
 
 
 describe('Vertical option', () => {

@@ -1,6 +1,6 @@
-import ViewOptional from './viewOptional';
-import ViewUpdating from './viewUpdating';
-import SliderOptionsForInit from '../sliderInit/sliderInit';
+import ViewOptional from '../ViewOptional/ViewOptional';
+import ViewUpdating from '../ViewUpdating/ViewUpdating';
+import SliderOptionsForInit from '../../sliderInit/sliderInit';
 
 class View {
     private $trackElement: JQuery;

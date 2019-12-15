@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../slider/views/view.ts';
-import ViewUpdating from '../slider/views/viewUpdating.ts';
+import View from '../slider/views/View/view.js';
+import ViewUpdating from '../slider/views/ViewUpdating.js';
 
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
