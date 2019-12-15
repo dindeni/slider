@@ -1,5 +1,5 @@
-import Presenter from '../presenter/presenter';
-import ViewUpdating from '../views/viewUpdating';
+import Presenter from '../slider/presenter/presenter';
+import ViewUpdating from '../slider/views/viewUpdating';
 
 interface Slider {
     progress: boolean;
