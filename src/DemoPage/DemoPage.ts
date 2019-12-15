@@ -309,7 +309,7 @@ class DemoPage {
 
       if (step) {
         const resultMinMax = validation.checkRangeValue();
-        return resultMinMax ? validation.checkStepValue() : undefined;
+        return resultMinMax || resultMinMax === 0 ? validation.checkStepValue() : undefined;
       } return validation.checkRangeValue();
     }
 
