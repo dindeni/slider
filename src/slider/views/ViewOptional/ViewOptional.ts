@@ -1,5 +1,4 @@
 import Presenter from '../../Presenter/Presenter';
-import { SliderOptions } from '../../../types/types';
 
 class ViewOptional {
     private scaleData: {coordinates: number[]; value: number[];
@@ -140,7 +139,7 @@ class ViewOptional {
     makeVertical(options: {range: boolean; wrapper: JQuery; min: number; max: number;
      coordinates: {notRange: number; min: number; max: number};}): void {
       const {
-        range, wrapper, coordinates, min,
+        range, wrapper, coordinates,
       } = options;
 
       const $trackElement = wrapper.find('.js-slider__track');
@@ -157,7 +156,7 @@ class ViewOptional {
         const $thumbElement = wrapper.find($('.js-slider__thumb'));
         $thumbElement.css({
           left: '-0.62rem',
-          top: `${coordinates.notRange || min}rem`,
+          top: `${coordinates.notRange || 0}rem`,
         });
       } else {
         const $thumbElementMin = wrapper.find('.js-slider__thumb_min');
