@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import View from '../slider/views/View/View';
 import { dispatchMove } from './_serviceFunctions';
-import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
+import style from '../blocks/slider/slider.scss';
 
 describe('Range', () => {
   let divThumbMin;
@@ -26,26 +26,18 @@ describe('Range', () => {
       vertical: false,
       min: 100,
       max: 500,
-      step: 100,
+      step: undefined,
       progress: true,
     };
     view.createElements(optionsForElements);
     document.documentElement.style.fontSize = '13px';
   };
 
-  const addDnd = () => {
-    const $wrapper = $('.slider');
-    const viewDnd = new ViewUpdating();
-    const optionsForDnD = {
-      step: undefined,
-      vertical: false,
-      range: true,
-      progress: true,
-      min: 100,
-      max: 500,
-      $wrapper,
-    };
-    viewDnd.addDragAndDrop(optionsForDnD);
+  const addStyle = () => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = style;
+    document.head.appendChild(styleElement);
+    document.documentElement.style.fontSize = '13px';
   };
 
 
@@ -68,9 +60,9 @@ describe('Range', () => {
 
   beforeAll(async () => {
     document.body.innerHTML = '';
+    await addStyle();
     await createElements();
     await findElements();
-    await addDnd();
   });
 
   it('should thumb min and max exist', () => {

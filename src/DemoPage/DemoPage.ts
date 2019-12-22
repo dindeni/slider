@@ -7,8 +7,6 @@ class DemoPage {
 
     errorElement: HTMLElement;
 
-    rem = 0.077;
-
     loadSliders(): void {
       this.sliderSettings = [
         {

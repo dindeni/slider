@@ -1,7 +1,6 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import View from '../slider/views/View/View';
-import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
 
@@ -36,6 +35,13 @@ describe('View', () => {
     divProgress.style.width = '0rem';
   };
 
+  const addStyle = () => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = style;
+    document.head.appendChild(styleElement);
+    document.documentElement.style.fontSize = '13px';
+  };
+
   const findElements = () => {
     divThumb = document.querySelector('.js-slider__thumb');
     divThumbLeft = divThumb.getBoundingClientRect().left;
@@ -49,6 +55,7 @@ describe('View', () => {
 
   beforeAll(async () => {
     document.body.innerHTML = '';
+    await addStyle();
     await createElements();
     await turnOnProgress();
     await findElements();
@@ -83,18 +90,6 @@ describe('View', () => {
 
   describe('After dispatch move', () => {
     beforeAll(() => {
-      const $wrapper = $('.sliderInit');
-      const viewDnd = new ViewUpdating();
-      const optionsForDnD = {
-        step: undefined,
-        vertical: false,
-        range: false,
-        progress: true,
-        min: 100,
-        max: 500,
-        $wrapper,
-      };
-      viewDnd.addDragAndDrop(optionsForDnD);
       dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
         moveDistanceY);
     });

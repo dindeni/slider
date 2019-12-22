@@ -3,6 +3,7 @@ import View from '../slider/views/View/View';
 import ViewOptional from '../slider/views/ViewOptional/ViewOptional';
 import { dispatchMove } from './_serviceFunctions';
 import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
+import style from '../blocks/slider/slider.scss';
 
 
 describe('Vertical option', () => {
@@ -15,9 +16,15 @@ describe('Vertical option', () => {
   const moveDistanceY = 50;
 
   const createElements = () => {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('wrapper');
+    document.body.appendChild(wrapper);
+    const $element = $('.wrapper');
+    $element.css({ width: '20.02rem' });
+
     const view = new View();
     const optionsForElements = {
-      $element: $('body'),
+      $element,
       range: false,
       vertical: true,
       min: 100,
@@ -26,22 +33,13 @@ describe('Vertical option', () => {
       progress: true,
     };
     view.createElements(optionsForElements);
-    document.documentElement.style.fontSize = '13px';
   };
 
-  const addDnd = () => {
-    const $wrapper = $('.slider__wrapper');
-    const viewDnd = new ViewUpdating();
-    const optionsForDnD = {
-      step: undefined,
-      vertical: true,
-      range: false,
-      progress: true,
-      min: 100,
-      max: 500,
-      $wrapper,
-    };
-    viewDnd.addDragAndDrop(optionsForDnD);
+  const addStyle = () => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = style;
+    document.head.appendChild(styleElement);
+    document.documentElement.style.fontSize = '13px';
   };
 
   const findElements = () => {
@@ -50,22 +48,13 @@ describe('Vertical option', () => {
     divThumbLeft = divThumb.getBoundingClientRect().left;
     divThumbTop = divThumb.getBoundingClientRect().top;
     divLabel = document.querySelector('.js-slider__label');
-
-    divTrack.style.width = '20.02rem';
-    divTrack.style.height = '0.385rem';
-  };
-
-  const makeVertical = () => {
-    const viewOptional = new ViewOptional();
-    viewOptional.makeVertical({ range: false, wrapper: $('.js-slider') });
   };
 
   beforeAll(async () => {
     document.body.innerHTML = '';
+    await addStyle();
     await createElements();
     await findElements();
-    await makeVertical();
-    await addDnd();
     await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
       moveDistanceY);
   });
