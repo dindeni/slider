@@ -1,6 +1,3 @@
-import Presenter from '../slider/Presenter/Presenter';
-import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
-
 interface Slider {
     progress: boolean;
     min: number;
@@ -8,6 +5,9 @@ interface Slider {
     vertical: boolean;
     range: boolean;
     step?: number;
+    valueMin?: number;
+    valueMax?: number;
+    value?: number;
 }
 
 class DemoPage {
@@ -19,14 +19,12 @@ class DemoPage {
 
     rem = 0.077;
 
-    viewUpdating: ViewUpdating = new ViewUpdating();
-
     loadSliders(): void {
       this.sliderSettings = [
         {
-          progress: true, min: 100, max: 500, vertical: false, range: false,
+          progress: true, min: 100, max: 500, vertical: false, range: true, step: 100,
         }, {
-          progress: true, min: 0, max: 100, vertical: true, range: true,
+          progress: true, min: 0, max: 100, vertical: true, range: true, value: 45,
         }, {
           progress: true, min: 0, max: 500, vertical: false, range: true, step: 100,
         }, {
@@ -70,97 +68,12 @@ class DemoPage {
     observeInput(options: {element: HTMLElement; range: boolean; min: number; max: number;
       vertical: boolean; step: number | undefined; progress: boolean;}): void {
       const {
-        element, range, min, max, vertical, step, progress,
+        element, range, min, max, step,
       } = options;
-
-      let trackWidth: number;
-      let trackHeight;
-      let thumbMin: HTMLElement;
-      let thumbMax: HTMLElement;
-      let thumb;
 
       const formElement = element.querySelector('.js-demo') as HTMLElement;
 
       const handleDemoChange = (event: MouseEvent): void => {
-        trackWidth = (element.querySelector('.js-slider__track') as HTMLElement).clientWidth;
-        trackHeight = (element.querySelector('.js-slider__track') as HTMLElement).clientHeight;
-
-        if (range) {
-          thumbMin = element.querySelector('.js-slider__thumb_min') as HTMLElement;
-          thumbMax = element.querySelector('.js-slider__thumb_max') as HTMLElement;
-        } else thumb = element.querySelector('.js-slider__thumb');
-
-        if ((event.target as HTMLElement).classList.contains('js-demo__field-value')) {
-          const optionsForDistance = {
-            value: parseInt((event.target as HTMLInputElement).value, 10),
-            min,
-            max,
-            trackSize: vertical ? trackHeight : trackWidth,
-          };
-          const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-
-          const optionsForValue = {
-            element: event.target as HTMLInputElement,
-            value: (event.target as HTMLInputElement).value,
-            min,
-            max,
-            step,
-            range,
-            wrapper: event.currentTarget as HTMLElement,
-          };
-          const inputValue: number | undefined = this.validateValue(optionsForValue);
-          const inputValueCondition = inputValue || inputValue === 0;
-
-          if (inputValueCondition) {
-            if (!range) {
-              const optionsForThumbPosition = {
-                value: vertical ? parseInt((event.target as HTMLInputElement).value, 10)
-                  : inputValue || 0,
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-              };
-              !vertical ? (thumb as HTMLElement).style.left = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`
-                : (thumb as HTMLElement).style.top = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`;
-              const optionsForData = {
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-                distance,
-                vertical,
-                thumbElement: thumb,
-                progress,
-                progressSize: distance,
-              };
-              this.viewUpdating.updateData(optionsForData);
-            } else {
-              let thumbMinMax: HTMLElement;
-              (event.target as HTMLInputElement).classList
-                .contains('js-demo__field-value_min') ? thumbMinMax = thumbMin
-                : thumbMinMax = thumbMax;
-              const optionsForThumbPosition = {
-                value: parseInt((event.target as HTMLInputElement).value, 10),
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-              };
-              !vertical ? thumbMinMax.style.left = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`
-                : thumbMinMax.style.top = `${Presenter.calculateFromValueToCoordinates(optionsForThumbPosition)}rem`;
-              const optionsForData = {
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-                distance,
-                vertical,
-                thumbElement: thumbMinMax,
-                progress,
-                progressSize: distance,
-              };
-              this.viewUpdating.updateData(optionsForData);
-            }
-          }
-        }
-
         const optionForSetting = {
           value: (event.target as HTMLInputElement).value,
           element: event.target as HTMLElement,
@@ -170,8 +83,17 @@ class DemoPage {
         const settingValue: boolean | number | undefined | null = this.validateSettings(
           optionForSetting,
         );
-
-        if (settingValue !== null) {
+        const optionsForValue = {
+          element: event.target as HTMLInputElement,
+          value: (event.target as HTMLInputElement).value,
+          min,
+          max,
+          step,
+          range,
+          wrapper: event.currentTarget as HTMLElement,
+        };
+        const inputValue: number | undefined = this.validateValue(optionsForValue);
+        if (settingValue !== null || inputValue) {
           const scaleElement = element.querySelector('.js-demo__field-scale');
 
           if (event.target === scaleElement && (event.target as HTMLInputElement).checked) {
@@ -187,6 +109,7 @@ class DemoPage {
             vertical: false,
             range: false,
             step: undefined,
+            value: min,
           };
 
           ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement)
@@ -195,7 +118,7 @@ class DemoPage {
           formElement.removeEventListener('change', handleDemoChange);
 
           const inputSettings = element.querySelectorAll('.js-demo__field-settings');
-          const inputValue = element.querySelectorAll('.js-demo__field-value');
+          const inputValueElements = element.querySelectorAll('.js-demo__field-value');
           Array.from(inputSettings).map((input, index) => {
             const key = this.settingsKeys[index];
             let value;
@@ -209,14 +132,24 @@ class DemoPage {
           });
 
           const sliderValue: {notRange?: number; min?: number; max?: number} = {};
-          Array.from(inputValue).map((input) => {
+          Array.from(inputValueElements).map((input) => {
             if (input.classList.contains('js-demo__field-value_min')) {
-              sliderValue.min = Number((input as HTMLInputElement).value);
-              return undefined;
+              let valueMin = Number((input as HTMLInputElement).value);
+              if (valueMin > settings.max) {
+                valueMin = settings.max;
+              } else if (valueMin < settings.min) {
+                valueMin = settings.min;
+              }
+              sliderValue.min = valueMin;
             }
             if (input.classList.contains('js-demo__field-value_max')) {
-              sliderValue.max = Number((input as HTMLInputElement).value);
-              return undefined;
+              let valueMax = Number((input as HTMLInputElement).value);
+              if (valueMax > settings.max) {
+                valueMax = settings.max;
+              } else if (valueMax < settings.min) {
+                valueMax = settings.min;
+              }
+              sliderValue.max = valueMax;
             }
             sliderValue.notRange = Number((input as HTMLInputElement).value);
             return undefined;
@@ -225,6 +158,9 @@ class DemoPage {
           while ((event.currentTarget as HTMLElement).firstChild as HTMLElement) {
             ((event.currentTarget as HTMLElement).firstChild as HTMLElement).remove();
           }
+          settings.value = sliderValue.notRange;
+          settings.valueMin = sliderValue.min;
+          settings.valueMax = sliderValue.max;
 
           const scale = settings.step !== undefined;
           DemoPage.createElements({ settings, form: event.currentTarget as HTMLElement, scale });
@@ -235,13 +171,6 @@ class DemoPage {
           });
 
           $(element).slider(settings);
-
-          const optionsForUpdate = {
-            ...settings,
-            wrapper: element,
-            value: sliderValue,
-          };
-          this.updateValue(optionsForUpdate);
 
           const optionsForInput = {
             element,
@@ -472,32 +401,21 @@ class DemoPage {
     static setInputValue(options: {element: HTMLElement; settings: Slider;
       value?: {notRange?: number; min?: number; max?: number};}): void {
       const {
-        element, settings, value,
+        element, settings,
       } = options;
 
       const { range, min, max } = settings;
 
       if (range) {
         const minInput = (element.querySelector('.js-demo__field-value_min') as HTMLInputElement);
-        minInput.min = min.toString();
-        minInput.max = max.toString();
-        if (value && value.notRange) {
-          minInput.value = value.notRange.toString();
-        } else minInput.value = value && value.min ? value.min.toString() : min.toString();
+        settings.valueMin ? minInput.value = settings.valueMin.toString()
+          : minInput.value = min.toString();
         const maxInput = (element.querySelector('.js-demo__field-value_max') as HTMLInputElement);
-        maxInput.min = min.toString();
-        maxInput.max = max.toString();
-        maxInput.value = value && value.max ? value.max.toString() : max.toString();
+        settings.valueMax ? maxInput.value = settings.valueMax.toString()
+          : maxInput.value = max.toString();
       } else {
         const input = (element.querySelector('.js-demo__field-value') as HTMLInputElement);
-        input.min = min.toString();
-        input.max = max.toString();
-        if (value && value.min) {
-          input.value = value.min.toString();
-        } else {
-          input.value = value && value.notRange ? value.notRange.toString()
-            : min.toString();
-        }
+        settings.value ? input.value = settings.value.toString() : input.value = min.toString();
       }
 
       Array.from(element.querySelectorAll('.js-demo__field-settings')).map((input, index) => {
@@ -509,234 +427,6 @@ class DemoPage {
         inputElement.value = Object.values(settings)[index];
         return inputElement;
       });
-    }
-
-    updateValue(options: {range: boolean; min: number; max: number; vertical: boolean;
-     progress: boolean; wrapper: HTMLElement;
-     value: {notRange?: number; min?: number; max?: number};},
-    step?: number | undefined): void {
-      const {
-        range, min, max, vertical, progress, wrapper, value,
-      } = options;
-
-      let thumbMin;
-      let thumbMax;
-      let thumb;
-      let stepCoords;
-      let stepIndex;
-
-      const trackWidth = Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().width);
-      const trackHeight = Math.round((wrapper.querySelector('.slider__track') as HTMLElement).getBoundingClientRect().height);
-
-      if (range) {
-        thumbMin = wrapper.querySelector('.js-slider__thumb_min') as HTMLElement;
-        thumbMax = wrapper.querySelector('.js-slider__thumb_max') as HTMLElement;
-      } else thumb = wrapper.querySelector('.js-slider__thumb');
-
-      const updatingValues = {
-        setDefaultValue: (): void => {
-          let validValue = value.notRange;
-
-          if (validValue) {
-            if (validValue < min) {
-              validValue = min;
-            } else if (validValue > max) {
-              validValue = max;
-            }
-            if (step) {
-              validValue = updatingValues.validateStep(validValue);
-            }
-
-            const input = wrapper.querySelector('.js-demo__field-value');
-            (input as HTMLInputElement).value = validValue.toString();
-
-            const optionsForDistance = {
-              value: validValue,
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-            };
-            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-            vertical ? (thumb as HTMLElement).style.top = `${distance}rem`
-              : (thumb as HTMLElement).style.left = `${distance}rem`;
-            const optionsForData = {
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-              distance,
-              vertical,
-              thumbElement: thumb,
-              progress,
-              progressSize: distance,
-            };
-            this.viewUpdating.updateData(optionsForData);
-          } else if (value.min) {
-            const optionsForDistance = {
-              value: value.min,
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-            };
-            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-            !vertical ? (thumb as HTMLElement).style.left = `${distance}rem`
-              : (thumb as HTMLElement).style.top = `${distance}rem`;
-            const optionsForData = {
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-              distance,
-              vertical,
-              thumbElement: thumb,
-              progress,
-              progressSize: distance,
-            };
-            this.viewUpdating.updateData(optionsForData);
-          }
-        },
-
-        validateStep: (checkedValue: number): number => {
-          const isNotValidStep = step && (checkedValue - min) % step !== 0;
-          const presenter = new Presenter();
-          stepCoords = presenter.calculateLeftScaleCoords({
-            min,
-            max,
-            step,
-            vertical,
-            trackWidth,
-            trackHeight,
-          });
-          /* eslint-disable array-callback-return, consistent-return */
-          if (isNotValidStep) {
-            return stepCoords.value.find((item: number, index) => {
-              const isGreaterValue = item > checkedValue || index === stepCoords.value.length - 1;
-              if (isGreaterValue) {
-                stepIndex = index;
-                return item;
-              }
-            });
-          }
-          return stepCoords.value.find((item: number, index) => {
-            if (item === checkedValue) {
-              stepIndex = index;
-              return checkedValue;
-            }
-          });
-          /* eslint-enable array-callback-return, consistent-return */
-        },
-
-        setMin: (): void => {
-          thumbMin = wrapper.querySelector('.js-slider__thumb_min') as HTMLElement;
-          if (value.notRange) {
-            const optionsForDistance = {
-              value: value.notRange,
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-            };
-            const distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem` : (thumbMin as HTMLElement).style.top = `${distance}rem`;
-            const optionsForData = {
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-              distance,
-              vertical,
-              thumbElement: thumbMin,
-              progress,
-              progressSize: distance,
-            };
-            this.viewUpdating.updateData(optionsForData);
-          }
-        },
-
-        setRangeValue: (): void => {
-          if (value.min) {
-            let distance;
-            let validValue = value.min;
-            if (validValue < min) {
-              validValue = min;
-            } else if (validValue > max) {
-              validValue = max;
-            }
-
-            if (step) {
-              validValue = updatingValues.validateStep(validValue);
-              distance = stepCoords.coords[stepIndex] * this.rem;
-            } else {
-              const optionsForDistance = {
-                value: validValue,
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-              };
-              distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-            }
-
-            !vertical ? (thumbMin as HTMLElement).style.left = `${distance}rem`
-              : (thumbMin as HTMLElement).style.top = `${distance}rem`;
-            const optionsForData = {
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-              distance,
-              vertical,
-              thumbElement: thumbMin,
-              progress,
-              progressSize: distance,
-            };
-            this.viewUpdating.updateData(optionsForData);
-
-            const input = wrapper.querySelector('.js-demo__field-value_min');
-            (input as HTMLInputElement).value = validValue.toString();
-          }
-          if (value.max) {
-            let validValue = value.max;
-            if (validValue < min) {
-              validValue = min;
-            } else if (validValue > max) {
-              validValue = max;
-            }
-            let distance;
-            if (step) {
-              validValue = updatingValues.validateStep(validValue);
-              distance = stepCoords.coords[stepIndex] * this.rem;
-            } else {
-              const optionsForDistance = {
-                value: validValue,
-                min,
-                max,
-                trackSize: vertical ? trackHeight : trackWidth,
-              };
-              distance = Presenter.calculateFromValueToCoordinates(optionsForDistance);
-            }
-
-            !vertical ? (thumbMax as HTMLElement).style.left = `${distance}rem`
-              : (thumbMax as HTMLElement).style.top = `${distance}rem`;
-            const optionsForData = {
-              min,
-              max,
-              trackSize: vertical ? trackHeight : trackWidth,
-              distance,
-              vertical,
-              thumbElement: thumbMax,
-              progress,
-              progressSize: distance,
-            };
-            this.viewUpdating.updateData(optionsForData);
-
-            const input = wrapper.querySelector('.js-demo__field-value_max');
-            (input as HTMLInputElement).value = validValue.toString();
-          }
-        },
-      };
-
-      switch (true) {
-        case !range: updatingValues.setDefaultValue();
-          break;
-        case value.notRange && range: updatingValues.setMin();
-          break;
-        default: updatingValues.setRangeValue();
-      }
     }
 }
 

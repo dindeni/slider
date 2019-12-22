@@ -10,6 +10,9 @@ interface SliderOptions {
   step?: number;
   vertical?: boolean;
   range?: boolean;
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
 }
 
 interface SliderOptionsForInit {
@@ -21,6 +24,9 @@ interface SliderOptionsForInit {
   step: number | undefined;
   vertical: boolean;
   range: boolean;
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
 }
 
 declare global {
@@ -44,6 +50,9 @@ const initSlider = (options: SliderOptionsForInit): void => {
       vertical: false,
       range: false,
       $element: this,
+      valueMin: undefined,
+      valueMax: undefined,
+      value: undefined,
     };
 
     const config = $.extend({}, optionsDefault, options);

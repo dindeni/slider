@@ -38,7 +38,7 @@ class Presenter {
       return this.model.sliderValue;
     }
 
-    calculateLeftScaleCoords(options: {min: number; max: number; step: number | undefined;
+    calculateLeftScaleCoordinates(options: {min: number; max: number; step: number | undefined;
       vertical: boolean; trackWidth: number; trackHeight: number;}):
        {value: number[]; coordinates: number[]; shortValue: number[]; shortCoordinates: number[]} {
       const {
@@ -128,6 +128,23 @@ class Presenter {
     static calculateCoordinatesOfMiddle(options: {start: number; itemSize: number}): number {
       const { start, itemSize } = options;
       return start + itemSize / 2;
+    }
+
+    static validateValue(options: {value: number | undefined; min: number; max: number}):
+     number | undefined {
+      const {
+        value, min, max,
+      } = options;
+
+      if (value) {
+        if (value > max) {
+          return max;
+        }
+        if (value < min) {
+          return min;
+        }
+      }
+      return value;
     }
 }
 

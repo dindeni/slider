@@ -19,6 +19,8 @@ class ViewUpdating {
 
     private rem = 0.077;
 
+    private trackElement: HTMLElement;
+
     viewOptional: ViewOptional = new ViewOptional();
 
     view: View = new View();
@@ -40,9 +42,11 @@ class ViewUpdating {
         const trackWidth: number = (((value as HTMLElement).parentElement as HTMLElement)
           .querySelector('.js-slider__track') as HTMLElement).getBoundingClientRect().width;
 
+        this.trackElement = (((value as HTMLElement).parentElement as HTMLElement)
+          .querySelector('.js-slider__track') as HTMLElement);
         let coordinateStep: number;
         if (step) {
-          const stepData = this.presenter.calculateLeftScaleCoords({
+          const stepData = this.presenter.calculateLeftScaleCoordinates({
             min,
             max,
             step,
@@ -211,7 +215,7 @@ class ViewUpdating {
         let coordinateStep;
 
         const updateStepThumbLabel = (thumbElement: HTMLElement): void => {
-          const scaleCoordinates = this.presenter.calculateLeftScaleCoords({
+          const scaleCoordinates = this.presenter.calculateLeftScaleCoordinates({
             min,
             max,
             step,
@@ -313,21 +317,62 @@ class ViewUpdating {
           const isStepVertical = step && vertical;
           if (isStepNotVertical) {
             switch (true) {
-              case coordinatesOfMiddle > event.pageX:
-                updateStepThumbLabel(thumbMin);
+              case coordinatesOfMiddle < event.pageX && event.pageX < thumbMinLeft
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMin);
                 break;
-              case coordinatesOfMiddle < event.pageX:
+              case coordinatesOfMiddle < event.pageX && event.pageX > thumbMinLeft
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMax);
+                break;
+              case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
+               && event.pageX > thumbMaxLeft: updateStepThumbLabel(thumbMax);
+                break;
+              case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMin);
+                break;
+              case thumbMinLeft < coordinatesOfMiddle && thumbMaxLeft < coordinatesOfMiddle
+               && event.pageX > coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
+                break;
+              case thumbMinLeft > coordinatesOfMiddle && thumbMaxLeft > coordinatesOfMiddle
+               && event.pageX < coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+                break;
+              case event.pageX > thumbMaxLeft && event.pageX > coordinatesOfMiddle:
                 updateStepThumbLabel(thumbMax);
+                break;
+              case event.pageX < thumbMinLeft && event.pageX < coordinatesOfMiddle:
+                updateStepThumbLabel(thumbMin);
                 break;
               default:
             }
           } else if (isStepVertical) {
+            const pageY = event.pageY - window.scrollY;
             switch (true) {
-              case coordinatesOfMiddle > event.pageY - window.scrollY:
+              case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
+               && thumbMaxTop < coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
+                updateStepThumbLabel(thumbMax);
+                break;
+              case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
+               && thumbMaxTop > coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
                 updateStepThumbLabel(thumbMin);
                 break;
-              case coordinatesOfMiddle < event.pageY - window.scrollY:
+              case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
+               && thumbMaxTop > coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
                 updateStepThumbLabel(thumbMax);
+                break;
+              case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
+               && thumbMaxTop < coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
+                updateStepThumbLabel(thumbMin);
+                break;
+              case coordinatesOfMiddle > pageY && thumbMinTop < pageY
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+                break;
+              case coordinatesOfMiddle < pageY && thumbMinTop < pageY
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
+                break;
+              case coordinatesOfMiddle > pageY && thumbMinTop > pageY
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+                break;
+              case coordinatesOfMiddle < pageY && thumbMinTop < pageY
+               && thumbMaxTop < coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
                 break;
               default:
             }
@@ -385,6 +430,16 @@ class ViewUpdating {
         thumbMinTop = parseFloat((thumbMin as HTMLElement).style.top);
         thumbMaxTop = parseFloat((thumbMax as HTMLElement).style.top);
         thumbMinWidth = thumbMin.getBoundingClientRect().width * this.rem;
+
+        const start = vertical ? this.trackElement.getBoundingClientRect().top + window.scrollY
+          : this.trackElement.getBoundingClientRect().left;
+
+        const coordinatesOfMiddle = Presenter.calculateCoordinatesOfMiddle(
+          { start, itemSize: vertical ? trackHeight : trackWidth },
+        );
+        ViewOptional.changeZIndex({
+          coordinatesOfMiddle, vertical, thumbMax, thumbMin, thumbElement,
+        });
       }
 
       if (isNotVerticalStep) {
@@ -460,7 +515,10 @@ class ViewUpdating {
           vertical,
           thumbElement,
         };
-        this.view.updateLabelValue(optionsForLabel);
+        const isDistance = distance || distance === 0;
+        if (isDistance) {
+          this.view.updateLabelValue(optionsForLabel);
+        }
       }
 
       if (progress) {
@@ -476,7 +534,7 @@ class ViewUpdating {
       trackHeight: number; elementCoordinate: HTMLElement;
       numberTranslation: number; vertical: boolean; event: MouseEvent; range: boolean;}): void {
       const {
-        thumbDistance, trackWidth, trackHeight, elementCoordinate, numberTranslation, vertical,
+        trackWidth, trackHeight, elementCoordinate, numberTranslation, vertical,
         event, range,
       } = options;
 
@@ -618,7 +676,6 @@ class ViewUpdating {
           }
         },
       };
-
       !vertical ? stepPosition.setLeft() : stepPosition.setTop();
     }
 }
