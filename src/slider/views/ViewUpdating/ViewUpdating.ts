@@ -1,6 +1,7 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 import Presenter from '../../Presenter/Presenter';
+import { SliderElementOptions } from '../../../types/types';
 
 class ViewUpdating {
     private coordinateXStart: number;
@@ -27,16 +28,15 @@ class ViewUpdating {
 
     presenter: Presenter = new Presenter();
 
-    addDragAndDrop(options: {step: number | undefined; vertical: boolean; range: boolean;
-     progress: boolean; min: number; max: number; $wrapper: JQuery;}): void {
+    addDragAndDrop(options: SliderElementOptions): void {
       const {
-        step, vertical, range, progress, min, max, $wrapper,
+        step, vertical, range, progress, min, max, $element,
       } = options;
 
       let thumbElementMin: HTMLElement;
       let thumbElementMax: HTMLElement;
 
-      Array.from($wrapper.find('.js-slider__thumb')).map((value) => {
+      Array.from($element.find('.js-slider__thumb')).map((value) => {
         const trackHeight: number = (((value as HTMLElement).parentElement as HTMLElement)
           .querySelector('.js-slider__track') as HTMLElement).getBoundingClientRect().height;
         const trackWidth: number = (((value as HTMLElement).parentElement as HTMLElement)
@@ -79,7 +79,7 @@ class ViewUpdating {
         }));
       });
 
-      Array.from($wrapper.find('.js-slider__track')).map((value) => value
+      Array.from($element.find('.js-slider__track')).map((value) => value
         .addEventListener('click', (event) => this.handleTrackClick({
           event,
           track: value,

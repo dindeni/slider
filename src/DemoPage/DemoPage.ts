@@ -1,14 +1,4 @@
-interface Slider {
-    progress: boolean;
-    min: number;
-    max: number;
-    vertical: boolean;
-    range: boolean;
-    step?: number;
-    valueMin?: number;
-    valueMax?: number;
-    value?: number;
-}
+import { Slider } from '../types/types';
 
 class DemoPage {
     sliderSettings: [Slider, Slider, Slider, Slider];

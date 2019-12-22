@@ -1,6 +1,6 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
-import SliderOptionsForInit from '../../sliderInit/sliderInit';
+import { SliderElementOptions } from '../../../types/types';
 import Presenter from '../../Presenter/Presenter';
 
 class View {
@@ -40,7 +40,7 @@ class View {
 
     viewUpdating: ViewUpdating;
 
-    createElements(options: SliderOptionsForInit): void {
+    createElements(options: SliderElementOptions): void {
       const {
         $element, range, vertical, min, max, step, progress, value, valueMin, valueMax,
       } = options;
@@ -116,7 +116,7 @@ class View {
         progress,
         min,
         max,
-        $wrapper,
+        $element: $wrapper,
       });
     }
 

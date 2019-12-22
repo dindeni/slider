@@ -1,4 +1,5 @@
 import Presenter from '../../Presenter/Presenter';
+import { SliderOptions } from '../../../types/types';
 
 class ViewOptional {
     private scaleData: {coordinates: number[]; value: number[];
