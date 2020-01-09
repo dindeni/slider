@@ -32,28 +32,71 @@ class ViewOptional {
       });
     }
 
-    correctStepCoordinate(value): {coordinate: number; value: number} {
-      const result: {coordinate: number; value: number} = {
-        coordinate: this.scaleData.coordinates[0],
-        value: this.scaleData.value[0],
-      };
+    correctStepCoordinate(options: { coordinateMin?: number; coordinateMax?: number;
+     coordinate?: number; }):
+     {coordinateMin?: number; coordinateMax?: number; coordinate?: number;
+     valueMin?: number; valueMax?: number; value?: number; } {
+      const { coordinateMin, coordinateMax, coordinate } = options;
+      const result: {coordinateMin: number; coordinateMax: number; coordinate: number;
+       valueMin: number; valueMax: number; value: number; } = {
+         coordinateMin: this.scaleData.coordinates[0],
+         coordinateMax: this.scaleData.coordinates[this.scaleData.coordinates.length - 1],
+         coordinate: this.scaleData.coordinates[0],
+         valueMin: this.scaleData.value[0],
+         valueMax: this.scaleData.value[this.scaleData.value.length - 1],
+         value: this.scaleData.value[0],
+       };
+      let indexMinFlag: boolean;
+      let indexMaxFlag: boolean;
+      let indexFlag;
 
-      for (let index = 0; index <= this.scaleData.value.length - 1; index += 1) {
-        if (index === this.scaleData.value.length - 1) {
-          result.coordinate = this.scaleData.coordinates[index];
-          result.value = this.scaleData.value[index];
+      this.scaleData.coordinates.map((value, index) => {
+        const checkedCoordinate = Number((value * this.rem).toFixed(2));
+        const isCoordinateMinAndMax = (coordinateMin || coordinateMin === 0) && coordinateMax;
+        if (isCoordinateMinAndMax) {
+          switch (true) {
+            case !indexMinFlag && coordinate === coordinateMin:
+              indexMinFlag = true;
+              result.coordinateMin = this.scaleData.coordinates[index];
+              result.valueMin = this.scaleData.value[index];
+              break;
+            case coordinateMin && !indexMinFlag && checkedCoordinate > coordinateMin:
+              indexMinFlag = true;
+              result.coordinateMin = this.scaleData.coordinates[index - 1];
+              result.valueMin = this.scaleData.value[index - 1];
+              break;
+          }
+          switch (true) {
+            case !indexMaxFlag && coordinate === coordinateMax:
+              indexMaxFlag = true;
+              result.coordinateMax = this.scaleData.coordinates[index];
+              result.valueMax = this.scaleData.value[index];
+              break;
+            case (coordinateMin || coordinateMin === 0) && coordinateMax && !indexMaxFlag
+             && checkedCoordinate > coordinateMin && checkedCoordinate > coordinateMax:
+              indexMaxFlag = true;
+              result.coordinateMax = this.scaleData.coordinates[index];
+              result.valueMax = this.scaleData.value[index];
+              break;
+          }
         }
-        if (this.scaleData.value[index] === value) {
-          result.coordinate = this.scaleData.coordinates[index];
-          result.value = this.scaleData.value[index];
-          break;
+        if (coordinate) {
+          switch (true) {
+            case !indexFlag && checkedCoordinate === coordinate:
+              indexFlag = true;
+              result.coordinate = this.scaleData.coordinates[index];
+              result.value = this.scaleData.value[index];
+              break;
+            case !indexFlag && checkedCoordinate > coordinate:
+              indexFlag = true;
+              result.coordinate = this.scaleData.coordinates[index - 1];
+              result.value = this.scaleData.value[index - 1];
+              break;
+          }
         }
-        if (value > this.scaleData.value[index] && value < this.scaleData.value[index + 1]) {
-          result.coordinate = this.scaleData.coordinates[index + 1];
-          result.value = this.scaleData.value[index + 1];
-          break;
-        }
-      }
+
+        return undefined;
+      });
       return result;
     }
 

@@ -59,24 +59,24 @@ class Presenter {
         let stepCount = 0;
         for (let i = min; i <= max; i += step) {
           let coordinatesItems;
-          !vertical ? coordinatesItems = (stepCount / (max - min))
-                    * trackWidth : coordinatesItems = (stepCount / (max - min))
+          !vertical ? coordinatesItems = (stepCount / (max - min)) * trackWidth
+            : coordinatesItems = (stepCount / (max - min))
                         * height;
+          coordinatesItems = Number(coordinatesItems.toFixed(2));
           scaleValue.value.push(i);
-          scaleValue.coordinates.push(Math.round(coordinatesItems));
+          scaleValue.coordinates.push(coordinatesItems);
           this.dataForScale.push(coordinatesItems);
           stepCount += step;
         }
 
-        const isNotVerticalLastCoordinate = !vertical && scaleValue.coordinates[
+        const isLastCoordinate = scaleValue.coordinates[
           scaleValue.coordinates.length - 1] !== width;
-        const isVerticalLastCoordinate = vertical && scaleValue.coordinates[
-          scaleValue.coordinates.length - 1] !== height;
-        if (isNotVerticalLastCoordinate) {
-          scaleValue.coordinates.push(width);
-        }
-        if (isVerticalLastCoordinate) {
-          scaleValue.coordinates.push(height);
+
+        if (isLastCoordinate) {
+          scaleValue.coordinates.pop();
+          vertical ? scaleValue.coordinates.push(height) : scaleValue.coordinates.push(width);
+          scaleValue.value.pop();
+          scaleValue.value.push(max);
         }
 
         scaleValue.shortValue = scaleValue.value;
@@ -99,7 +99,6 @@ class Presenter {
             } return false;
           });
         }
-
         return scaleValue;
       } return {
         coordinates: [],
@@ -122,7 +121,7 @@ class Presenter {
       } = options;
       const unit = trackSize / (max - min);
       const rem = 0.077;
-      return ((value - min) * unit) * rem;
+      return Number((((value - min) * unit) * rem).toFixed(2));
     }
 
     static calculateCoordinatesOfMiddle(options: {start: number; itemSize: number}): number {

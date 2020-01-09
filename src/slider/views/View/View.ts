@@ -12,11 +12,11 @@ class View {
 
     private $thumbElementMax: JQuery;
 
-    private labelOffsetLeft = 0.62;
+    private LABEL_OFFSET_LEFT = 0.62;
 
-    private labelOffsetTop = -2.31;
+    private LABEL_TOP_CORRECTION = 0.17;
 
-    private rem = 0.077;
+    private REM = 0.077;
 
     private value: number | undefined = undefined;
 
@@ -32,9 +32,9 @@ class View {
 
     private thumbCoordinateMax: number;
 
-    min: number;
+    private min: number;
 
-    max: number;
+    private max: number;
 
     viewOptional: ViewOptional;
 
@@ -155,6 +155,7 @@ class View {
         this.thumbCoordinateMax = Presenter.calculateFromValueToCoordinates({
           value: this.valueMax || this.max, min: this.min, max: this.max, trackSize: this.trackSize,
         });
+        this.validateCoordinates();
       } else {
         this.thumbCoordinate = Presenter.calculateFromValueToCoordinates({
           value: this.value || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
@@ -164,16 +165,28 @@ class View {
       const isStepNotRange = step && !range;
       const isStepRange = step && range;
       if (isStepNotRange) {
-        const stepData = this.viewOptional.correctStepCoordinate(this.value || this.min);
-        this.thumbCoordinate = stepData.coordinate * this.rem;
+        const stepData = this.viewOptional.correctStepCoordinate({
+          coordinate: this.thumbCoordinate,
+        });
+
+        this.thumbCoordinate = stepData.coordinate
+         || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
+
         this.value = stepData.value;
       } else if (isStepRange) {
-        const stepDataMin = this.viewOptional.correctStepCoordinate(this.valueMin || this.min);
-        this.thumbCoordinateMin = stepDataMin.coordinate * this.rem;
-        this.valueMin = stepDataMin.value;
-        const stepDataMax = this.viewOptional.correctStepCoordinate(this.valueMax || this.max);
-        this.thumbCoordinateMax = stepDataMax.coordinate * this.rem;
-        this.valueMax = stepDataMax.value;
+        const stepData = this.viewOptional.correctStepCoordinate({
+          coordinateMin: this.thumbCoordinateMin,
+          coordinateMax: this.thumbCoordinateMax,
+        });
+
+        if (stepData.coordinateMin) {
+          this.thumbCoordinateMin = stepData.coordinateMin * this.REM;
+        }
+        if (stepData.coordinateMax) {
+          this.thumbCoordinateMax = stepData.coordinateMax * this.REM;
+        }
+        this.valueMin = stepData.valueMin;
+        this.valueMax = stepData.valueMax;
       }
 
       const isRangeVertical = range && !vertical;
@@ -188,12 +201,12 @@ class View {
 
         this.$thumbElementMin.css({
           left: `${this.thumbCoordinateMin}rem`,
-          zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.rem ? 200 : 50,
+          zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.REM ? 200 : 50,
         });
 
         this.$thumbElementMax.css({
           left: `${this.thumbCoordinateMax}rem`,
-          zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.rem ? 50 : 200,
+          zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.REM ? 50 : 200,
         });
       }
       if (vertical) {
@@ -216,43 +229,51 @@ class View {
       const {
         vertical, range, wrapper,
       } = options;
+      const LABEL_OFFSET_TOP = -4.2;
 
       if (!range) {
         const $labelElement = $('<div class="slider__label js-slider__label"></div>')
           .appendTo(wrapper);
         $labelElement.css({
-          left: `${this.thumbCoordinate - this.labelOffsetLeft}rem`,
+          left: `${this.thumbCoordinate - this.LABEL_OFFSET_LEFT}rem`,
         });
         $labelElement.text(this.value || this.min);
         if (vertical) {
           $labelElement.css({
-            top: `${this.thumbCoordinate + this.labelOffsetTop}rem`,
-            left: `${this.labelOffsetTop / 2}rem`,
+            top: `${this.thumbCoordinate - this.LABEL_TOP_CORRECTION}rem`,
+            left: `${LABEL_OFFSET_TOP}rem`,
           });
+          $labelElement.addClass('slider__label_vertical');
         }
       } else {
         const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
           .appendTo(wrapper);
         if (vertical) {
           $labelElementMin.css({
-            left: `${this.labelOffsetTop / 2}rem`,
-            top: `${this.thumbCoordinateMin + this.labelOffsetTop}rem`,
+            left: `${LABEL_OFFSET_TOP}rem`,
+            top: `${this.thumbCoordinateMin - this.LABEL_TOP_CORRECTION}rem`,
           });
+          $labelElementMin.addClass('slider__label_vertical');
         } else {
           $labelElementMin.css({
-            left: `${this.thumbCoordinateMin - this.labelOffsetLeft}rem`,
+            left: `${this.thumbCoordinateMin - this.LABEL_OFFSET_LEFT}rem`,
           });
         }
         $labelElementMin.text(this.valueMin || this.min);
 
         const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
           .appendTo(wrapper);
-        !vertical ? $labelElementMax.css({
-          left: `${this.thumbCoordinateMax - this.labelOffsetLeft}rem`,
-        }) : $labelElementMax.css({
-          top: `${this.thumbCoordinateMax + this.labelOffsetTop}rem`,
-          left: `${this.labelOffsetTop / 2}rem`,
-        });
+        if (vertical) {
+          $labelElementMax.css({
+            top: `${this.thumbCoordinateMax - this.LABEL_TOP_CORRECTION}rem`,
+            left: `${LABEL_OFFSET_TOP}rem`,
+          });
+          $labelElementMax.addClass('slider__label_vertical');
+        } else {
+          $labelElementMax.css({
+            left: `${this.thumbCoordinateMax - this.LABEL_OFFSET_LEFT}rem`,
+          });
+        }
         $labelElementMax.text(this.valueMax || this.max);
       }
     }
@@ -270,21 +291,42 @@ class View {
         if ($thumb.is('.slider__thumb_min')) {
           const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_min');
           labelElementMin.text(value);
-          !vertical ? labelElementMin.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
-            : labelElementMin.css({ top: `${coordinate + this.labelOffsetTop}rem` });
+          !vertical ? labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
+            : labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
         } else {
           const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_max');
           $labelElementMax.text(value);
-          !vertical ? $labelElementMax.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
-            : $labelElementMax.css({ top: `${coordinate + this.labelOffsetTop}rem` });
+          !vertical ? $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
+            : $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
         }
       } else {
         const $labelElement = $(thumbElement).parent().find('.slider__label');
         $labelElement.text(value);
 
-        !vertical ? $labelElement.css({ left: `${coordinate - this.labelOffsetLeft}rem` })
-          : $labelElement.css({ top: `${coordinate + this.labelOffsetTop}rem` });
+        !vertical ? $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
+          : $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
       }
+    }
+
+    validateCoordinates(): number | undefined {
+      const coordinateOfMiddle = Presenter.calculateCoordinatesOfMiddle(
+        { start: 0, itemSize: this.trackSize },
+      )
+      * this.REM;
+      switch (true) {
+        case this.thumbCoordinateMin < this.thumbCoordinateMax - 3:
+          return this.thumbCoordinateMin;
+        case this.thumbCoordinateMin > this.thumbCoordinateMax - 3
+        && this.thumbCoordinateMin > coordinateOfMiddle:
+          this.thumbCoordinateMin = this.thumbCoordinateMin - 3;
+          break;
+        case this.thumbCoordinateMin > this.thumbCoordinateMax - 3
+        && this.thumbCoordinateMin < coordinateOfMiddle:
+          this.thumbCoordinateMax = this.thumbCoordinateMax + 3;
+          break;
+        default: return undefined;
+      }
+      return undefined;
     }
 }
 

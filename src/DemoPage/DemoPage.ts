@@ -10,9 +10,9 @@ class DemoPage {
     loadSliders(): void {
       this.sliderSettings = [
         {
-          progress: true, min: 100, max: 500, vertical: false, range: true, step: 100,
+          progress: true, min: 100, max: 500, vertical: false, range: true,
         }, {
-          progress: true, min: 0, max: 100, vertical: true, range: true, value: 45,
+          progress: true, min: 0, max: 100, vertical: true, range: true,
         }, {
           progress: true, min: 0, max: 500, vertical: false, range: true, step: 100,
         }, {
@@ -73,15 +73,19 @@ class DemoPage {
         );
         const optionsForValue = {
           element: event.target as HTMLInputElement,
-          value: (event.target as HTMLInputElement).value,
+          value: (event.target as HTMLElement).classList.contains('js-demo__field-value')
+            ? (event.target as HTMLInputElement).value : 'null',
           min,
           max,
           step,
           range,
           wrapper: event.currentTarget as HTMLElement,
         };
+
         const inputValue: number | undefined = this.validateValue(optionsForValue);
-        if (settingValue !== null || inputValue) {
+
+        const isValidValueOrSetting = settingValue !== null || inputValue || inputValue === 0;
+        if (isValidValueOrSetting) {
           const scaleElement = element.querySelector('.js-demo__field-scale');
 
           if (event.target === scaleElement && (event.target as HTMLInputElement).checked) {
@@ -90,7 +94,7 @@ class DemoPage {
             ((event.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_step') as HTMLElement).remove();
           }
 
-          const settings: Slider = {
+          let settings: Slider = {
             progress: true,
             min: 0,
             max: 100,
@@ -116,7 +120,8 @@ class DemoPage {
             } else {
               value = DemoPage.convertInputValue((input as HTMLInputElement).value);
             }
-            return Object.assign(settings, { [key]: value });
+            settings = { ...settings, ...{ [key]: value } };
+            return settings;
           });
 
           const sliderValue: {notRange?: number; min?: number; max?: number} = {};
@@ -129,6 +134,7 @@ class DemoPage {
                 valueMin = settings.min;
               }
               sliderValue.min = valueMin;
+              sliderValue.notRange = valueMin;
             }
             if (input.classList.contains('js-demo__field-value_max')) {
               let valueMax = Number((input as HTMLInputElement).value);
@@ -138,8 +144,10 @@ class DemoPage {
                 valueMax = settings.min;
               }
               sliderValue.max = valueMax;
+            } else {
+              sliderValue.notRange = Number((input as HTMLInputElement).value);
+              sliderValue.min = Number((input as HTMLInputElement).value);
             }
-            sliderValue.notRange = Number((input as HTMLInputElement).value);
             return undefined;
           });
 

@@ -18,13 +18,27 @@
   &__label{
     height: 2.15rem;
     width: 2.69rem;
-    background: url("icon-label.svg") no-repeat;
     color: #ffffff;
     text-align: center;
     line-height: 1.92rem;
     position: absolute;
     top: -1.38rem;
     left: -0.62rem;
+    &::before{
+      content: '';
+      position: absolute;
+      height: 2.15rem;
+      width: 2.69rem;
+      background: url("icon-label.svg") no-repeat;
+      left: 0;
+      z-index: -1;
+    }
+    &_vertical::before{
+      width: 3.5rem;
+      height: 2.15rem;
+      background: url("icon-label-vertical.svg") no-repeat;
+      top: -.14rem;
+    }
   }
 
   &__scale-item{

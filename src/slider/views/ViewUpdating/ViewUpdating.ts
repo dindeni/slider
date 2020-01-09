@@ -452,13 +452,15 @@ class ViewUpdating {
             this.thumbLeft = 0;
             break;
           case thumbElement === thumbMin && (shift + distance
-           > thumbMaxLeft - thumbMinWidth): return;
+           > thumbMaxLeft - (thumbMinWidth * 2)): return;
           case thumbElement === thumbMax && ((shift + distance)
-           < thumbMinLeft + thumbMinWidth): return;
+           < thumbMinLeft + (thumbMinWidth * 2)): return;
           default: thumbNode.style.left = `${shift + distance}rem`;
             this.thumbLeft = shift + distance;
         }
       } else if (step) {
+        let flagRange;
+
         this.setStepPosition({
           thumbDistance,
           trackWidth,
@@ -468,6 +470,7 @@ class ViewUpdating {
           vertical,
           event,
           range,
+          flagRange,
         });
         !vertical ? this.thumbLeft = parseFloat(thumbElement.style.left)
           : this.thumbTop = parseFloat(thumbElement.style.top);
@@ -532,7 +535,8 @@ class ViewUpdating {
 
     setStepPosition(options: {thumbDistance: number; trackWidth: number;
       trackHeight: number; elementCoordinate: HTMLElement;
-      numberTranslation: number; vertical: boolean; event: MouseEvent; range: boolean;}): void {
+      numberTranslation: number; vertical: boolean; event: MouseEvent; range: boolean;
+      flagRange?: {min: 'increase' | 'bidirectional'; max: 'bidirectional' | 'decrease'};}): void {
       const {
         trackWidth, trackHeight, elementCoordinate, numberTranslation, vertical,
         event, range,
@@ -558,13 +562,15 @@ class ViewUpdating {
         return this.coordinateStep[index - 1];
       };
 
+      const thumbWidth = element.getBoundingClientRect().width * this.rem;
+
       const stepPosition = {
         setLeft: (): void => {
           const numberCoordinateLeft = parseFloat(element.style.left);
+          const index = this.coordinateStep.findIndex(
+            (value) => value === Number((numberCoordinateLeft / this.rem).toFixed(2)),
+          );
 
-          const index = this.coordinateStep.findIndex((value) => value === Math.round(
-            numberCoordinateLeft / this.rem,
-          ));
 
           const distanceOfPageX = event.pageX - (((element as HTMLElement)
             .parentElement as HTMLElement).querySelector('.slider__track') as HTMLElement).getBoundingClientRect().left;
@@ -574,12 +580,16 @@ class ViewUpdating {
             if (isThumbMin) {
               const thumbMaxLeft = parseFloat((element.nextElementSibling as HTMLElement)
                 .style.left);
-              thumbRangeFlag.above = thumbMaxLeft > this.coordinateStep[index + 1] * this.rem;
+              const thumbMinLeft = parseFloat(element.style.left);
+              thumbRangeFlag.above = thumbMaxLeft > this.coordinateStep[index + 1] * this.rem
+              && thumbMinLeft < thumbMaxLeft - thumbWidth * 2;
               thumbRangeFlag.below = numberCoordinateLeft <= thumbMaxLeft;
             } else {
               const thumbMinLeft = parseFloat((element.previousElementSibling as HTMLElement)
                 .style.left);
-              thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinLeft;
+              const thumbMaxLeft = parseFloat(element.style.left);
+              thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinLeft
+              && thumbMaxLeft - thumbWidth * 2 > thumbMinLeft;
               thumbRangeFlag.above = numberCoordinateLeft >= thumbMinLeft;
             }
           }
@@ -587,21 +597,23 @@ class ViewUpdating {
           const isAbove0 = !range ? numberCoordinateLeft < trackWidth * this.rem
             && distanceOfPageX >= this.coordinateStep[index]
             + (this.coordinateStep[index + 1] - this.coordinateStep[index]) / 2
-            : numberCoordinateLeft < trackWidth * this.rem && thumbRangeFlag.above
+            : numberCoordinateLeft <= trackWidth * this.rem && thumbRangeFlag.above
             && distanceOfPageX >= this.coordinateStep[index]
-            + (this.coordinateStep[index + 1] - this.coordinateStep[index]) / 2;
+            + (((this.coordinateStep[index + 1] || this.coordinateStep[
+              this.coordinateStep.length - 1])) - this.coordinateStep[index]) / 2;
 
-          const isBelow0 = !range ? numberCoordinateLeft >= numberTranslation * this.rem
+          const isBelow0 = !range ? numberCoordinateLeft >= Number((
+            numberTranslation * this.rem).toFixed(5))
            && distanceOfPageX <= this.coordinateStep[index]
             - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2
-            : numberCoordinateLeft >= numberTranslation * this.rem && thumbRangeFlag.below
-            && distanceOfPageX <= this.coordinateStep[index]
+            : numberCoordinateLeft >= Number((numberTranslation * this.rem).toFixed(5))
+             && thumbRangeFlag.below && distanceOfPageX <= this.coordinateStep[index]
             - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2;
 
           if (isAbove0) {
             element.style.left = `${setCoordinate('above', index) * this.rem}rem`;
             const optionsForLabel = {
-              value: this.stepValues[index + 1],
+              value: this.stepValues[index + 1] || this.stepValues[this.stepValues.length - 1],
               coordinate: this.coordinateStep[index + 1] * this.rem,
               vertical,
               thumbElement: element,
@@ -620,8 +632,8 @@ class ViewUpdating {
         },
         setTop: (): void => {
           const numberCoordinateTop = parseFloat(element.style.top);
-          const index = this.coordinateStep.findIndex((value) => parseFloat((value * this.rem)
-            .toFixed(3)) === numberCoordinateTop);
+          const index = this.coordinateStep.findIndex((value) => value
+             === Number((numberCoordinateTop / this.rem).toFixed(2)));
           const distanceOfPageY = event.pageY - ((((element as HTMLElement)
             .parentElement as HTMLElement).querySelector('.slider__track') as HTMLElement).getBoundingClientRect().top + window.scrollY);
 
@@ -630,35 +642,43 @@ class ViewUpdating {
             const isThumbMin = element.classList.contains('js-slider__thumb_min');
             if (isThumbMin) {
               const thumbMaxTop = parseFloat((element.nextElementSibling as HTMLElement).style.top);
-              thumbRangeFlag.above = thumbMaxTop > this.coordinateStep[index + 1] * this.rem;
+              const thumbMinTop = parseFloat(element.style.top);
+              thumbRangeFlag.above = thumbMaxTop > this.coordinateStep[index + 1] * this.rem
+              && thumbMinTop < thumbMaxTop - thumbWidth * 2;
               thumbRangeFlag.below = numberCoordinateTop <= thumbMaxTop;
             } else {
               const thumbMinTop = parseFloat((element.previousElementSibling as HTMLElement)
                 .style.top);
-              thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinTop;
+              const thumbMaxTop = parseFloat(element.style.top);
+              thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinTop
+              && thumbMaxTop - thumbWidth * 2 > thumbMinTop;
               thumbRangeFlag.above = numberCoordinateTop >= thumbMinTop;
             }
           }
 
+          const nextCoordinate = this.coordinateStep[index + 1] === 0 ? 0
+            : this.coordinateStep[index + 1] || this.coordinateStep[this.coordinateStep.length - 1];
           const isAbove0 = !range ? numberCoordinateTop < trackHeight * this.rem && distanceOfPageY
            >= this.coordinateStep[index]
             + (this.coordinateStep[index + 1] - this.coordinateStep[index]) / 2
-            : numberCoordinateTop < trackHeight * this.rem && thumbRangeFlag.above
+            : numberCoordinateTop <= trackHeight * this.rem && thumbRangeFlag.above
              && distanceOfPageY >= this.coordinateStep[index]
-            + (this.coordinateStep[index + 1] - this.coordinateStep[index]) / 2;
+            + (nextCoordinate - this.coordinateStep[index]) / 2;
 
+          const previousCoordinate = this.coordinateStep[index - 1] === 0 ? 0
+            : this.coordinateStep[index - 1] || this.coordinateStep[1];
           const isBelow0 = !range ? numberCoordinateTop <= trackHeight * this.rem
            && numberCoordinateTop !== 0
            && distanceOfPageY <= this.coordinateStep[index]
             - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2
-            : numberCoordinateTop <= trackHeight * this.rem && numberCoordinateTop !== 0
-             && thumbRangeFlag.below && distanceOfPageY <= this.coordinateStep[index]
-            - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2;
+            : numberCoordinateTop <= trackHeight * this.rem && thumbRangeFlag.below
+             && distanceOfPageY <= this.coordinateStep[index]
+            - (this.coordinateStep[index] - previousCoordinate) / 2;
 
           if (isAbove0) {
             element.style.top = `${(setCoordinate('above', index)) * this.rem}rem`;
             const optionsForLabel = {
-              value: this.stepValues[index + 1],
+              value: this.stepValues[index + 1] || this.stepValues[this.stepValues.length - 1],
               coordinate: this.coordinateStep[index + 1] * this.rem,
               vertical,
               thumbElement: element,
@@ -667,8 +687,8 @@ class ViewUpdating {
           } else if (isBelow0) {
             element.style.top = `${(setCoordinate('below', index)) * this.rem}rem`;
             const optionsForLabel = {
-              value: this.stepValues[index - 1],
-              coordinate: this.coordinateStep[index - 1] * this.rem,
+              value: this.stepValues[index - 1] || this.stepValues[0],
+              coordinate: this.coordinateStep[index - 1] * this.rem || this.coordinateStep[0],
               vertical,
               thumbElement: element,
             };
