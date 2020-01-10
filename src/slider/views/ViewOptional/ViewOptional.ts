@@ -109,7 +109,7 @@ class ViewOptional {
               break;
           }
           switch (true) {
-            case !indexMaxFlag && coordinate === coordinateMax:
+            case !indexMaxFlag && checkedCoordinate === coordinateMax:
               indexMaxFlag = true;
               result.coordinateMax = this.scaleData.coordinates[index];
               result.valueMax = this.scaleData.value[index];
@@ -136,7 +136,6 @@ class ViewOptional {
               break;
           }
         }
-
         return undefined;
       });
       return result;
