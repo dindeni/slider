@@ -1,7 +1,29 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
-import { SliderElementOptions } from '../../../types/types';
+import { SliderElementOptions, RangeAndVerticalOptions } from '../../../types/types';
 import Presenter from '../../Presenter/Presenter';
+
+
+interface OptionsForStylingElements extends RangeAndVerticalOptions{
+  wrapper: JQuery;
+  step: number | undefined;
+}
+
+interface LabelCreationOptions extends RangeAndVerticalOptions{
+  initialValue: number;
+  max: number; wrapper;
+}
+
+interface UpdatingLabelOptions {
+  value: number;
+  coordinate: number;
+  vertical: boolean;
+  thumbElement: HTMLElement | JQuery;
+}
+
+interface ThumbCreationOptions extends RangeAndVerticalOptions{
+  wrapper: JQuery;
+}
 
 class View {
     private $trackElement: JQuery;
@@ -120,7 +142,7 @@ class View {
       });
     }
 
-    createThumb(options: {range: boolean; vertical; wrapper}): void {
+    createThumb(options: ThumbCreationOptions): void {
       const { range, vertical, wrapper } = options;
 
       if (!range) {
@@ -141,8 +163,7 @@ class View {
       }
     }
 
-    stylingElements(options: {range: boolean; vertical: boolean; wrapper: JQuery;
-     step: number | undefined;}): void {
+    stylingElements(options: OptionsForStylingElements): void {
       const {
         range, vertical, wrapper, step,
       } = options;
@@ -224,8 +245,7 @@ class View {
       }
     }
 
-    createLabel(options: {initialValue: number; vertical: boolean; range: boolean;
-      max: number; wrapper;}): void {
+    createLabel(options: LabelCreationOptions): void {
       const {
         vertical, range, wrapper,
       } = options;
@@ -278,8 +298,7 @@ class View {
       }
     }
 
-    updateLabelValue(options: {value: number; coordinate: number; vertical: boolean;
-      thumbElement: HTMLElement | JQuery;}): void {
+    updateLabelValue(options: UpdatingLabelOptions): void {
       const {
         value, coordinate, vertical, thumbElement,
       } = options;

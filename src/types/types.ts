@@ -1,9 +1,20 @@
-interface Slider {
-  progress: boolean;
+interface ExtremumOptions {
   min: number;
   max: number;
+}
+
+interface RangeAndVerticalOptions {
   vertical: boolean;
   range: boolean;
+}
+
+interface SliderBasicOptions extends ExtremumOptions, RangeAndVerticalOptions{
+  progress: boolean;
+  step?: number;
+}
+
+interface Slider extends ExtremumOptions, RangeAndVerticalOptions{
+  progress: boolean;
   step?: number;
   valueMin?: number;
   valueMax?: number;
@@ -22,4 +33,7 @@ interface SliderOptions extends Slider{
   label?: boolean;
 }
 
-export {SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider};
+export {
+  SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
+  ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions,
+};

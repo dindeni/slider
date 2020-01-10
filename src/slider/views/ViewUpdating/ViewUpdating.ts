@@ -1,7 +1,55 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 import Presenter from '../../Presenter/Presenter';
-import { SliderElementOptions } from '../../../types/types';
+import { SliderElementOptions, SliderBasicOptions, RangeAndVerticalOptions, ExtremumOptions } from '../../../types/types';
+
+interface MovingThumbOptions extends SliderBasicOptions{
+  event: MouseEvent;
+  value: HTMLElement;
+  trackWidth: number;
+  trackHeight: number;
+  coordinateStep: number;
+}
+
+interface MousedownOptions extends MovingThumbOptions{
+  thumbElementMin: HTMLElement;
+  thumbElementMax: HTMLElement;
+}
+
+interface TrackClickOptions extends SliderBasicOptions{
+  event: MouseEvent;
+  track: HTMLElement;
+}
+
+interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
+  step: number | undefined;
+  thumbDistance: number;
+  thumbElement: HTMLElement;
+  trackHeight: number;
+  event: MouseEvent;
+  trackWidth;
+  shift: number;
+  coordinateStep: number;
+}
+
+interface UpdatingDataOptions extends ExtremumOptions{
+  trackSize: number;
+  distance: number;
+  vertical;
+  thumbElement: HTMLElement;
+  progress: boolean;
+  progressSize: number;
+  step?: boolean;
+}
+
+interface StepPositionOptions extends RangeAndVerticalOptions{
+  thumbDistance: number;
+  trackWidth: number;
+  trackHeight: number;
+  elementCoordinate: HTMLElement;
+  numberTranslation: number;
+  event: MouseEvent;
+}
 
 class ViewUpdating {
     private coordinateXStart: number;
@@ -96,9 +144,7 @@ class ViewUpdating {
       this.view = new View();
     }
 
-    moveThumb(options: {event: MouseEvent; value: HTMLElement; vertical: boolean; step;
-      trackWidth: number; trackHeight: number; min: number; max: number;
-      coordinateStep: number; progress: boolean; range: boolean;}): void {
+    moveThumb(options: MovingThumbOptions): void {
       const {
         event, value, vertical, step, trackWidth, trackHeight, min, max, coordinateStep,
         progress, range,
@@ -141,10 +187,7 @@ class ViewUpdating {
       this.updateData(optionsForData);
     }
 
-    handleDocumentMousedown(options: {event: MouseEvent; thumbElementMin: HTMLElement;
-     thumbElementMax: HTMLElement; value: HTMLElement; vertical: boolean; step: number | undefined;
-     trackWidth: number; trackHeight: number; min: number; max: number;
-     coordinateStep: number; progress: boolean; range: boolean;}): void {
+    handleDocumentMousedown(options: MousedownOptions): void {
       const {
         event, thumbElementMin, thumbElementMax, value, vertical, step, trackWidth, trackHeight,
         min, max, coordinateStep, progress, range,
@@ -184,18 +227,18 @@ class ViewUpdating {
       }
     }
 
-    handleTrackClick(options: {event: MouseEvent; track; vertical; step; range; progress;
-     min; max;}): void {
+    handleTrackClick(options: TrackClickOptions): void {
       const {
         event, track, vertical, step, range, progress, min, max,
       } = options;
 
       const target = event.target as HTMLElement;
       const wrapper = target.parentElement as HTMLElement;
+      const parentElementOfTrack = ((track as HTMLElement).parentElement as HTMLElement);
 
       const isTrack = target === track || wrapper.querySelector('.js-slider__progress');
       if (isTrack) {
-        const thumb = track.parentElement.querySelector('.js-slider__thumb') as HTMLElement;
+        const thumb = parentElementOfTrack.querySelector('.js-slider__thumb') as HTMLElement;
         let distance = !vertical ? event.pageX - track.getBoundingClientRect().left
         - thumb.getBoundingClientRect().width / 2
           : event.pageY - window.scrollY - track.getBoundingClientRect().top
@@ -298,8 +341,8 @@ class ViewUpdating {
         }
 
         if (range) {
-          const thumbMin = track.parentElement.querySelector('.js-slider__thumb_min');
-          const thumbMax = track.parentElement.querySelector('.js-slider__thumb_max');
+          const thumbMin = parentElementOfTrack.querySelector('.js-slider__thumb_min') as HTMLElement;
+          const thumbMax = parentElementOfTrack.querySelector('.js-slider__thumb_max') as HTMLElement;
           const thumbMinLeft = thumbMin.getBoundingClientRect().left;
           const thumbMaxLeft = thumbMax.getBoundingClientRect().left;
           const thumbMinTop = thumbMin.getBoundingClientRect().top;
@@ -401,9 +444,7 @@ class ViewUpdating {
       }
     }
 
-    updateThumbCoordinates(options: {vertical: boolean; step: number | undefined;
-      thumbDistance: number; thumbElement: HTMLElement; trackHeight: number; event: MouseEvent;
-      trackWidth; shift: number; coordinateStep: number; range: boolean;}): void {
+    updateThumbCoordinates(options: ThumbUpdatingOptions): void {
       const {
         vertical, step, thumbDistance, thumbElement, trackHeight, event, trackWidth, shift,
         coordinateStep, range,
@@ -459,7 +500,6 @@ class ViewUpdating {
             this.thumbLeft = shift + distance;
         }
       } else if (step) {
-        let flagRange;
 
         this.setStepPosition({
           thumbDistance,
@@ -470,7 +510,6 @@ class ViewUpdating {
           vertical,
           event,
           range,
-          flagRange,
         });
         !vertical ? this.thumbLeft = parseFloat(thumbElement.style.left)
           : this.thumbTop = parseFloat(thumbElement.style.top);
@@ -494,9 +533,7 @@ class ViewUpdating {
       }
     }
 
-    updateData(options: {min; max; trackSize: number; distance: number; vertical;
-      thumbElement: HTMLElement; progress: boolean; progressSize: number;
-      step?: boolean;}): void {
+    updateData(options: UpdatingDataOptions): void {
       const {
         min, max, trackSize, distance, vertical, thumbElement, progress, progressSize,
         step,
@@ -533,10 +570,7 @@ class ViewUpdating {
       }
     }
 
-    setStepPosition(options: {thumbDistance: number; trackWidth: number;
-      trackHeight: number; elementCoordinate: HTMLElement;
-      numberTranslation: number; vertical: boolean; event: MouseEvent; range: boolean;
-      flagRange?: {min: 'increase' | 'bidirectional'; max: 'bidirectional' | 'decrease'};}): void {
+    setStepPosition(options: StepPositionOptions): void {
       const {
         trackWidth, trackHeight, elementCoordinate, numberTranslation, vertical,
         event, range,

@@ -1,5 +1,5 @@
 import View from '../views/View/View';
-import { SliderOptionsForInit, SliderElementOptions,SliderOptions } from '../../types/types';
+import { SliderOptionsForInit,SliderOptions } from '../../types/types';
 
 const view = new View();
 

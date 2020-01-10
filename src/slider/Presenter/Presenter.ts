@@ -1,11 +1,55 @@
 import Model from '../Model/Model';
+import { ExtremumOptions } from '../../types/types';
+
+interface SliderValueOptions extends ExtremumOptions{
+  trackSize: number;
+  distance: number;
+}
+
+interface ScaleCoordinatesOptions extends ExtremumOptions{
+  step: number | undefined;
+  vertical: boolean;
+  trackWidth: number;
+  trackHeight: number;
+}
+
+interface ScaleValue {
+  value: number[];
+  coordinates: number[];
+  shortValue: number[];
+  shortCoordinates: number[];
+}
+
+interface FromValueToCoordinate extends ExtremumOptions{
+  value: number;
+  trackSize: number;
+}
+
+interface ValidationOptions extends ExtremumOptions{
+  value: number | undefined;
+}
+
+interface MovingPercentOptions {
+  trackSize: number;
+  distance: number;
+}
+
+interface DistanceOptions {
+  coordinateStart: number;
+  coordinateMove: number;
+}
+
+interface CoordinateOfMiddleOptions {
+  start: number;
+  itemSize: number;
+}
 
 class Presenter {
     private dataForScale: number[] = [];
 
     model: Model = new Model();
 
-    calculateSliderMovePercent(options: {trackSize: number; distance: number}): number {
+    calculateSliderMovePercent(options: MovingPercentOptions): number {
       const { trackSize, distance } = options;
       this.model.sliderValuePercent = (distance / trackSize) * 100;
       switch (true) {
@@ -20,8 +64,7 @@ class Presenter {
       return this.model.sliderValuePercent;
     }
 
-    calculateSliderValue(options: {min: number; max: number; trackSize: number;
-      distance: number;}): number {
+    calculateSliderValue(options: SliderValueOptions): number {
       const {
         min, max, trackSize, distance,
       } = options;
@@ -38,9 +81,7 @@ class Presenter {
       return this.model.sliderValue;
     }
 
-    calculateLeftScaleCoordinates(options: {min: number; max: number; step: number | undefined;
-      vertical: boolean; trackWidth: number; trackHeight: number;}):
-       {value: number[]; coordinates: number[]; shortValue: number[]; shortCoordinates: number[]} {
+    calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleValue {
       const {
         min, max, step, vertical, trackWidth, trackHeight,
       } = options;
@@ -108,14 +149,12 @@ class Presenter {
       };
     }
 
-    static calculateThumbDistance(options: {coordinateStart: number;
-     coordinateMove: number;}): number {
+    static calculateThumbDistance(options: DistanceOptions): number {
       const { coordinateStart, coordinateMove } = options;
       return coordinateMove - coordinateStart;
     }
 
-    static calculateFromValueToCoordinates(options: {value: number; min: number;
-      max: number; trackSize: number;}): number {
+    static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
       const {
         value, min, max, trackSize,
       } = options;
@@ -124,12 +163,12 @@ class Presenter {
       return Number((((value - min) * unit) * rem).toFixed(2));
     }
 
-    static calculateCoordinatesOfMiddle(options: {start: number; itemSize: number}): number {
+    static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
       const { start, itemSize } = options;
       return start + itemSize / 2;
     }
 
-    static validateValue(options: {value: number | undefined; min: number; max: number}):
+    static validateValue(options: ValidationOptions):
      number | undefined {
       const {
         value, min, max,

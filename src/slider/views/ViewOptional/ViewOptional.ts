@@ -1,4 +1,50 @@
 import Presenter from '../../Presenter/Presenter';
+import { ExtremumOptions } from '../../../types/types';
+
+interface ScaleCreationOptions extends ExtremumOptions{
+  vertical: boolean;
+  step: number;
+  trackWidth: number;
+  trackHeight: number;
+  wrapper: JQuery;
+}
+
+interface CoordinateCorrectionOptions {
+  coordinateMin?: number;
+  coordinateMax?: number;
+  coordinate?: number;
+}
+
+interface ResultOfCoordinateCorrection extends CoordinateCorrectionOptions{
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
+}
+
+interface StylizationProgressOptions {
+  progressSize: number;
+  vertical: boolean;
+  thumbElement: HTMLElement;
+}
+
+interface VerticalOptions extends ExtremumOptions{
+  range: boolean;
+  wrapper: JQuery;
+  coordinates: {notRange: number; min: number; max: number};
+}
+
+interface ChangingZIndexOptions {
+  coordinatesOfMiddle: number;
+  vertical: boolean;
+  thumbMax: HTMLElement;
+  thumbMin: HTMLElement;
+  thumbElement: HTMLElement;
+}
+
+interface CreationProgressOptions {
+  range: boolean | undefined;
+  wrapper: JQuery;
+}
 
 class ViewOptional {
     private scaleData: {coordinates: number[]; value: number[];
@@ -8,8 +54,7 @@ class ViewOptional {
 
     private rem = 0.077;
 
-    createScale(options: {vertical: boolean; min: number; max: number; step: number;
-     trackWidth: number; trackHeight: number; wrapper: JQuery;}): void {
+    createScale(options: ScaleCreationOptions): void {
       const {
         vertical, min, max, step, trackWidth, trackHeight, wrapper,
       } = options;
@@ -32,10 +77,7 @@ class ViewOptional {
       });
     }
 
-    correctStepCoordinate(options: { coordinateMin?: number; coordinateMax?: number;
-     coordinate?: number; }):
-     {coordinateMin?: number; coordinateMax?: number; coordinate?: number;
-     valueMin?: number; valueMax?: number; value?: number; } {
+    correctStepCoordinate(options: CoordinateCorrectionOptions): ResultOfCoordinateCorrection {
       const { coordinateMin, coordinateMax, coordinate } = options;
       const result: {coordinateMin: number; coordinateMax: number; coordinate: number;
        valueMin: number; valueMax: number; value: number; } = {
@@ -101,8 +143,7 @@ class ViewOptional {
     }
 
 
-    stylingProgress(options: {progressSize: number; vertical: boolean;
-      thumbElement: HTMLElement;}): void {
+    stylingProgress(options: StylizationProgressOptions): void {
       const {
         progressSize, vertical, thumbElement,
       } = options;
@@ -165,7 +206,7 @@ class ViewOptional {
         : progress.makeDefault();
     }
 
-    static createProgress(options: {range: boolean | undefined; wrapper: JQuery}): void {
+    static createProgress(options: CreationProgressOptions): void {
       const {
         range, wrapper,
       } = options;
@@ -179,8 +220,7 @@ class ViewOptional {
       }
     }
 
-    makeVertical(options: {range: boolean; wrapper: JQuery; min: number; max: number;
-     coordinates: {notRange: number; min: number; max: number};}): void {
+    makeVertical(options: VerticalOptions): void {
       const {
         range, wrapper, coordinates,
       } = options;
@@ -218,8 +258,7 @@ class ViewOptional {
       }
     }
 
-    static changeZIndex(options: {coordinatesOfMiddle: number; vertical: boolean;
-     thumbMax: HTMLElement; thumbMin: HTMLElement; thumbElement: HTMLElement; }): undefined {
+    static changeZIndex(options: ChangingZIndexOptions): undefined {
       const {
         coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
       } = options;

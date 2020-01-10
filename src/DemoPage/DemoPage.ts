@@ -1,4 +1,48 @@
-import { Slider } from '../types/types';
+import { Slider, SliderBasicOptions, ExtremumOptions } from '../types/types';
+
+
+interface ObservingInputOptions extends SliderBasicOptions{
+  element: HTMLElement;
+}
+
+interface ValueValidatingOptions extends ExtremumOptions{
+  element: HTMLElement;
+  value: string;
+  step: number | undefined;
+  range: boolean;
+  wrapper: HTMLElement;
+}
+
+interface SettingsValidatingOptions extends ExtremumOptions{
+  value: string;
+  element: HTMLElement;
+}
+
+interface ErrorCreationOptions {
+  element: HTMLElement;
+   text: string;
+}
+
+interface ObservingLabelOptions {
+  element: HTMLElement;
+  range: boolean;
+}
+
+interface ElementsCreationOptions {
+  settings: Slider;
+  form: HTMLElement;
+  scale: boolean;
+}
+
+interface StepSettingsOptions extends ExtremumOptions{
+  form: HTMLElement;
+}
+
+interface InputValueOptions {
+  element: HTMLElement;
+  settings: Slider;
+  value?: {notRange?: number; min?: number; max?: number};
+}
 
 class DemoPage {
     sliderSettings: [Slider, Slider, Slider, Slider];
@@ -53,8 +97,7 @@ class DemoPage {
         });
     }
 
-    observeInput(options: {element: HTMLElement; range: boolean; min: number; max: number;
-      vertical: boolean; step: number | undefined; progress: boolean;}): void {
+    observeInput(options: ObservingInputOptions): void {
       const {
         element, range, min, max, step,
       } = options;
@@ -186,8 +229,7 @@ class DemoPage {
     }
 
 
-    validateValue(options: {element: HTMLElement; value: string; min: number; max: number;
-      step: number | undefined; range: boolean; wrapper: HTMLElement;}):
+    validateValue(options: ValueValidatingOptions):
     number | undefined {
       const {
         element, value, min, max, step, range, wrapper,
@@ -238,7 +280,7 @@ class DemoPage {
       } return validation.checkRangeValue();
     }
 
-    validateSettings(options: {value: string; element: HTMLElement; min: number; max: number}):
+    validateSettings(options: SettingsValidatingOptions):
      boolean | number | undefined | null {
       const {
         value, element, min, max,
@@ -264,7 +306,7 @@ class DemoPage {
       }
     }
 
-    createErrorElement(options: {element: HTMLElement; text: string}): null {
+    createErrorElement(options: ErrorCreationOptions): null {
       const {
         element, text,
       } = options;
@@ -283,7 +325,7 @@ class DemoPage {
       }
     }
 
-    static observeLabel(options: {element: HTMLElement; range: boolean}): void {
+    static observeLabel(options: ObservingLabelOptions): void {
       const {
         element, range,
       } = options;
@@ -333,7 +375,7 @@ class DemoPage {
       }
     }
 
-    static createElements(options: {settings: Slider; form: HTMLElement; scale: boolean}): void {
+    static createElements(options: ElementsCreationOptions): void {
       const {
         settings, form, scale,
       } = options;
@@ -370,7 +412,7 @@ class DemoPage {
       }
     }
 
-    static createStepSetting(options: {form: HTMLElement; min: number; max: number}): void {
+    static createStepSetting(options: StepSettingsOptions): void {
       const {
         form, min, max,
       } = options;
@@ -394,8 +436,7 @@ class DemoPage {
       } return valueToNumber;
     }
 
-    static setInputValue(options: {element: HTMLElement; settings: Slider;
-      value?: {notRange?: number; min?: number; max?: number};}): void {
+    static setInputValue(options: InputValueOptions): void {
       const {
         element, settings,
       } = options;
