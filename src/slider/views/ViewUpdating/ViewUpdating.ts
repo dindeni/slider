@@ -18,7 +18,7 @@ interface MousedownOptions extends MovingThumbOptions{
 
 interface TrackClickOptions extends SliderBasicOptions{
   event: MouseEvent;
-  track: HTMLElement;
+  trackElement: HTMLElement;
 }
 
 interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
@@ -127,10 +127,10 @@ class ViewUpdating {
         }));
       });
 
-      Array.from($element.find('.js-slider__track')).map((value) => value
-        .addEventListener('click', (event) => this.handleTrackClick({
+      Array.from($element.find('.js-slider__track')).map((trackElement) => trackElement
+        .addEventListener('click', (event) => this.handleTrackElementClick({
           event,
-          track: value,
+          trackElement,
           vertical,
           step,
           range,
@@ -227,25 +227,25 @@ class ViewUpdating {
       }
     }
 
-    handleTrackClick(options: TrackClickOptions): void {
+    handleTrackElementClick(options: TrackClickOptions): void {
       const {
-        event, track, vertical, step, range, progress, min, max,
+        event, trackElement, vertical, step, range, progress, min, max,
       } = options;
 
       const target = event.target as HTMLElement;
       const wrapper = target.parentElement as HTMLElement;
-      const parentElementOfTrack = ((track as HTMLElement).parentElement as HTMLElement);
+      const parentElementOfTrack = ((trackElement as HTMLElement).parentElement as HTMLElement);
 
-      const isTrack = target === track || wrapper.querySelector('.js-slider__progress');
+      const isTrack = target === trackElement || wrapper.querySelector('.js-slider__progress');
       if (isTrack) {
         const thumb = parentElementOfTrack.querySelector('.js-slider__thumb') as HTMLElement;
-        let distance = !vertical ? event.pageX - track.getBoundingClientRect().left
+        let distance = !vertical ? event.pageX - trackElement.getBoundingClientRect().left
         - thumb.getBoundingClientRect().width / 2
-          : event.pageY - window.scrollY - track.getBoundingClientRect().top
+          : event.pageY - window.scrollY - trackElement.getBoundingClientRect().top
            + thumb.getBoundingClientRect().height / 2;
 
-        const trackHeight = track.getBoundingClientRect().height;
-        const trackWidth = track.getBoundingClientRect().width;
+        const trackHeight = trackElement.getBoundingClientRect().height;
+        const trackWidth = trackElement.getBoundingClientRect().width;
 
         if (distance < 0) {
           distance = 0;
@@ -350,10 +350,10 @@ class ViewUpdating {
           const thumbHeight = thumb.getBoundingClientRect().height;
 
           const coordinatesOfMiddle = !vertical ? Presenter.calculateCoordinatesOfMiddle(
-            { start: track.getBoundingClientRect().left, itemSize: trackWidth },
+            { start: trackElement.getBoundingClientRect().left, itemSize: trackWidth },
           )
             : Presenter.calculateCoordinatesOfMiddle(
-              { start: track.getBoundingClientRect().top, itemSize: trackHeight },
+              { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
             );
 
           const isStepNotVertical = step && !vertical;
