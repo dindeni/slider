@@ -6,7 +6,8 @@ const config = {
   entry: ['jquery', './src/ts/app.ts'],
   output: {
     path: path.resolve(__dirname, './'),
-    filename: 'build/js/bundle.js',
+    filename: './bundle.js',
+    publicPath: './',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],

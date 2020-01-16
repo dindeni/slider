@@ -11,6 +11,7 @@ module.exports = merge(common, {
     new HtmlWebpackPlugin({
       template: './src/pugTemplates/index.pug',
       filename: './index.html',
+      inject: 'body',
     }),
     new MiniCssExtractPlugin({
       filename: './style.css',

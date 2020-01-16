@@ -10,19 +10,17 @@ module.exports = merge(common, {
     host: '0.0.0.0',
     port: 3000,
     publicPath: '/',
-    contentBase: path.resolve(__dirname, './build'),
-    watchContentBase: true,
-    writeToDisk: true,
+    contentBase: path.resolve(__dirname, './'),
     compress: true,
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/pugTemplates/index.pug',
-      filename: './build/index.html',
+      filename: `${path.resolve('./')}/index.html`,
+      inject: 'body',
     }),
     new MiniCssExtractPlugin({
-      filename: './build/style.css',
-      publicPath: '/',
+      filename: './style.css',
     }),
   ],
   module: {
@@ -48,7 +46,7 @@ module.exports = merge(common, {
         use: {
           loader: 'file-loader',
           options: {
-            outputPath: './build/files',
+            outputPath: './files',
             publicPath: './files',
 
           },
