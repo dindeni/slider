@@ -50,6 +50,6 @@ describe('Presenter', () => {
       max: 500,
       trackSize: 260,
     });
-    expect(coordinates).toBe(15.015);
+    expect(coordinates).toBe(15.02);
   });
 });

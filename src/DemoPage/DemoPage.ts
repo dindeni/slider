@@ -178,8 +178,7 @@ class DemoPage {
               }
               sliderValue.min = valueMin;
               sliderValue.notRange = valueMin;
-            }
-            if (input.classList.contains('js-demo__field-value_max')) {
+            } else if (input.classList.contains('js-demo__field-value_max')) {
               let valueMax = Number((input as HTMLInputElement).value);
               if (valueMax > settings.max) {
                 valueMax = settings.max;
@@ -198,8 +197,13 @@ class DemoPage {
             ((event.currentTarget as HTMLElement).firstChild as HTMLElement).remove();
           }
           settings.value = sliderValue.notRange;
-          settings.valueMin = sliderValue.min;
-          settings.valueMax = sliderValue.max;
+          settings.valueMin = sliderValue.min === sliderValue.max
+           && sliderValue.min === settings.max && settings.step
+            ? sliderValue.min - settings.step : sliderValue.min;
+
+          settings.valueMax = sliderValue.min === sliderValue.max
+           && sliderValue.max === settings.min && settings.step
+            ? sliderValue.max + settings.step : sliderValue.max;
 
           const scale = settings.step !== undefined;
           DemoPage.createElements({ settings, form: event.currentTarget as HTMLElement, scale });

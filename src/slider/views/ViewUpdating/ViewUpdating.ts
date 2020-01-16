@@ -1,7 +1,9 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 import Presenter from '../../Presenter/Presenter';
-import { SliderElementOptions, SliderBasicOptions, RangeAndVerticalOptions, ExtremumOptions } from '../../../types/types';
+import {
+  SliderElementOptions, SliderBasicOptions, RangeAndVerticalOptions, ExtremumOptions,
+} from '../../../types/types';
 
 interface MovingThumbOptions extends SliderBasicOptions{
   event: MouseEvent;
@@ -257,7 +259,15 @@ class ViewUpdating {
 
         let coordinateStep;
 
-        const updateStepThumbLabel = (thumbElement: HTMLElement): void => {
+        const updateStepThumbLabel = (stepOptions: {thumbElement: HTMLElement;
+         siblingElement?: HTMLElement;}): void => {
+          const { thumbElement, siblingElement } = stepOptions;
+
+          const siblingElementCoordinate = !vertical ? Math.round(parseFloat((
+          siblingElement as HTMLElement).style.left) / this.rem) : Math.round(
+            parseFloat((siblingElement as HTMLElement).style.top) / this.rem,
+          );
+
           const scaleCoordinates = this.presenter.calculateLeftScaleCoordinates({
             min,
             max,
@@ -270,12 +280,10 @@ class ViewUpdating {
           const stepDistance = distance + thumbElement.getBoundingClientRect().width;
           scaleCoordinates.coordinates.forEach((value, index, array) => {
             let flag = false;
-
             const isDistanceAbove0 = stepDistance >= value && stepDistance
-            < array[index + 1] && !flag;
+            < array[index + 1] && !flag && siblingElementCoordinate !== value;
             const isLastCoordinate = !flag && distance > array[array.length - 2]
             + thumb.getBoundingClientRect().width;
-
             if (isDistanceAbove0) {
               coordinateStep = value;
               flag = true;
@@ -337,7 +345,7 @@ class ViewUpdating {
         if (isNotRangeStep) {
           updateThumbLabel(thumb);
         } else if (isStepNotRange) {
-          updateStepThumbLabel(thumb);
+          updateStepThumbLabel({ thumbElement: thumb });
         }
 
         if (range) {
@@ -355,34 +363,45 @@ class ViewUpdating {
             : Presenter.calculateCoordinatesOfMiddle(
               { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
             );
-
           const isStepNotVertical = step && !vertical;
           const isStepVertical = step && vertical;
           if (isStepNotVertical) {
             switch (true) {
               case coordinatesOfMiddle < event.pageX && event.pageX < thumbMinLeft
-               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMin);
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(
+                  { thumbElement: thumbMin, siblingElement: thumbMax },
+                );
                 break;
               case coordinatesOfMiddle < event.pageX && event.pageX > thumbMinLeft
-               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMax);
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(
+                  { thumbElement: thumbMax, siblingElement: thumbMin },
+                );
                 break;
               case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
-               && event.pageX > thumbMaxLeft: updateStepThumbLabel(thumbMax);
+               && event.pageX > thumbMaxLeft: updateStepThumbLabel(
+                  { thumbElement: thumbMax, siblingElement: thumbMin },
+                );
                 break;
               case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
-               && event.pageX < thumbMaxLeft: updateStepThumbLabel(thumbMin);
+               && event.pageX < thumbMaxLeft: updateStepThumbLabel(
+                  { thumbElement: thumbMin, siblingElement: thumbMax },
+                );
                 break;
               case thumbMinLeft < coordinatesOfMiddle && thumbMaxLeft < coordinatesOfMiddle
-               && event.pageX > coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
+               && event.pageX > coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMax, siblingElement: thumbMin },
+                );
                 break;
               case thumbMinLeft > coordinatesOfMiddle && thumbMaxLeft > coordinatesOfMiddle
-               && event.pageX < coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+               && event.pageX < coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMin, siblingElement: thumbMax },
+                );
                 break;
               case event.pageX > thumbMaxLeft && event.pageX > coordinatesOfMiddle:
-                updateStepThumbLabel(thumbMax);
+                updateStepThumbLabel({ thumbElement: thumbMax, siblingElement: thumbMin });
                 break;
               case event.pageX < thumbMinLeft && event.pageX < coordinatesOfMiddle:
-                updateStepThumbLabel(thumbMin);
+                updateStepThumbLabel({ thumbElement: thumbMin, siblingElement: thumbMax });
                 break;
               default:
             }
@@ -391,31 +410,39 @@ class ViewUpdating {
             switch (true) {
               case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
                && thumbMaxTop < coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
-                updateStepThumbLabel(thumbMax);
+                updateStepThumbLabel({ thumbElement: thumbMax, siblingElement: thumbMin });
                 break;
               case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
                && thumbMaxTop > coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
-                updateStepThumbLabel(thumbMin);
+                updateStepThumbLabel({ thumbElement: thumbMin, siblingElement: thumbMax });
                 break;
               case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
                && thumbMaxTop > coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
-                updateStepThumbLabel(thumbMax);
+                updateStepThumbLabel({ thumbElement: thumbMax, siblingElement: thumbMin });
                 break;
               case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
                && thumbMaxTop < coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
-                updateStepThumbLabel(thumbMin);
+                updateStepThumbLabel({ thumbElement: thumbMin, siblingElement: thumbMax });
                 break;
               case coordinatesOfMiddle > pageY && thumbMinTop < pageY
-               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMin, siblingElement: thumbMax },
+                );
                 break;
               case coordinatesOfMiddle < pageY && thumbMinTop < pageY
-               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMax, siblingElement: thumbMin },
+                );
                 break;
               case coordinatesOfMiddle > pageY && thumbMinTop > pageY
-               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(thumbMin);
+               && thumbMaxTop > coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMin, siblingElement: thumbMax },
+                );
                 break;
               case coordinatesOfMiddle < pageY && thumbMinTop < pageY
-               && thumbMaxTop < coordinatesOfMiddle: updateStepThumbLabel(thumbMax);
+               && thumbMaxTop < coordinatesOfMiddle: updateStepThumbLabel(
+                  { thumbElement: thumbMax, siblingElement: thumbMin },
+                );
                 break;
               default:
             }
@@ -461,7 +488,6 @@ class ViewUpdating {
       let thumbMaxTop;
       let thumbMin;
       let thumbMax;
-      let thumbMinWidth;
 
       if (range) {
         thumbMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_min');
@@ -470,7 +496,6 @@ class ViewUpdating {
         thumbMaxLeft = parseFloat((thumbMax as HTMLElement).style.left);
         thumbMinTop = parseFloat((thumbMin as HTMLElement).style.top);
         thumbMaxTop = parseFloat((thumbMax as HTMLElement).style.top);
-        thumbMinWidth = thumbMin.getBoundingClientRect().width * this.rem;
 
         const start = vertical ? this.trackElement.getBoundingClientRect().top + window.scrollY
           : this.trackElement.getBoundingClientRect().left;
@@ -492,15 +517,12 @@ class ViewUpdating {
           case distance + shift < 0 && thumbElement !== thumbMax: thumbNode.style.left = `${0}rem`;
             this.thumbLeft = 0;
             break;
-          case thumbElement === thumbMin && (shift + distance
-           > thumbMaxLeft - (thumbMinWidth * 2)): return;
-          case thumbElement === thumbMax && ((shift + distance)
-           < thumbMinLeft + (thumbMinWidth * 2)): return;
+          case thumbElement === thumbMin && (shift + distance > thumbMaxLeft): return;
+          case thumbElement === thumbMax && ((shift + distance) < thumbMinLeft): return;
           default: thumbNode.style.left = `${shift + distance}rem`;
             this.thumbLeft = shift + distance;
         }
       } else if (step) {
-
         this.setStepPosition({
           thumbDistance,
           trackWidth,
@@ -524,9 +546,9 @@ class ViewUpdating {
             this.thumbTop = 0;
             break;
           case thumbElement === thumbMin && (shift + distance
-           > thumbMaxTop - thumbMinWidth * 2): return;
+           > thumbMaxTop): return;
           case thumbElement === thumbMax && ((shift + distance)
-           < thumbMinTop + thumbMinWidth * 2): return;
+           < thumbMinTop): return;
           default: thumbNode.style.top = `${shift + distance}rem`;
             this.thumbTop = shift + distance;
         }
@@ -596,8 +618,6 @@ class ViewUpdating {
         return this.coordinateStep[index - 1];
       };
 
-      const thumbWidth = element.getBoundingClientRect().width * this.rem;
-
       const stepPosition = {
         setLeft: (): void => {
           const numberCoordinateLeft = parseFloat(element.style.left);
@@ -616,14 +636,14 @@ class ViewUpdating {
                 .style.left);
               const thumbMinLeft = parseFloat(element.style.left);
               thumbRangeFlag.above = thumbMaxLeft > this.coordinateStep[index + 1] * this.rem
-              && thumbMinLeft < thumbMaxLeft - thumbWidth * 2;
+              && thumbMinLeft < thumbMaxLeft;
               thumbRangeFlag.below = numberCoordinateLeft <= thumbMaxLeft;
             } else {
               const thumbMinLeft = parseFloat((element.previousElementSibling as HTMLElement)
                 .style.left);
               const thumbMaxLeft = parseFloat(element.style.left);
               thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinLeft
-              && thumbMaxLeft - thumbWidth * 2 > thumbMinLeft;
+              && thumbMaxLeft > thumbMinLeft;
               thumbRangeFlag.above = numberCoordinateLeft >= thumbMinLeft;
             }
           }
@@ -632,9 +652,8 @@ class ViewUpdating {
             && distanceOfPageX >= this.coordinateStep[index]
             + (this.coordinateStep[index + 1] - this.coordinateStep[index]) / 2
             : numberCoordinateLeft <= trackWidth * this.rem && thumbRangeFlag.above
-            && distanceOfPageX >= this.coordinateStep[index]
-            + (((this.coordinateStep[index + 1] || this.coordinateStep[
-              this.coordinateStep.length - 1])) - this.coordinateStep[index]) / 2;
+            && distanceOfPageX >= this.coordinateStep[index] + (this.coordinateStep[index + 1]
+            - this.coordinateStep[index]) / 2;
 
           const isBelow0 = !range ? numberCoordinateLeft >= Number((
             numberTranslation * this.rem).toFixed(5))
@@ -642,7 +661,7 @@ class ViewUpdating {
             - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2
             : numberCoordinateLeft >= Number((numberTranslation * this.rem).toFixed(5))
              && thumbRangeFlag.below && distanceOfPageX <= this.coordinateStep[index]
-            - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2;
+              - (this.coordinateStep[index] - this.coordinateStep[index - 1]) / 2;
 
           if (isAbove0) {
             element.style.left = `${setCoordinate('above', index) * this.rem}rem`;
@@ -678,14 +697,14 @@ class ViewUpdating {
               const thumbMaxTop = parseFloat((element.nextElementSibling as HTMLElement).style.top);
               const thumbMinTop = parseFloat(element.style.top);
               thumbRangeFlag.above = thumbMaxTop > this.coordinateStep[index + 1] * this.rem
-              && thumbMinTop < thumbMaxTop - thumbWidth * 2;
+              && thumbMinTop < thumbMaxTop;
               thumbRangeFlag.below = numberCoordinateTop <= thumbMaxTop;
             } else {
               const thumbMinTop = parseFloat((element.previousElementSibling as HTMLElement)
                 .style.top);
               const thumbMaxTop = parseFloat(element.style.top);
               thumbRangeFlag.below = this.coordinateStep[index - 1] * this.rem > thumbMinTop
-              && thumbMaxTop - thumbWidth * 2 > thumbMinTop;
+              && thumbMaxTop > thumbMinTop;
               thumbRangeFlag.above = numberCoordinateTop >= thumbMinTop;
             }
           }

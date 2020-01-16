@@ -94,21 +94,36 @@ class ViewOptional {
 
       this.scaleData.coordinates.map((value, index) => {
         const checkedCoordinate = Number((value * this.rem).toFixed(2));
-        const isCoordinateMinAndMax = (coordinateMin || coordinateMin === 0) && coordinateMax;
+        const isCoordinateMinAndMax = (coordinateMin || coordinateMin === 0)
+         && (coordinateMax || coordinateMax === 0);
         if (isCoordinateMinAndMax) {
           switch (true) {
-            case !indexMinFlag && coordinate === coordinateMin:
+            case !indexMinFlag && checkedCoordinate === coordinateMin
+            && coordinateMax === coordinateMin
+             && index === this.scaleData.coordinates.length - 1:
+              indexMinFlag = true;
+              result.coordinateMin = this.scaleData.coordinates[index - 1];
+              result.valueMin = this.scaleData.value[index - 1];
+              break;
+            case !indexMinFlag && checkedCoordinate === coordinateMin:
               indexMinFlag = true;
               result.coordinateMin = this.scaleData.coordinates[index];
               result.valueMin = this.scaleData.value[index];
               break;
-            case coordinateMin && !indexMinFlag && checkedCoordinate > coordinateMin:
+            case (coordinateMin || coordinateMin === 0) && !indexMinFlag
+             && checkedCoordinate > coordinateMin:
               indexMinFlag = true;
               result.coordinateMin = this.scaleData.coordinates[index - 1];
               result.valueMin = this.scaleData.value[index - 1];
               break;
           }
           switch (true) {
+            case !indexMaxFlag && checkedCoordinate === coordinateMax
+             && coordinateMax === coordinateMin && index === 0:
+              indexMaxFlag = true;
+              result.coordinateMax = this.scaleData.coordinates[index + 1];
+              result.valueMax = this.scaleData.value[index + 1];
+              break;
             case !indexMaxFlag && checkedCoordinate === coordinateMax:
               indexMaxFlag = true;
               result.coordinateMax = this.scaleData.coordinates[index];
@@ -270,23 +285,33 @@ class ViewOptional {
         > coordinatesOfMiddle;
       const isNotVerticalBellowMiddle = !vertical && thumbElement.getBoundingClientRect().left
         < coordinatesOfMiddle;
+      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_min') as HTMLElement;
+      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_max') as HTMLElement;
 
       if (isVerticalAboveMiddle) {
         thumbMax.style.zIndex = '200';
         thumbMin.style.zIndex = '100';
+        labelElementMax.style.zIndex = '200';
+        labelElementMin.style.zIndex = '100';
         return;
       } if (isVerticalBelowMiddle) {
         thumbMax.style.zIndex = '100';
         thumbMin.style.zIndex = '200';
+        labelElementMax.style.zIndex = '100';
+        labelElementMin.style.zIndex = '200';
         return;
       }
 
       if (isNotVerticalAboveMiddle) {
         thumbMax.style.zIndex = '100';
         thumbMin.style.zIndex = '200';
+        labelElementMin.style.zIndex = '100';
+        labelElementMax.style.zIndex = '200';
       } else if (isNotVerticalBellowMiddle) {
         thumbMax.style.zIndex = '200';
         thumbMin.style.zIndex = '100';
+        labelElementMin.style.zIndex = '200';
+        labelElementMax.style.zIndex = '100';
       }
     }
 }

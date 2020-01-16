@@ -84,10 +84,6 @@ describe('View', () => {
     expect(divLabel).not.toBeNull();
   });
 
-  it('should div thumb to be draggable', () => {
-    expect(divThumb.hasAttribute('draggable')).toBeTruthy();
-  });
-
   describe('After dispatch move', () => {
     beforeAll(() => {
       dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
