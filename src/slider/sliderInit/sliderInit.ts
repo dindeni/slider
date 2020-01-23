@@ -1,5 +1,5 @@
 import View from '../views/View/View';
-import { SliderOptionsForInit,SliderOptions } from '../../types/types';
+import { SliderOptionsForInit, SliderOptions } from '../../types/types';
 
 const view = new View();
 
@@ -19,7 +19,7 @@ const initSlider = (options: SliderOptionsForInit): void => {
       progress: false,
       min: 0,
       max: 100,
-      label: true,
+      label: false,
       step: undefined,
       vertical: false,
       range: false,

@@ -26,8 +26,9 @@ describe('Range', () => {
       vertical: false,
       min: 100,
       max: 500,
-      step: undefined,
       progress: true,
+      label: true,
+      step: undefined,
     };
     view.createElements(optionsForElements);
     document.documentElement.style.fontSize = '13px';

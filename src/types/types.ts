@@ -19,6 +19,7 @@ interface Slider extends ExtremumOptions, RangeAndVerticalOptions{
   valueMin?: number;
   valueMax?: number;
   value?: number;
+  label?: boolean;
 }
 
 interface SliderElementOptions extends Slider{
@@ -26,7 +27,7 @@ interface SliderElementOptions extends Slider{
 }
 
 interface SliderOptionsForInit extends SliderElementOptions{
-  label: boolean;
+  label?: boolean;
 }
 
 interface SliderOptions extends Slider{

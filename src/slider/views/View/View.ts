@@ -64,7 +64,7 @@ class View {
 
     createElements(options: SliderElementOptions): void {
       const {
-        $element, range, vertical, min, max, step, progress, value, valueMin, valueMax,
+        $element, range, vertical, min, max, step, progress, value, valueMin, valueMax, label,
       } = options;
 
       this.min = min;
@@ -104,9 +104,12 @@ class View {
       this.stylingElements({
         range, vertical, wrapper: $wrapper, step,
       });
-      this.createLabel({
-        initialValue: min, vertical, range, max, wrapper: $wrapper,
-      });
+      if (label) {
+        this.createLabel({
+          initialValue: min, vertical, range, max, wrapper: $wrapper,
+        });
+      }
+
       if (progress) {
         ViewOptional.createProgress({ range, wrapper: $wrapper });
         const viewOptional = new ViewOptional();

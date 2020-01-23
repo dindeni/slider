@@ -1,6 +1,5 @@
 import { Slider, SliderBasicOptions, ExtremumOptions } from '../types/types';
 
-
 interface ObservingInputOptions extends SliderBasicOptions{
   element: HTMLElement;
 }
@@ -47,20 +46,20 @@ interface InputValueOptions {
 class DemoPage {
     sliderSettings: [Slider, Slider, Slider, Slider];
 
-    settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'step'];
+    settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
 
     errorElement: HTMLElement;
 
     loadSliders(): void {
       this.sliderSettings = [
         {
-          progress: true, min: 100, max: 500, vertical: false, range: true,
+          progress: true, min: 100, max: 500, vertical: false, range: true, label: true,
         }, {
-          progress: true, min: 0, max: 100, vertical: true, range: true,
+          progress: true, min: 0, max: 100, vertical: true, range: true, label: false,
         }, {
-          progress: true, min: 0, max: 500, vertical: false, range: true, step: 100,
+          progress: true, min: 0, max: 500, vertical: false, range: true, label: true, step: 100,
         }, {
-          progress: false, min: 0, max: 1000, vertical: true, range: false, step: 250,
+          progress: false, min: 0, max: 1000, vertical: true, range: false, label: true, step: 250,
         },
       ];
 
@@ -89,10 +88,13 @@ class DemoPage {
             step: this.sliderSettings[index].step,
             progress: this.sliderSettings[index].progress,
           };
-          DemoPage.observeLabel({
-            element: formWrapper as HTMLElement,
-            range: this.sliderSettings[index].range,
-          });
+          if (this.sliderSettings[index].label) {
+            DemoPage.observeLabel({
+              element: formWrapper as HTMLElement,
+              range: this.sliderSettings[index].range,
+            });
+          }
+
           return this.observeInput(optionsForInput);
         });
     }
@@ -143,6 +145,7 @@ class DemoPage {
             max: 100,
             vertical: false,
             range: false,
+            label: false,
             step: undefined,
             value: min,
           };
@@ -163,6 +166,7 @@ class DemoPage {
             } else {
               value = DemoPage.convertInputValue((input as HTMLInputElement).value);
             }
+            // console.log('jj', key, value, input);
             settings = { ...settings, ...{ [key]: value } };
             return settings;
           });
@@ -225,7 +229,9 @@ class DemoPage {
             progress: settings.progress,
           };
           this.observeInput(optionsForInput);
-          DemoPage.observeLabel({ element, range: settings.range });
+          if (settings.label) {
+            DemoPage.observeLabel({ element, range: settings.range });
+          }
         }
       };
 
@@ -404,7 +410,8 @@ class DemoPage {
       + '<label class="demo__mark">max<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_max js-demo__field-settings_max"></label></div>'
       + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">vertical<input type="checkbox" id="vertical-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_vertical js-demo__field-settings_vertical"><label for="vertical-${formIndex}" class="demo__mark"></label></div>`
        + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">range<input type="checkbox" id="range-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_range js-demo__field-settings_range"><label for="range-${formIndex}" class="demo__mark"></label></div>`
-        + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">scale<input type="checkbox" id="scale-${formIndex}" ${scale ? 'checked=true' : ''} class="demo__field-scale js-demo__field-scale"><label for="scale-${formIndex}" class="demo__mark"></label></div>`);
+        + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">scale<input type="checkbox" id="scale-${formIndex}" ${scale ? 'checked=true' : ''} class="demo__field-scale js-demo__field-scale"><label for="scale-${formIndex}" class="demo__mark"></label></div>`
+        + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">label<input type="checkbox" id="label-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_for-label js-demo__field-settings_for-label" ${settings.label ? 'checked=true' : ''}><label for="label-${formIndex}" class="demo__mark"></label></div>`);
 
       const $scaleElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_step js-demo__field-settings_step"></label></div>');
 
@@ -461,11 +468,12 @@ class DemoPage {
 
       Array.from(element.querySelectorAll('.js-demo__field-settings')).map((input, index) => {
         const inputElement = (input as HTMLInputElement);
-        if (inputElement.type === 'checkbox') {
+        const isCheckbox = inputElement.type === 'checkbox';
+        if (isCheckbox) {
           inputElement.checked = Object.values(settings)[index];
-          return inputElement;
+        } else if (Object.values(settings)[index] || Object.values(settings)[index] === 0) {
+          inputElement.value = Object.values(settings)[index];
         }
-        inputElement.value = Object.values(settings)[index];
         return inputElement;
       });
     }

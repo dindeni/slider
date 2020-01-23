@@ -287,31 +287,41 @@ class ViewOptional {
         < coordinatesOfMiddle;
       const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_min') as HTMLElement;
       const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_max') as HTMLElement;
+      const isLabelsExist = labelElementMin && labelElementMax;
 
       if (isVerticalAboveMiddle) {
         thumbMax.style.zIndex = '200';
         thumbMin.style.zIndex = '100';
-        labelElementMax.style.zIndex = '200';
-        labelElementMin.style.zIndex = '100';
+        if (isLabelsExist) {
+          labelElementMax.style.zIndex = '200';
+          labelElementMin.style.zIndex = '100';
+        }
         return;
-      } if (isVerticalBelowMiddle) {
+      }
+      if (isVerticalBelowMiddle) {
         thumbMax.style.zIndex = '100';
         thumbMin.style.zIndex = '200';
-        labelElementMax.style.zIndex = '100';
-        labelElementMin.style.zIndex = '200';
+        if (isLabelsExist) {
+          labelElementMax.style.zIndex = '100';
+          labelElementMin.style.zIndex = '200';
+        }
         return;
       }
 
       if (isNotVerticalAboveMiddle) {
         thumbMax.style.zIndex = '100';
         thumbMin.style.zIndex = '200';
-        labelElementMin.style.zIndex = '100';
-        labelElementMax.style.zIndex = '200';
+        if (isLabelsExist) {
+          labelElementMin.style.zIndex = '100';
+          labelElementMax.style.zIndex = '200';
+        }
       } else if (isNotVerticalBellowMiddle) {
         thumbMax.style.zIndex = '200';
         thumbMin.style.zIndex = '100';
-        labelElementMin.style.zIndex = '200';
-        labelElementMax.style.zIndex = '100';
+        if (isLabelsExist) {
+          labelElementMin.style.zIndex = '200';
+          labelElementMax.style.zIndex = '100';
+        }
       }
     }
 }

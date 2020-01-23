@@ -29,8 +29,9 @@ describe('Vertical option', () => {
       vertical: true,
       min: 100,
       max: 500,
-      step: undefined,
       progress: true,
+      label: true,
+      step: undefined,
     };
     view.createElements(optionsForElements);
   };
