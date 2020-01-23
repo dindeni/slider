@@ -104,9 +104,9 @@ class DemoPage {
         element, range, min, max, step,
       } = options;
 
-      const formElement = element.querySelector('.js-demo') as HTMLElement;
+      const demoElement = element.querySelector('.js-demo') as HTMLElement;
 
-      const handleFormElementChange = (event: MouseEvent): void => {
+      const handleDemoElementChange = (event: MouseEvent): void => {
         const optionForSetting = {
           value: (event.target as HTMLInputElement).value,
           element: event.target as HTMLElement,
@@ -153,7 +153,7 @@ class DemoPage {
           ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement)
             .remove();
 
-          formElement.removeEventListener('change', handleFormElementChange);
+          demoElement.removeEventListener('change', handleDemoElementChange);
 
           const inputSettings = element.querySelectorAll('.js-demo__field-settings');
           const inputValueElements = element.querySelectorAll('.js-demo__field-value');
@@ -166,7 +166,6 @@ class DemoPage {
             } else {
               value = DemoPage.convertInputValue((input as HTMLInputElement).value);
             }
-            // console.log('jj', key, value, input);
             settings = { ...settings, ...{ [key]: value } };
             return settings;
           });
@@ -235,7 +234,7 @@ class DemoPage {
         }
       };
 
-      formElement.addEventListener('change', handleFormElementChange);
+      demoElement.addEventListener('change', handleDemoElementChange);
     }
 
 
