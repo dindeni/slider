@@ -263,10 +263,13 @@ class ViewUpdating {
          siblingElement?: HTMLElement;}): void => {
           const { thumbElement, siblingElement } = stepOptions;
 
-          const siblingElementCoordinate = !vertical ? Math.round(parseFloat((
-          siblingElement as HTMLElement).style.left) / this.rem) : Math.round(
-            parseFloat((siblingElement as HTMLElement).style.top) / this.rem,
-          );
+          let siblingElementCoordinate: number;
+          if (siblingElement) {
+            siblingElementCoordinate = !vertical ? Math.round(parseFloat((
+              siblingElement as HTMLElement).style.left) / this.rem) : Math.round(
+              parseFloat((siblingElement as HTMLElement).style.top) / this.rem,
+            );
+          }
 
           const scaleCoordinates = this.presenter.calculateLeftScaleCoordinates({
             min,
