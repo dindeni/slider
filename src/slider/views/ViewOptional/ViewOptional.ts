@@ -69,11 +69,8 @@ class ViewOptional {
       this.scaleData.shortValue.map((item, index) => {
         const $itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo($ul);
 
-        return !vertical ? $itemElement.css({ left: `${this.scaleData.shortCoordinates[index] * this.rem}rem` })
-          : $itemElement.css({
-            top: `${(this.scaleData.shortCoordinates[index]
-                        - scaleTopPositionCorrection) * this.rem}rem`,
-          });
+        return vertical ? $itemElement.css({ top: `${(this.scaleData.shortCoordinates[index] - scaleTopPositionCorrection) * this.rem}rem` })
+          : $itemElement.css({ left: `${this.scaleData.shortCoordinates[index] * this.rem}rem` });
       });
     }
 
@@ -226,11 +223,11 @@ class ViewOptional {
       } = options;
 
       const $track = wrapper.find('.js-slider__track');
-      if (!range) {
-        $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
-      } else {
+      if (range) {
         $('<div class="slider__progress js-slider__progress slider__progress_min js-slider__progress_min"></div>').appendTo($track);
         $('<div class="slider__progress js-slider__progress slider__progress_max js-slider__progress_max"></div>').appendTo($track);
+      } else {
+        $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
       }
     }
 
@@ -249,13 +246,7 @@ class ViewOptional {
         height: `${(trackWidth as number) * this.rem}rem`,
       });
 
-      if (!range) {
-        const $thumbElement = wrapper.find($('.js-slider__thumb'));
-        $thumbElement.css({
-          left: '-0.62rem',
-          top: `${coordinates.notRange || 0}rem`,
-        });
-      } else {
+      if (range) {
         const $thumbElementMin = wrapper.find('.js-slider__thumb_min');
         const $thumbElementMax = wrapper.find('.js-slider__thumb_max');
 
@@ -268,6 +259,12 @@ class ViewOptional {
           left: '-0.62rem',
           top: `${coordinates.max}rem`,
           zIndex: (coordinates.max) < (trackWidth / 2) * this.rem ? 200 : 50,
+        });
+      } else {
+        const $thumbElement = wrapper.find($('.js-slider__thumb'));
+        $thumbElement.css({
+          left: '-0.62rem',
+          top: `${coordinates.notRange || 0}rem`,
         });
       }
     }

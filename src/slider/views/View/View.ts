@@ -69,9 +69,9 @@ class View {
 
       this.min = min;
       this.max = max;
-      value ? this.value = value : this.value = undefined;
-      valueMin ? this.valueMin = valueMin : this.valueMin = undefined;
-      valueMax ? this.valueMax = valueMax : this.valueMax = undefined;
+      this.value = value || undefined;
+      this.valueMin = valueMin || undefined;
+      this.valueMax = valueMax || undefined;
       this.valueMin = Presenter.validateValue({ value: valueMin, min, max });
       this.valueMax = Presenter.validateValue({ value: valueMax, min, max });
       this.value = Presenter.validateValue({ value, min, max });
@@ -148,19 +148,19 @@ class View {
     createThumb(options: ThumbCreationOptions): void {
       const { range, vertical, wrapper } = options;
 
-      if (!range) {
+      if (range) {
+        vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_min js-slider__thumb_min">'
+          + '</div>').appendTo(wrapper)
+          : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_min js-slider__thumb_min">'
+          + '</div>').appendTo(wrapper);
+        vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_max js-slider__thumb_max">'
+          + '</div>').appendTo(wrapper)
+          : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_max js-slider__thumb_max">'
+          + '</div>').appendTo(wrapper);
+      } else {
         vertical ? this.$thumbElement = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical"></div>')
           .appendTo(wrapper) : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"></div>')
           .appendTo(wrapper);
-      } else {
-        vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_min js-slider__thumb_min">'
-                + '</div>').appendTo(wrapper)
-          : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_min js-slider__thumb_min">'
-                + '</div>').appendTo(wrapper);
-        vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_max js-slider__thumb_max">'
-                + '</div>').appendTo(wrapper)
-          : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_max js-slider__thumb_max">'
-                    + '</div>').appendTo(wrapper);
       }
     }
 
@@ -185,16 +185,7 @@ class View {
 
       const isStepNotRange = step && !range;
       const isStepRange = step && range;
-      if (isStepNotRange) {
-        const stepData = this.viewOptional.correctStepCoordinate({
-          coordinate: this.thumbCoordinate,
-        });
-
-        this.thumbCoordinate = stepData.coordinate
-         || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
-
-        this.value = stepData.value;
-      } else if (isStepRange) {
+      if (isStepRange) {
         const stepData = this.viewOptional.correctStepCoordinate({
           coordinateMin: this.thumbCoordinateMin,
           coordinateMax: this.thumbCoordinateMax,
@@ -213,6 +204,15 @@ class View {
         }
         this.valueMin = stepData.valueMin;
         this.valueMax = stepData.valueMax;
+      } else if (isStepNotRange) {
+        const stepData = this.viewOptional.correctStepCoordinate({
+          coordinate: this.thumbCoordinate,
+        });
+
+        this.thumbCoordinate = stepData.coordinate
+        || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
+
+        this.value = stepData.value;
       }
 
       const isRangeVertical = range && !vertical;
@@ -256,21 +256,7 @@ class View {
       } = options;
       const LABEL_OFFSET_TOP = -4.2;
 
-      if (!range) {
-        const $labelElement = $('<div class="slider__label js-slider__label"></div>')
-          .appendTo(wrapper);
-        $labelElement.css({
-          left: `${this.thumbCoordinate - this.LABEL_OFFSET_LEFT}rem`,
-        });
-        $labelElement.text(this.value || this.min);
-        if (vertical) {
-          $labelElement.css({
-            top: `${this.thumbCoordinate - this.LABEL_TOP_CORRECTION}rem`,
-            left: `${LABEL_OFFSET_TOP}rem`,
-          });
-          $labelElement.addClass('slider__label_vertical');
-        }
-      } else {
+      if (range) {
         const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
           .appendTo(wrapper);
         if (vertical) {
@@ -304,6 +290,20 @@ class View {
           });
         }
         $labelElementMax.text(this.valueMax || this.max);
+      } else {
+        const $labelElement = $('<div class="slider__label js-slider__label"></div>')
+          .appendTo(wrapper);
+        $labelElement.css({
+          left: `${this.thumbCoordinate - this.LABEL_OFFSET_LEFT}rem`,
+        });
+        $labelElement.text(this.value || this.min);
+        if (vertical) {
+          $labelElement.css({
+            top: `${this.thumbCoordinate - this.LABEL_TOP_CORRECTION}rem`,
+            left: `${LABEL_OFFSET_TOP}rem`,
+          });
+          $labelElement.addClass('slider__label_vertical');
+        }
       }
     }
 
@@ -319,20 +319,20 @@ class View {
         if ($thumb.is('.slider__thumb_min')) {
           const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_min');
           labelElementMin.text(value);
-          !vertical ? labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
-            : labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
+          vertical ? labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+            : labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
         } else {
           const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_max');
           $labelElementMax.text(value);
-          !vertical ? $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
-            : $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
+          vertical ? $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+            : $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
         }
       } else {
         const $labelElement = $(thumbElement).parent().find('.slider__label');
         $labelElement.text(value);
 
-        !vertical ? $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` })
-          : $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` });
+        vertical ? $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+          : $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
       }
     }
 }

@@ -99,11 +99,9 @@ class Presenter {
       if (step) {
         let stepCount = 0;
         for (let i = min; i <= max; i += step) {
-          let coordinatesItems;
-          !vertical ? coordinatesItems = (stepCount / (max - min)) * trackWidth
-            : coordinatesItems = (stepCount / (max - min))
-                        * height;
-          coordinatesItems = Number(coordinatesItems.toFixed(2));
+          const fractionOfValue = stepCount / (max - min);
+          const coordinatesItems = vertical ? Number((fractionOfValue * height).toFixed(2))
+            : Number((fractionOfValue * trackWidth).toFixed(2));
           scaleValue.value.push(i);
           scaleValue.coordinates.push(coordinatesItems);
           this.dataForScale.push(coordinatesItems);

@@ -143,10 +143,14 @@ class DemoPage {
         const isValidValueOrSetting = settingValue !== null || inputValue || inputValue === 0;
         if (isValidValueOrSetting) {
           const scaleElement = element.querySelector('.js-demo__field-scale');
+          const isScaleElementChecked = event.target === scaleElement
+           && (event.target as HTMLInputElement).checked;
+          const isScaleElementNotChecked = event.target === scaleElement
+            && !(event.target as HTMLInputElement).checked;
 
-          if (event.target === scaleElement && (event.target as HTMLInputElement).checked) {
+          if (isScaleElementChecked) {
             DemoPage.createStepSetting({ form: event.currentTarget as HTMLElement, min, max });
-          } else if (event.target === scaleElement && !(event.target as HTMLInputElement).checked) {
+          } else if (isScaleElementNotChecked) {
             ((event.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_step') as HTMLElement).remove();
           }
 
@@ -274,8 +278,8 @@ class DemoPage {
       let isValueValid;
       const isValidStepValue = step && (valueToNumber - min) % step === 0;
 
-      !range ? isValueValid = valueToNumber >= min && valueToNumber < max
-        : isValueValid = valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid;
+      range ? isValueValid = valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid
+        : isValueValid = valueToNumber >= min && valueToNumber < max;
       const validation = {
         checkRangeValue: (): number | undefined => {
           if (isValueValid) {
@@ -357,21 +361,8 @@ class DemoPage {
       const track: HTMLElement = element.querySelector('.js-slider__track') as HTMLElement;
       const trackWidth = track.getBoundingClientRect().width;
       const trackHeight = track.getBoundingClientRect().height;
-      if (!range) {
-        const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
-        const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
-        const watchThumb = (): void => {
-          DemoPage.setInputValueFromThumb({
-            min, max, vertical, trackWidth, trackHeight, inputElement, thumbElement,
-          });
-        };
-        const observer = new MutationObserver(watchThumb);
-        observer.observe(thumbElement as HTMLElement, {
-          childList: true,
-          attributes: true,
-          characterData: true,
-        });
-      } else {
+
+      if (range) {
         const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_min') as HTMLElement;
         const inputElementMin: HTMLInputElement = element.querySelector('.js-demo__field-value_min') as HTMLInputElement;
         const watchThumbMin = (): void => {
@@ -411,6 +402,20 @@ class DemoPage {
           attributes: true,
           characterData: true,
         });
+      } else {
+        const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
+        const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
+        const watchThumb = (): void => {
+          DemoPage.setInputValueFromThumb({
+            min, max, vertical, trackWidth, trackHeight, inputElement, thumbElement,
+          });
+        };
+        const observer = new MutationObserver(watchThumb);
+        observer.observe(thumbElement as HTMLElement, {
+          childList: true,
+          attributes: true,
+          characterData: true,
+        });
       }
     }
 
@@ -419,18 +424,18 @@ class DemoPage {
         settings, form, scale,
       } = options;
 
-      let $inputValue: JQuery;
       let formIndex;
       Array.from(document.querySelectorAll('.js-demo')).map((value, index) => {
         if (form === value) {
           formIndex = index;
         } return undefined;
       });
-      !settings.range ? $inputValue = $('<div class="demo__field-wrapper">'
-       + '<label class="demo__mark">value<input type="number" class="demo__field-value js-demo__field-value"></label></div>')
-        : $inputValue = $('<div class="demo__field-wrapper">'
-      + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_min js-demo__field-value_min"></label></div>'
-      + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_max js-demo__field-value_max"></label></div>');
+
+      const $inputValue = settings.range ? $('<div class="demo__field-wrapper">'
+        + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_min js-demo__field-value_min"></label></div>'
+        + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_max js-demo__field-value_max"></label></div>')
+        : $('<div class="demo__field-wrapper">'
+          + '<label class="demo__mark">value<input type="number" class="demo__field-value js-demo__field-value"></label></div>');
 
       const $settingsInputs = $(`<div class="demo__field-wrapper demo__field-wrapper_for-checkbox"> progress
        <input type="checkbox" id="progress-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_progress js-demo__field-settings_progress"><label for="progress-${formIndex}" class="demo__mark"></label></div>`
@@ -466,7 +471,8 @@ class DemoPage {
     static convertInputValue(value: string):
     boolean | undefined | number | null {
       const valueToNumber = parseInt(value, 10);
-      if (!valueToNumber && valueToNumber !== 0) {
+      const isNotValueToNumber = !valueToNumber && valueToNumber !== 0;
+      if (isNotValueToNumber) {
         switch (value) {
           case 'true': return true;
           case 'false': return false;
@@ -497,10 +503,11 @@ class DemoPage {
 
       Array.from(element.querySelectorAll('.js-demo__field-settings')).map((input, index) => {
         const inputElement = (input as HTMLInputElement);
-        const isCheckbox = inputElement.type === 'checkbox';
-        if (isCheckbox) {
+        const isSettingValue = Object.values(settings)[index]
+         || Object.values(settings)[index] === 0;
+        if (inputElement.type === 'checkbox') {
           inputElement.checked = Object.values(settings)[index];
-        } else if (Object.values(settings)[index] || Object.values(settings)[index] === 0) {
+        } else if (isSettingValue) {
           inputElement.value = Object.values(settings)[index];
         }
         return inputElement;
@@ -512,10 +519,10 @@ class DemoPage {
         thumbElement, vertical, min, max, inputElement, trackWidth, trackHeight,
       } = options;
 
-      const valueLeft = !vertical ? parseFloat(thumbElement.style.left) / 0.077
-        : parseFloat(thumbElement.style.top) / 0.077;
-      const sliderValue = !vertical ? (min + ((max - min) * (valueLeft / trackWidth)))
-        : (min + ((max - min) * (valueLeft / trackHeight)));
+      const valueLeft = vertical ? parseFloat(thumbElement.style.top) / 0.077
+        : parseFloat(thumbElement.style.left) / 0.077;
+      const sliderValue = vertical ? (min + ((max - min) * (valueLeft / trackHeight)))
+        : (min + ((max - min) * (valueLeft / trackWidth)));
       (inputElement as HTMLInputElement).value = Math.round(sliderValue).toString();
     }
 }
