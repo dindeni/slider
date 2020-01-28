@@ -1,8 +1,6 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import View from '../slider/views/View/View';
-import ViewOptional from '../slider/views/ViewOptional/ViewOptional';
 import { dispatchMove } from './_serviceFunctions';
-import ViewUpdating from '../slider/views/ViewUpdating/ViewUpdating';
 import style from '../blocks/slider/slider.scss';
 
 

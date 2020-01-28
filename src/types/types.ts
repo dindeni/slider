@@ -34,6 +34,7 @@ interface SliderOptions extends Slider{
   label?: boolean;
 }
 
+/* eslint-disable no-undef */
 export {
   SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
   ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions,

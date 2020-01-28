@@ -113,6 +113,7 @@ class ViewOptional {
               result.coordinateMin = this.scaleData.coordinates[index - 1];
               result.valueMin = this.scaleData.value[index - 1];
               break;
+            default: return undefined;
           }
           switch (true) {
             case !indexMaxFlag && checkedCoordinate === coordinateMax
@@ -132,6 +133,7 @@ class ViewOptional {
               result.coordinateMax = this.scaleData.coordinates[index];
               result.valueMax = this.scaleData.value[index];
               break;
+            default: return undefined;
           }
         }
         if (coordinate) {
@@ -146,6 +148,7 @@ class ViewOptional {
               result.coordinate = this.scaleData.coordinates[index - 1];
               result.value = this.scaleData.value[index - 1];
               break;
+            default: return undefined;
           }
         }
         return undefined;

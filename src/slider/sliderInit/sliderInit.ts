@@ -13,6 +13,8 @@ const initSlider = (options: SliderOptionsForInit): void => {
   view.createElements(options);
 };
 
+/* eslint-disable func-names */
+/* eslint-disable no-param-reassign */
 (function ($): void {
   $.fn.slider = function (options?: SliderOptions): JQuery {
     const optionsDefault = {
