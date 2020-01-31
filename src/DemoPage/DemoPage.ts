@@ -62,7 +62,7 @@ class DemoPage {
     loadSliders(): void {
       this.sliderSettings = [
         {
-          progress: true, min: 100, max: 500, vertical: false, range: false, label: false,
+          progress: true, min: 100, max: 500, vertical: false, range: true, label: true,
         }, {
           progress: true, min: 0, max: 100, vertical: true, range: true, label: true,
         }, {

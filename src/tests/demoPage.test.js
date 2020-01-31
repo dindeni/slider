@@ -28,7 +28,6 @@ describe('DemoPage', async () => {
             + '<form class="demo js-demo"></form>'
             + '</div>';
     const main = document.querySelector('body');
-
     for (let i = 0; i <= 3; i += 1) {
       main.insertAdjacentHTML('afterbegin', htmlElements);
     }
@@ -156,13 +155,13 @@ describe('DemoPage', async () => {
     it('third slider input min value to be equal label value',
       () => {
         const input = formsList[2].querySelector('.js-demo__field-value_min');
-        expect(input.value).toBe(label[2].textContent);
+        expect(input.value).toBe(label[4].textContent);
       });
 
     it('third slider input max value to be equal label value',
       () => {
         const input = formsList[2].querySelector('.js-demo__field-value_max');
-        expect(input.value).toBe(label[3].textContent);
+        expect(input.value).toBe(label[5].textContent);
       });
 
     it('should fourth slider input value to be equal label value',

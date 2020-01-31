@@ -229,21 +229,24 @@ class ViewUpdating {
       if (isTrack) {
         const thumb = parentElementOfTrack.querySelector('.js-slider__thumb') as HTMLElement;
 
-        let distance = vertical ? event.pageY - window.scrollY
-         - trackElement.getBoundingClientRect().top + thumb.getBoundingClientRect().height / 2
-          : event.pageX - trackElement.getBoundingClientRect().left
-          - thumb.getBoundingClientRect().width / 2;
-
         const trackHeight = trackElement.getBoundingClientRect().height;
         const trackWidth = trackElement.getBoundingClientRect().width;
 
-        if (distance < 0) {
-          distance = 0;
-        }
-        const isVerticalAboveTrackHeight = vertical && distance > trackHeight;
-        if (isVerticalAboveTrackHeight) {
-          distance = trackHeight;
-        }
+        const getDistance = (): number => {
+          const thumbDistance = vertical ? event.pageY - window.scrollY
+            - trackElement.getBoundingClientRect().top + thumb.getBoundingClientRect().height / 2
+            : event.pageX - trackElement.getBoundingClientRect().left
+            - thumb.getBoundingClientRect().width / 2;
+          if (thumbDistance < 0) {
+            return 0;
+          }
+          const isVerticalAboveTrackHeight = vertical && thumbDistance > trackHeight;
+          if (isVerticalAboveTrackHeight) {
+            return trackHeight;
+          }
+          return thumbDistance;
+        };
+        const distance = getDistance();
 
         const updateStepThumbLabel = (stepOptions: {thumbElement: HTMLElement;
          siblingElement?: HTMLElement;}): number => {
