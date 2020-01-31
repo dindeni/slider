@@ -87,7 +87,7 @@ class ViewOptional {
        };
       let indexMinFlag: boolean;
       let indexMaxFlag: boolean;
-      let indexFlag;
+      let indexFlag: boolean;
 
       this.scaleData.coordinates.map((value, index) => {
         const checkedCoordinate = Number((value * this.rem).toFixed(2));
@@ -113,7 +113,7 @@ class ViewOptional {
               result.coordinateMin = this.scaleData.coordinates[index - 1];
               result.valueMin = this.scaleData.value[index - 1];
               break;
-            default: return undefined;
+            default: break;
           }
           switch (true) {
             case !indexMaxFlag && checkedCoordinate === coordinateMax

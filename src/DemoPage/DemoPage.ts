@@ -174,36 +174,36 @@ class DemoPage {
           const inputValueElements = element.querySelectorAll('.js-demo__field-value');
           Array.from(inputSettings).map((input, index) => {
             const key = this.settingsKeys[index];
-            let value;
 
-            if ((input as HTMLInputElement).type === 'checkbox') {
-              value = (input as HTMLInputElement).checked;
-            } else {
-              value = DemoPage.convertInputValue((input as HTMLInputElement).value);
-            }
+            const setInputValue = (): boolean | string | number | undefined | null => {
+              if ((input as HTMLInputElement).type === 'checkbox') {
+                return (input as HTMLInputElement).checked;
+              }
+              return DemoPage.convertInputValue((input as HTMLInputElement).value);
+            };
+            const value = setInputValue();
             settings = { ...settings, ...{ [key]: value } };
             return settings;
           });
 
           const sliderValue: {notRange?: number; min?: number; max?: number} = {};
+
+          const checkValue = (checkedValue: number): number => {
+            if (checkedValue > settings.max) {
+              return settings.max;
+            }
+            if (checkedValue < settings.min) {
+              return settings.min;
+            }
+            return checkedValue;
+          };
           Array.from(inputValueElements).map((input) => {
             if (input.classList.contains('js-demo__field-value_min')) {
-              let valueMin = Number((input as HTMLInputElement).value);
-              if (valueMin > settings.max) {
-                valueMin = settings.max;
-              } else if (valueMin < settings.min) {
-                valueMin = settings.min;
-              }
+              const valueMin = checkValue(Number((input as HTMLInputElement).value));
               sliderValue.min = valueMin;
               sliderValue.notRange = valueMin;
             } else if (input.classList.contains('js-demo__field-value_max')) {
-              let valueMax = Number((input as HTMLInputElement).value);
-              if (valueMax > settings.max) {
-                valueMax = settings.max;
-              } else if (valueMax < settings.min) {
-                valueMax = settings.min;
-              }
-              sliderValue.max = valueMax;
+              sliderValue.max = checkValue(Number((input as HTMLInputElement).value));
             } else {
               sliderValue.notRange = Number((input as HTMLInputElement).value);
               sliderValue.min = Number((input as HTMLInputElement).value);
@@ -263,23 +263,25 @@ class DemoPage {
         element, value, min, max, step, range, wrapper,
       } = options;
       const valueToNumber = Number(value);
-      let isValueMinMaxValid;
 
-      if (range) {
-        const minElement = wrapper.querySelector('.js-demo__field-value_min');
-        const maxElement = wrapper.querySelector('.js-demo__field-value_max');
-        const valueMin = Number((minElement as HTMLInputElement).value);
-        const valueMax = Number((maxElement as HTMLInputElement).value);
+      const checkRangeValue = (): boolean | undefined => {
+        if (range) {
+          const minElement = wrapper.querySelector('.js-demo__field-value_min');
+          const maxElement = wrapper.querySelector('.js-demo__field-value_max');
+          const valueMin = Number((minElement as HTMLInputElement).value);
+          const valueMax = Number((maxElement as HTMLInputElement).value);
 
-        element === minElement ? isValueMinMaxValid = valueToNumber < valueMax
-          : isValueMinMaxValid = valueToNumber > valueMin;
-      }
+          return element === minElement ? valueToNumber < valueMax
+            : valueToNumber > valueMin;
+        }
+        return undefined;
+      };
+      const isValueMinMaxValid = checkRangeValue();
 
-      let isValueValid;
       const isValidStepValue = step && (valueToNumber - min) % step === 0;
 
-      range ? isValueValid = valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid
-        : isValueValid = valueToNumber >= min && valueToNumber < max;
+      const isValueValid = range ? valueToNumber >= min && valueToNumber <= max
+       && isValueMinMaxValid : valueToNumber >= min && valueToNumber < max;
       const validation = {
         checkRangeValue: (): number | undefined => {
           if (isValueValid) {
@@ -424,12 +426,9 @@ class DemoPage {
         settings, form, scale,
       } = options;
 
-      let formIndex;
-      Array.from(document.querySelectorAll('.js-demo')).map((value, index) => {
-        if (form === value) {
-          formIndex = index;
-        } return undefined;
-      });
+      const formIndex = Array.from(document.querySelectorAll('.js-demo')).findIndex(
+        (value) => form === value,
+      );
 
       const $inputValue = settings.range ? $('<div class="demo__field-wrapper">'
         + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_min js-demo__field-value_min"></label></div>'

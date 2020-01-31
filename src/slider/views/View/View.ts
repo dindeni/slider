@@ -76,9 +76,8 @@ class View {
       this.valueMax = Presenter.validateValue({ value: valueMax, min, max });
       this.value = Presenter.validateValue({ value, min, max });
 
-      let $wrapper: JQuery;
-      step ? $wrapper = $('<div class="slider js-slider slider_step js-slider_step"></div>')
-        .appendTo($element) : $wrapper = $('<div class="slider js-slider"></div>')
+      const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_step js-slider_step"></div>')
+        .appendTo($element) : $('<div class="slider js-slider"></div>')
         .appendTo($element);
       this.$trackElement = $('<div class="slider__track js-slider__track"></div>')
         .appendTo($wrapper);
