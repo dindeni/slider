@@ -47,9 +47,9 @@ interface CoordinateOfMiddleOptions {
 class Presenter {
     private dataForScale: number[] = [];
 
-    model: Model = new Model();
+    private model: Model = new Model();
 
-    calculateSliderMovePercent(options: MovingPercentOptions): number {
+    private calculateSliderMovePercent(options: MovingPercentOptions): number {
       const { trackSize, distance } = options;
       this.model.sliderValuePercent = (distance / trackSize) * 100;
       switch (true) {
@@ -64,7 +64,7 @@ class Presenter {
       return this.model.sliderValuePercent;
     }
 
-    calculateSliderValue(options: SliderValueOptions): number {
+    public calculateSliderValue(options: SliderValueOptions): number {
       const {
         min, max, trackSize, distance,
       } = options;
@@ -81,7 +81,7 @@ class Presenter {
       return this.model.sliderValue;
     }
 
-    calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleValue {
+    public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleValue {
       const {
         min, max, step, vertical, trackWidth, trackHeight,
       } = options;
@@ -147,12 +147,12 @@ class Presenter {
       };
     }
 
-    static calculateThumbDistance(options: DistanceOptions): number {
+    public static calculateThumbDistance(options: DistanceOptions): number {
       const { coordinateStart, coordinateMove } = options;
       return coordinateMove - coordinateStart;
     }
 
-    static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
+    public static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
       const {
         value, min, max, trackSize,
       } = options;
@@ -161,12 +161,12 @@ class Presenter {
       return Number((((value - min) * unit) * rem).toFixed(2));
     }
 
-    static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
+    public static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
       const { start, itemSize } = options;
       return start + itemSize / 2;
     }
 
-    static validateValue(options: ValidationOptions):
+    public static validateValue(options: ValidationOptions):
      number | undefined {
       const {
         value, min, max,

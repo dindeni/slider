@@ -69,13 +69,13 @@ class ViewUpdating {
 
     private trackElement: HTMLElement;
 
-    viewOptional: ViewOptional = new ViewOptional();
+    private viewOptional: ViewOptional = new ViewOptional();
 
-    view: View = new View();
+    private view: View = new View();
 
-    presenter: Presenter = new Presenter();
+    private presenter: Presenter = new Presenter();
 
-    addDragAndDrop(options: SliderElementOptions): void {
+    public addDragAndDrop(options: SliderElementOptions): void {
       const {
         step, vertical, range, progress, min, max, $element,
       } = options;
@@ -136,7 +136,7 @@ class ViewUpdating {
       this.view = new View();
     }
 
-    moveThumb(options: MovingThumbOptions): void {
+    private moveThumb(options: MovingThumbOptions): void {
       const {
         event, value, vertical, step, trackWidth, trackHeight, min, max,
         progress, range,
@@ -178,7 +178,7 @@ class ViewUpdating {
       this.updateData(optionsForData);
     }
 
-    handleDocumentMousedown(options: MovingThumbOptions): void {
+    private handleDocumentMousedown(options: MovingThumbOptions): void {
       const {
         event, value, vertical, step, trackWidth, trackHeight,
         min, max, coordinateStep, progress, range,
@@ -216,7 +216,7 @@ class ViewUpdating {
       }
     }
 
-    handleTrackElementClick(options: TrackClickOptions): void {
+    private handleTrackElementClick(options: TrackClickOptions): void {
       const {
         event, trackElement, vertical, step, range, progress, min, max,
       } = options;
@@ -462,7 +462,7 @@ class ViewUpdating {
       }
     }
 
-    updateThumbCoordinates(options: ThumbUpdatingOptions): void {
+    private updateThumbCoordinates(options: ThumbUpdatingOptions): void {
       const {
         vertical, step, thumbDistance, thumbElement, trackHeight, event, trackWidth, shift,
         coordinateStep, range,
@@ -568,7 +568,7 @@ class ViewUpdating {
       }
     }
 
-    updateData(options: UpdatingDataOptions): void {
+    private updateData(options: UpdatingDataOptions): void {
       const {
         min, max, trackSize, distance, vertical, thumbElement, progress, progressSize,
         step,
@@ -605,7 +605,7 @@ class ViewUpdating {
       }
     }
 
-    setStepPosition(options: StepPositionOptions): void {
+    private setStepPosition(options: StepPositionOptions): void {
       const {
         trackWidth, trackHeight, elementCoordinate, numberTranslation, vertical,
         event, range,

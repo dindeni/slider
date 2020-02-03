@@ -53,13 +53,13 @@ interface FromThumbToInputOptions extends ExtremumOptions{
 }
 
 class DemoPage {
-    sliderSettings: [Slider, Slider, Slider, Slider];
+    private sliderSettings: [Slider, Slider, Slider, Slider];
 
-    settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
+    private settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
 
-    errorElement: HTMLElement;
+    private errorElement: HTMLElement;
 
-    loadSliders(): void {
+    public loadSliders(): void {
       this.sliderSettings = [
         {
           progress: true, min: 100, max: 500, vertical: false, range: true, label: true,
@@ -110,7 +110,7 @@ class DemoPage {
         });
     }
 
-    observeInput(options: ObservingInputOptions): void {
+    private observeInput(options: ObservingInputOptions): void {
       const {
         element, range, min, max, step,
       } = options;
@@ -257,7 +257,7 @@ class DemoPage {
     }
 
 
-    validateValue(options: ValueValidatingOptions):
+    private validateValue(options: ValueValidatingOptions):
     number | undefined {
       const {
         element, value, min, max, step, range, wrapper,
@@ -310,7 +310,7 @@ class DemoPage {
       } return validation.checkRangeValue();
     }
 
-    validateSettings(options: SettingsValidatingOptions):
+    private validateSettings(options: SettingsValidatingOptions):
      boolean | number | undefined | null {
       const {
         value, element, min, max,
@@ -336,7 +336,7 @@ class DemoPage {
       }
     }
 
-    createErrorElement(options: ErrorCreationOptions): null {
+    private createErrorElement(options: ErrorCreationOptions): null {
       const {
         element, text,
       } = options;
@@ -421,7 +421,7 @@ class DemoPage {
       }
     }
 
-    static createElements(options: ElementsCreationOptions): void {
+    private static createElements(options: ElementsCreationOptions): void {
       const {
         settings, form, scale,
       } = options;
@@ -456,7 +456,7 @@ class DemoPage {
       }
     }
 
-    static createStepSetting(options: StepSettingsOptions): void {
+    private static createStepSetting(options: StepSettingsOptions): void {
       const {
         form, min, max,
       } = options;
@@ -467,7 +467,7 @@ class DemoPage {
       $stepElement.appendTo($(form));
     }
 
-    static convertInputValue(value: string):
+    private static convertInputValue(value: string):
     boolean | undefined | number | null {
       const valueToNumber = parseInt(value, 10);
       const isNotValueToNumber = !valueToNumber && valueToNumber !== 0;
@@ -481,7 +481,7 @@ class DemoPage {
       } return valueToNumber;
     }
 
-    static setInputValue(options: InputValueOptions): void {
+    private static setInputValue(options: InputValueOptions): void {
       const {
         element, settings,
       } = options;
@@ -513,7 +513,7 @@ class DemoPage {
       });
     }
 
-    static setInputValueFromThumb(options: FromThumbToInputOptions): void {
+    private static setInputValueFromThumb(options: FromThumbToInputOptions): void {
       const {
         thumbElement, vertical, min, max, inputElement, trackWidth, trackHeight,
       } = options;

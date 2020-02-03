@@ -54,7 +54,7 @@ class ViewOptional {
 
     private rem = 0.077;
 
-    createScale(options: ScaleCreationOptions): void {
+    public createScale(options: ScaleCreationOptions): void {
       const {
         vertical, min, max, step, trackWidth, trackHeight, wrapper,
       } = options;
@@ -74,7 +74,8 @@ class ViewOptional {
       });
     }
 
-    correctStepCoordinate(options: CoordinateCorrectionOptions): ResultOfCoordinateCorrection {
+    public correctStepCoordinate(options:
+     CoordinateCorrectionOptions): ResultOfCoordinateCorrection {
       const { coordinateMin, coordinateMax, coordinate } = options;
       const result: {coordinateMin: number; coordinateMax: number; coordinate: number;
        valueMin: number; valueMax: number; value: number; } = {
@@ -157,7 +158,7 @@ class ViewOptional {
     }
 
 
-    stylingProgress(options: StylizationProgressOptions): void {
+    public stylingProgress(options: StylizationProgressOptions): void {
       const {
         progressSize, vertical, thumbElement,
       } = options;
@@ -220,7 +221,7 @@ class ViewOptional {
         : progress.makeDefault();
     }
 
-    static createProgress(options: CreationProgressOptions): void {
+    public static createProgress(options: CreationProgressOptions): void {
       const {
         range, wrapper,
       } = options;
@@ -234,7 +235,7 @@ class ViewOptional {
       }
     }
 
-    makeVertical(options: VerticalOptions): void {
+    public makeVertical(options: VerticalOptions): void {
       const {
         range, wrapper, coordinates,
       } = options;
@@ -272,7 +273,7 @@ class ViewOptional {
       }
     }
 
-    static changeZIndex(options: ChangingZIndexOptions): undefined {
+    public static changeZIndex(options: ChangingZIndexOptions): undefined {
       const {
         coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
       } = options;

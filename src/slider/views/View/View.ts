@@ -58,11 +58,11 @@ class View {
 
     private max: number;
 
-    viewOptional: ViewOptional;
+    private viewOptional: ViewOptional;
 
-    viewUpdating: ViewUpdating;
+    private viewUpdating: ViewUpdating;
 
-    createElements(options: SliderElementOptions): void {
+    public createElements(options: SliderElementOptions): void {
       const {
         $element, range, vertical, min, max, step, progress, value, valueMin, valueMax, label,
       } = options;
@@ -144,7 +144,7 @@ class View {
       });
     }
 
-    createThumb(options: ThumbCreationOptions): void {
+    private createThumb(options: ThumbCreationOptions): void {
       const { range, vertical, wrapper } = options;
 
       if (range) {
@@ -163,7 +163,7 @@ class View {
       }
     }
 
-    stylingElements(options: OptionsForStylingElements): void {
+    private stylingElements(options: OptionsForStylingElements): void {
       const {
         range, vertical, wrapper, step,
       } = options;
@@ -249,7 +249,7 @@ class View {
       }
     }
 
-    createLabel(options: LabelCreationOptions): void {
+    private createLabel(options: LabelCreationOptions): void {
       const {
         vertical, range, wrapper,
       } = options;
@@ -306,7 +306,7 @@ class View {
       }
     }
 
-    updateLabelValue(options: UpdatingLabelOptions): void {
+    public updateLabelValue(options: UpdatingLabelOptions): void {
       const {
         value, coordinate, vertical, thumbElement,
       } = options;
