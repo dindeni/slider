@@ -46,6 +46,12 @@ interface CreationProgressOptions {
   wrapper: JQuery;
 }
 
+interface MakingProgressOptions {
+  thumbElement: HTMLElement;
+  vertical: boolean;
+  progressSize: number;
+}
+
 class ViewOptional {
     private scaleData: {coordinates: number[]; value: number[];
      shortCoordinates: number[]; shortValue: number[];};
@@ -165,60 +171,64 @@ class ViewOptional {
 
       const $thumb = $(thumbElement);
 
-      const progress = {
-        makeDefault: (): void => {
-          const progressElement = (thumbElement.previousElementSibling as HTMLElement)
-            .children[0] as HTMLElement;
-
-          if (vertical) {
-            progressElement.style.height = `${progressSize}rem`;
-            progressElement.style.width = '0.38rem';
-          } else {
-            progressElement.style.width = `${progressSize}rem`;
-          }
-        },
-        makeRange: (): void => {
-          if (vertical) {
-            if ($thumb.is('.js-slider__thumb_min')) {
-              const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
-                .children[0] as HTMLElement;
-              divProgressMin.style.height = `${progressSize}rem`;
-              divProgressMin.style.width = '0.38rem';
-            } else {
-              const divProgressMax = $thumb.siblings('.js-slider__track').children(
-                '.js-slider__progress_max',
-              );
-              const divTrack = $thumb.siblings('.js-slider__track');
-              divProgressMax.css({
-                height: `${(divTrack.height() || 0) * this.rem - progressSize}rem`,
-                width: '0.38rem',
-                position: 'absolute',
-                right: '0rem',
-                bottom: '0rem',
-              });
-            }
-          } else if ($thumb.is('.js-slider__thumb_min')) {
-            const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
-              .children[0] as HTMLElement;
-            divProgressMin.style.width = `${progressSize}rem`;
-          } else {
-            const divProgressMax = $thumb.siblings('.js-slider__track').children(
-              '.js-slider__progress_max',
-            );
-            const divTrack = $thumb.siblings('.js-slider__track');
-            divProgressMax.css({
-              width: `${(divTrack.width() || 0) * this.rem - progressSize}rem`,
-              position: 'absolute',
-              right: '0rem',
-              top: '0rem',
-            });
-          }
-        },
-      };
-
       ($thumb.is('.js-slider__thumb_min')
-      || $thumb.is('.js-slider__thumb_max')) ? progress.makeRange()
-        : progress.makeDefault();
+      || $thumb.is('.js-slider__thumb_max')) ? this.makeRangeProgress(
+          { vertical, thumbElement, progressSize },
+        ) : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
+    }
+
+    private static makeSingleProgress(options: MakingProgressOptions): void {
+      const { thumbElement, vertical, progressSize } = options;
+      const progressElement = (thumbElement.previousElementSibling as HTMLElement)
+        .children[0] as HTMLElement;
+
+      if (vertical) {
+        progressElement.style.height = `${progressSize}rem`;
+        progressElement.style.width = '0.38rem';
+      } else {
+        progressElement.style.width = `${progressSize}rem`;
+      }
+    }
+
+    private makeRangeProgress(options: MakingProgressOptions): void {
+      const { thumbElement, vertical, progressSize } = options;
+
+      const $thumb = $(thumbElement);
+      if (vertical) {
+        if ($thumb.is('.js-slider__thumb_min')) {
+          const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
+            .children[0] as HTMLElement;
+          divProgressMin.style.height = `${progressSize}rem`;
+          divProgressMin.style.width = '0.38rem';
+        } else {
+          const divProgressMax = $thumb.siblings('.js-slider__track').children(
+            '.js-slider__progress_max',
+          );
+          const divTrack = $thumb.siblings('.js-slider__track');
+          divProgressMax.css({
+            height: `${(divTrack.height() || 0) * this.rem - progressSize}rem`,
+            width: '0.38rem',
+            position: 'absolute',
+            right: '0rem',
+            bottom: '0rem',
+          });
+        }
+      } else if ($thumb.is('.js-slider__thumb_min')) {
+        const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
+          .children[0] as HTMLElement;
+        divProgressMin.style.width = `${progressSize}rem`;
+      } else {
+        const divProgressMax = $thumb.siblings('.js-slider__track').children(
+          '.js-slider__progress_max',
+        );
+        const divTrack = $thumb.siblings('.js-slider__track');
+        divProgressMax.css({
+          width: `${(divTrack.width() || 0) * this.rem - progressSize}rem`,
+          position: 'absolute',
+          right: '0rem',
+          top: '0rem',
+        });
+      }
     }
 
     public static createProgress(options: CreationProgressOptions): void {

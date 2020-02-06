@@ -34,8 +34,13 @@ interface SliderOptions extends Slider{
   label?: boolean;
 }
 
+interface TrackSizesOptions {
+  trackWidth: number;
+  trackHeight: number;
+}
+
 /* eslint-disable no-undef */
 export {
   SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
-  ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions,
+  ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions, TrackSizesOptions,
 };
