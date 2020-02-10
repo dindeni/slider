@@ -116,7 +116,7 @@ class ViewHandle {
       this.view = new View();
     }
 
-    private handleDocumentMove(event): void {
+    private handleDocumentMousemove(event): void {
       event.preventDefault();
 
       const thumbDistance = this.vertical ? Presenter.calculateThumbDistance({
@@ -169,7 +169,7 @@ class ViewHandle {
           this.coordinateXStart = event.screenX;
           this.shift = parseFloat((event.target as HTMLElement).style.left);
         }
-        const bindMove = this.handleDocumentMove.bind(this);
+        const bindMove = this.handleDocumentMousemove.bind(this);
 
         const handleDocumentMouseup = (): void => {
           document.removeEventListener('mousemove', bindMove);
