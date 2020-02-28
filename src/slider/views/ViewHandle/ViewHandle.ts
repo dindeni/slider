@@ -1,11 +1,17 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
-import Presenter from '../../Presenter/Presenter';
 import { SliderElementOptions } from '../../../types/types';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import ViewOnTrack from '../ViewOnTrack/ViewOnTrack';
+import Observable from '../../Observable/Observable';
 
-class ViewHandle {
+interface ConstructorForHandle {
+  view: View;
+  viewOnTrack: ViewOnTrack;
+  viewUpdating: ViewUpdating;
+}
+
+class ViewHandle extends Observable {
     private coordinateXStart: number;
 
     private shift: number;
@@ -32,9 +38,9 @@ class ViewHandle {
 
     private progress: boolean;
 
-    private value: HTMLElement;
+    private thumbElement: HTMLElement;
 
-    private valueMax: HTMLElement;
+    private thumbElementMax: HTMLElement;
 
     private trackWidth: number;
 
@@ -42,13 +48,19 @@ class ViewHandle {
 
     private viewOptional: ViewOptional = new ViewOptional();
 
-    private view: View = new View();
+    private view: View;
 
-    private presenter: Presenter = new Presenter();
+    private viewOnTrack: ViewOnTrack;
 
-    private viewOnTrack: ViewOnTrack = new ViewOnTrack();
+    private viewUpdating: ViewUpdating = new ViewUpdating();
 
-    private viewUpdatingCoordinates: ViewUpdating = new ViewUpdating();
+    constructor(options: ConstructorForHandle) {
+      super();
+      const { view, viewOnTrack, viewUpdating } = options;
+      this.view = view;
+      this.viewOnTrack = viewOnTrack;
+      this.viewUpdating = viewUpdating;
+    }
 
     public addDragAndDrop(options: SliderElementOptions): void {
       const {
@@ -65,26 +77,29 @@ class ViewHandle {
       this.trackWidth = trackElement.getBoundingClientRect().width;
       this.trackHeight = trackElement.getBoundingClientRect().height;
       const thumbCollection = $element.find('.js-slider__thumb');
-      this.value = (thumbCollection.get(0));
+      this.thumbElement = (thumbCollection.get(0));
 
       if (step) {
-        const stepData = this.presenter.calculateLeftScaleCoordinates({
-          min,
-          max,
-          step,
-          vertical,
-          trackWidth: this.trackWidth,
-          trackHeight: this.trackHeight,
+        const stepData = this.notifyAllForScale({
+          value: {
+            min,
+            max,
+            step,
+            vertical,
+            trackWidth: this.trackWidth,
+            trackHeight: this.trackHeight,
+          },
+          type: 'getScaleValue',
         });
 
         this.coordinateStep = stepData.coordinates;
         this.stepValues = stepData.value;
       }
 
-      this.value.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
+      this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
       if (range) {
-        this.valueMax = thumbCollection.get(1);
-        this.valueMax.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
+        this.thumbElementMax = thumbCollection.get(1);
+        this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
       }
 
       Array.from($element.find('.js-slider__thumb')).map((value) => {
@@ -113,27 +128,31 @@ class ViewHandle {
       }));
 
       this.viewOptional = new ViewOptional();
-      this.view = new View();
     }
 
     private handleDocumentMousemove(event): void {
       event.preventDefault();
 
-      const thumbDistance = this.vertical ? Presenter.calculateThumbDistance({
-        coordinateStart: this.coordinateYStart,
-        coordinateMove: event.screenY,
-      }) : Presenter.calculateThumbDistance(
+      const thumbDistance = this.vertical ? this.notifyAll({
+        value: {
+          coordinateStart: this.coordinateYStart,
+          coordinateMove: event.screenY,
+        },
+        type: 'getDistance',
+      }) : this.notifyAll({
+        value:
         { coordinateStart: this.coordinateXStart, coordinateMove: event.screenX },
-      );
+        type: 'getDistance',
+      });
 
-      this.viewUpdatingCoordinates.updateThumbCoordinates({
+      this.viewUpdating.updateThumbCoordinates({
         step: this.step,
         vertical: this.vertical,
         range: this.range,
         trackWidth: this.trackWidth,
         trackHeight: this.trackHeight,
         thumbDistance,
-        thumbElement: this.value,
+        thumbElement: this.thumbElement,
         event,
         shift: this.shift,
         trackElement: this.trackElement,
@@ -145,13 +164,13 @@ class ViewHandle {
         min: this.min,
         max: this.max,
         trackSize: this.vertical ? this.trackHeight : this.trackWidth,
-        distance: this.vertical ? parseFloat(this.value.style.top)
-          : parseFloat(this.value.style.left),
+        distance: this.vertical ? parseFloat(this.thumbElement.style.top)
+          : parseFloat(this.thumbElement.style.left),
         vertical: this.vertical,
-        thumbElement: this.value,
+        thumbElement: this.thumbElement,
         progress: this.progress,
-        progressSize: this.vertical ? parseFloat(this.value.style.top)
-          : parseFloat(this.value.style.left),
+        progressSize: this.vertical ? parseFloat(this.thumbElement.style.top)
+          : parseFloat(this.thumbElement.style.left),
       };
 
       this.view.updateData(optionsForData);
@@ -159,7 +178,7 @@ class ViewHandle {
 
     private handleDocumentMousedown(event): void {
       if (event.target.classList.contains('js-slider__thumb')) {
-        this.value = event.target;
+        this.thumbElement = event.target;
 
         const isVertical = (event.target as HTMLElement).classList.contains('js-slider__thumb_vertical');
         if (isVertical) {

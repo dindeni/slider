@@ -1,7 +1,9 @@
-import View from '../views/View/View';
+import Model from '../Model/Model';
+import Controller from '../Controller/Controller';
 import { SliderOptionsForInit, SliderOptions } from '../../types/types';
 
-const view = new View();
+const model = new Model();
+const controller = new Controller(model);
 
 declare global {
   interface JQuery {
@@ -10,7 +12,8 @@ declare global {
 }
 
 const initSlider = (options: SliderOptionsForInit): void => {
-  view.createElements(options);
+  model.getSliderOptions(options);
+  controller.init();
 };
 
 /* eslint-disable func-names */

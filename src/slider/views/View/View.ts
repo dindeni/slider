@@ -1,8 +1,6 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
-import ViewHandle from '../ViewHandle/ViewHandle';
 import { SliderElementOptions, RangeAndVerticalOptions, ExtremumOptions } from '../../../types/types';
-import Presenter from '../../Presenter/Presenter';
-
+import Observable from '../../Observable/Observable';
 
 interface OptionsForStylingElements extends RangeAndVerticalOptions{
   wrapper: JQuery;
@@ -49,9 +47,7 @@ interface OptionsForCreateRangeLabel {
   $wrapper: JQuery;
 }
 
-class View {
-  private presenter: Presenter = new Presenter();
-
+class View extends Observable {
   private $trackElement: JQuery;
 
   private $thumbElement: JQuery;
@@ -68,7 +64,7 @@ class View {
 
   private LABEL_OFFSET_TOP = -4.2;
 
-  private value: number | undefined = undefined;
+  private value: number | undefined;
 
   private valueMin: number | undefined;
 
@@ -86,11 +82,15 @@ class View {
 
   private max: number;
 
-  private viewOptional: ViewOptional = new ViewOptional();
-
-  private viewUpdating: ViewHandle;
+  private viewOptional: ViewOptional;
 
   private rem = 0.077;
+
+  constructor(viewOptional) {
+    super();
+    this.viewOptional = viewOptional;
+  }
+
 
   public createElements(options: SliderElementOptions): void {
     const {
@@ -102,9 +102,6 @@ class View {
     this.value = value || undefined;
     this.valueMin = valueMin || undefined;
     this.valueMax = valueMax || undefined;
-    this.valueMin = Presenter.validateValue({ value: valueMin, min, max });
-    this.valueMax = Presenter.validateValue({ value: valueMax, min, max });
-    this.value = Presenter.validateValue({ value, min, max });
 
     const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_step js-slider_step"></div>')
       .appendTo($element) : $('<div class="slider js-slider"></div>')
@@ -140,17 +137,6 @@ class View {
     if (progress) {
       this.initializeProgress({ vertical, range, $wrapper });
     }
-
-    this.viewUpdating = new ViewHandle();
-    this.viewUpdating.addDragAndDrop({
-      step,
-      vertical,
-      range,
-      progress,
-      min,
-      max,
-      $element: $wrapper,
-    });
   }
 
   private initializeProgress(options: OptionsForInitializingProgress): void {
@@ -197,22 +183,32 @@ class View {
     }
   }
 
-  private stylingElements(options: OptionsForStylingElements): void {
+  public stylingElements(options: OptionsForStylingElements): void {
     const {
       range, vertical, wrapper, step,
     } = options;
 
     this.trackSize = wrapper.find('.slider__track').width() || 0;
     if (range) {
-      this.thumbCoordinateMin = Presenter.calculateFromValueToCoordinates({
-        value: this.valueMin || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+      this.thumbCoordinateMin = this.notifyAll({
+        value: {
+          value: this.valueMin || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+        },
+        type: 'getCoordinates',
       });
-      this.thumbCoordinateMax = Presenter.calculateFromValueToCoordinates({
-        value: this.valueMax || this.max, min: this.min, max: this.max, trackSize: this.trackSize,
+
+      this.thumbCoordinateMax = this.notifyAll({
+        value: {
+          value: this.valueMax || this.max, min: this.min, max: this.max, trackSize: this.trackSize,
+        },
+        type: 'getCoordinates',
       });
     } else {
-      this.thumbCoordinate = Presenter.calculateFromValueToCoordinates({
-        value: this.value || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+      this.thumbCoordinate = this.notifyAll({
+        value: {
+          value: this.value || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+        },
+        type: 'getCoordinates',
       });
     }
     this.setStepCoordinates({ step, range });
@@ -389,7 +385,8 @@ class View {
       trackSize: Math.round(trackSize),
       distance: distance / this.rem,
     };
-    const value: number = this.presenter.calculateSliderValue(valueOptions);
+
+    const value: number = this.notifyAll({ value: valueOptions, type: 'getValue' });
     const optionsForLabel = {
       value: Math.round(value),
       coordinate: distance,

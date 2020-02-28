@@ -1,5 +1,6 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import View from '../slider/views/View/View';
+import Model from '../slider/Model/Model';
+import Controller from '../slider/Controller/Controller';
 import { dispatchMove } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
 
@@ -19,7 +20,6 @@ describe('Range', () => {
   const moveDistanceY = 0;
 
   const createElements = () => {
-    const view = new View();
     const optionsForElements = {
       $element: $('body'),
       range: true,
@@ -30,7 +30,10 @@ describe('Range', () => {
       label: true,
       step: undefined,
     };
-    view.createElements(optionsForElements);
+    const model = new Model();
+    const controller = new Controller(model);
+    model.getSliderOptions(optionsForElements);
+    controller.init();
     document.documentElement.style.fontSize = '13px';
   };
 

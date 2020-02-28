@@ -39,8 +39,44 @@ interface TrackSizesOptions {
   trackHeight: number;
 }
 
+interface FromValueToCoordinate extends ExtremumOptions{
+  value: number;
+  trackSize: number;
+}
+
+interface ScaleValue {
+  value: number[];
+  coordinates: number[];
+  shortValue: number[];
+  shortCoordinates: number[];
+}
+
+interface ScaleCoordinatesOptions extends ExtremumOptions{
+  step: number | undefined;
+  vertical: boolean;
+  trackWidth: number;
+  trackHeight: number;
+}
+
+interface SliderValueOptions extends ExtremumOptions{
+  trackSize: number;
+  distance: number;
+}
+
+interface DistanceOptions {
+  coordinateStart: number;
+  coordinateMove: number;
+}
+
+interface CoordinateOfMiddleOptions {
+  start: number;
+  itemSize: number;
+}
+
 /* eslint-disable no-undef */
 export {
   SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
   ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions, TrackSizesOptions,
+  FromValueToCoordinate, ScaleValue, ScaleCoordinatesOptions, SliderValueOptions, DistanceOptions,
+  CoordinateOfMiddleOptions,
 };

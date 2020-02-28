@@ -1,6 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import View from '../slider/views/View/View';
+import Model from '../slider/Model/Model';
+import Controller from '../slider/Controller/Controller';
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
 
@@ -17,7 +18,6 @@ describe('View', () => {
   let divLabel;
 
   const createElements = () => {
-    const view = new View();
     const optionsForElements = {
       $element: $('body'),
       range: false,
@@ -28,7 +28,11 @@ describe('View', () => {
       label: true,
       step: undefined,
     };
-    view.createElements(optionsForElements);
+
+    const model = new Model();
+    const controller = new Controller(model);
+    model.getSliderOptions(optionsForElements);
+    controller.init();
   };
 
   const turnOnProgress = () => {

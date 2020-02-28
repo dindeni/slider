@@ -1,36 +1,28 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
+/* eslint-disable  @typescript-eslint/no-var-requires  */
 import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
-import { dispatchMove } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
 
+const $ = require('jquery');
 
-describe('Vertical option', () => {
-  let divTrack;
+describe('Controller init', () => {
   let divThumb;
-  let divThumbLeft;
-  let divThumbTop;
+  let divTrack;
   let divLabel;
-  const moveDistanceX = 0;
-  const moveDistanceY = 50;
 
   const createElements = () => {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('wrapper');
-    document.body.appendChild(wrapper);
-    const $element = $('.wrapper');
-    $element.css({ width: '20.02rem' });
-
     const optionsForElements = {
-      $element,
+      $element: $('body'),
       range: false,
-      vertical: true,
+      vertical: false,
       min: 100,
       max: 500,
       progress: true,
       label: true,
       step: undefined,
     };
+
     const model = new Model();
     const controller = new Controller(model);
     model.getSliderOptions(optionsForElements);
@@ -45,11 +37,12 @@ describe('Vertical option', () => {
   };
 
   const findElements = () => {
-    divTrack = document.querySelector('.js-slider__track');
     divThumb = document.querySelector('.js-slider__thumb');
-    divThumbLeft = divThumb.getBoundingClientRect().left;
-    divThumbTop = divThumb.getBoundingClientRect().top;
+    divTrack = document.querySelector('.js-slider__track');
     divLabel = document.querySelector('.js-slider__label');
+
+    divTrack.style.width = '20.02rem';
+    divThumb.style.left = '0rem';
   };
 
   beforeAll(async () => {
@@ -57,18 +50,20 @@ describe('Vertical option', () => {
     await addStyle();
     await createElements();
     await findElements();
-    await dispatchMove(divThumb, divThumbLeft, divThumbTop, moveDistanceX,
-      moveDistanceY);
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = style;
+    document.head.appendChild(styleElement);
   });
 
-  it('should track height to be 20rem', () => {
-    expect(parseInt(divTrack.style.height, 10)).toBe(20);
+  it('should track element exists', () => {
+    expect(divTrack).not.toBeNull();
   });
 
-  it('should div thumb move a distance', () => {
-    expect(parseFloat(divThumb.style.top)).toBe(moveDistanceY * 0.077);
+  it('should thumb element exists', () => {
+    expect(divThumb).not.toBeNull();
   });
-  it('should label value to be 177', () => {
-    expect(divLabel.textContent).toBe('177');
+
+  it('should label element exists', () => {
+    expect(divLabel).not.toBeNull();
   });
 });

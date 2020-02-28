@@ -1,7 +1,7 @@
-import Presenter from '../../Presenter/Presenter';
 import View from '../View/View';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import { ExtremumOptions, SliderBasicOptions, TrackSizesOptions } from '../../../types/types';
+import Observable from '../../Observable/Observable';
 
 interface OptionsForChangeOnTrack extends ExtremumOptions, TrackSizesOptions{
   vertical: boolean;
@@ -54,9 +54,7 @@ interface OptionsForStepRangeSettingVertical extends OptionsForStepRangeSettings
   thumbMaxTop: number;
 }
 
-class ViewOnTrack {
-  private presenter: Presenter = new Presenter();
-
+class ViewOnTrack extends Observable {
   private rem = 0.077;
 
   private currentCoordinateStep: number;
@@ -65,9 +63,14 @@ class ViewOnTrack {
 
   private thumbTop: number;
 
-  private view: View = new View();
+  private view: View;
 
   private viewUpdatingCoordinates: ViewUpdating = new ViewUpdating();
+
+  constructor(view) {
+    super();
+    this.view = view;
+  }
 
 
   public handleTrackElementClick(options: TrackClickOptions): void {
@@ -149,13 +152,16 @@ class ViewOnTrack {
     };
     const siblingElementCoordinate = getCoordinateForSiblingElement();
 
-    const scaleCoordinates = this.presenter.calculateLeftScaleCoordinates({
-      min,
-      max,
-      step,
-      vertical,
-      trackWidth,
-      trackHeight,
+    const scaleCoordinates = this.notifyAllForScale({
+      value: {
+        min,
+        max,
+        step,
+        vertical,
+        trackWidth,
+        trackHeight,
+      },
+      type: 'getScaleValue',
     });
 
     const stepDistance = distance + thumbElement.getBoundingClientRect().width;
@@ -243,12 +249,16 @@ class ViewOnTrack {
       const thumbMaxTop = thumbMax.getBoundingClientRect().top;
       const thumbHeight = thumbElement.getBoundingClientRect().height;
 
-      const coordinatesOfMiddle = vertical ? Presenter.calculateCoordinatesOfMiddle(
+      const coordinatesOfMiddle = vertical ? this.notifyAll({
+        value:
         { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
-      )
-        : Presenter.calculateCoordinatesOfMiddle(
+        type: 'getCoordinatesOfMiddle',
+      })
+        : this.notifyAll({
+          value:
           { start: trackElement.getBoundingClientRect().left, itemSize: trackWidth },
-        );
+          type: 'getCoordinatesOfMiddle',
+        });
 
       const optionsForUpdateStep = {
         min,

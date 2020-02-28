@@ -1,5 +1,5 @@
-import Presenter from '../../Presenter/Presenter';
 import { ExtremumOptions } from '../../../types/types';
+import Observable from '../../Observable/Observable';
 
 interface ScaleCreationOptions extends ExtremumOptions{
   vertical: boolean;
@@ -52,11 +52,9 @@ interface MakingProgressOptions {
   progressSize: number;
 }
 
-class ViewOptional {
+class ViewOptional extends Observable {
     private scaleData: {coordinates: number[]; value: number[];
      shortCoordinates: number[]; shortValue: number[];};
-
-    private presenter: Presenter = new Presenter();
 
     private rem = 0.077;
 
@@ -65,10 +63,12 @@ class ViewOptional {
         vertical, min, max, step, trackWidth, trackHeight, wrapper,
       } = options;
 
-      this.scaleData = this.presenter
-        .calculateLeftScaleCoordinates({
+      this.scaleData = this.notifyAllForScale({
+        value: {
           min, max, step, vertical, trackWidth, trackHeight,
-        });
+        },
+        type: 'getScaleValue',
+      });
 
       const scaleTopPositionCorrection = 5;
       const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
