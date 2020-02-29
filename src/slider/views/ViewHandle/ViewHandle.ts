@@ -22,8 +22,6 @@ class ViewHandle extends Observable {
 
     private stepValues: number[];
 
-    private rem = 0.077;
-
     private trackElement: HTMLElement;
 
     private step: number | undefined;

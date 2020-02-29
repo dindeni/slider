@@ -84,8 +84,6 @@ class View extends Observable {
 
   private viewOptional: ViewOptional;
 
-  private rem = 0.077;
-
   constructor(viewOptional) {
     super();
     this.viewOptional = viewOptional;
@@ -383,7 +381,7 @@ class View extends Observable {
       min,
       max,
       trackSize: Math.round(trackSize),
-      distance: distance / this.rem,
+      distance: distance / this.REM,
     };
 
     const value: number = this.notifyAll({ value: valueOptions, type: 'getValue' });

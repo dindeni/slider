@@ -78,21 +78,6 @@ class Model extends Observable {
       return value;
     }
 
-    private calculateSliderMovePercent(options: MovingPercentOptions): number {
-      const { trackSize, distance } = options;
-      this.sliderValuePercent = (distance / trackSize) * 100;
-      switch (true) {
-        case this.sliderValuePercent < 0:
-          this.sliderValuePercent = 0;
-          break;
-        case this.sliderValuePercent > 100:
-          this.sliderValuePercent = 100;
-          break;
-        default: return this.sliderValuePercent;
-      }
-      return this.sliderValuePercent;
-    }
-
     public calculateSliderValue(options: SliderValueOptions): number {
       const {
         min, max, trackSize, distance,
@@ -175,6 +160,21 @@ class Model extends Observable {
         shortCoordinates: [],
         shortValue: [],
       };
+    }
+
+    private calculateSliderMovePercent(options: MovingPercentOptions): number {
+      const { trackSize, distance } = options;
+      this.sliderValuePercent = (distance / trackSize) * 100;
+      switch (true) {
+        case this.sliderValuePercent < 0:
+          this.sliderValuePercent = 0;
+          break;
+        case this.sliderValuePercent > 100:
+          this.sliderValuePercent = 100;
+          break;
+        default: return this.sliderValuePercent;
+      }
+      return this.sliderValuePercent;
     }
 
     public static calculateThumbDistance(options: DistanceOptions): number {

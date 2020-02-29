@@ -231,6 +231,59 @@ class ViewOptional extends Observable {
       }
     }
 
+    public static changeZIndex(options: ChangingZIndexOptions): undefined {
+      const {
+        coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
+      } = options;
+
+      const isVerticalAboveMiddle = vertical && thumbElement.getBoundingClientRect().top
+      + window.scrollY < coordinatesOfMiddle;
+      const isVerticalBelowMiddle = vertical && thumbElement.getBoundingClientRect().top
+      + window.scrollY > coordinatesOfMiddle;
+      const isNotVerticalAboveMiddle = !vertical && thumbElement.getBoundingClientRect().left
+      > coordinatesOfMiddle;
+      const isNotVerticalBellowMiddle = !vertical && thumbElement.getBoundingClientRect().left
+      < coordinatesOfMiddle;
+      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_min') as HTMLElement;
+      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_max') as HTMLElement;
+      const isLabelsExist = labelElementMin && labelElementMax;
+
+      if (isVerticalAboveMiddle) {
+        thumbMax.style.zIndex = '200';
+        thumbMin.style.zIndex = '100';
+        if (isLabelsExist) {
+          labelElementMax.style.zIndex = '200';
+          labelElementMin.style.zIndex = '100';
+        }
+        return;
+      }
+      if (isVerticalBelowMiddle) {
+        thumbMax.style.zIndex = '100';
+        thumbMin.style.zIndex = '200';
+        if (isLabelsExist) {
+          labelElementMax.style.zIndex = '100';
+          labelElementMin.style.zIndex = '200';
+        }
+        return;
+      }
+
+      if (isNotVerticalAboveMiddle) {
+        thumbMax.style.zIndex = '100';
+        thumbMin.style.zIndex = '200';
+        if (isLabelsExist) {
+          labelElementMin.style.zIndex = '100';
+          labelElementMax.style.zIndex = '200';
+        }
+      } else if (isNotVerticalBellowMiddle) {
+        thumbMax.style.zIndex = '200';
+        thumbMin.style.zIndex = '100';
+        if (isLabelsExist) {
+          labelElementMin.style.zIndex = '200';
+          labelElementMax.style.zIndex = '100';
+        }
+      }
+    }
+
     public static createProgress(options: CreationProgressOptions): void {
       const {
         range, wrapper,
@@ -280,59 +333,6 @@ class ViewOptional extends Observable {
           left: '-0.62rem',
           top: `${coordinates.notRange || 0}rem`,
         });
-      }
-    }
-
-    public static changeZIndex(options: ChangingZIndexOptions): undefined {
-      const {
-        coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
-      } = options;
-
-      const isVerticalAboveMiddle = vertical && thumbElement.getBoundingClientRect().top
-       + window.scrollY < coordinatesOfMiddle;
-      const isVerticalBelowMiddle = vertical && thumbElement.getBoundingClientRect().top
-       + window.scrollY > coordinatesOfMiddle;
-      const isNotVerticalAboveMiddle = !vertical && thumbElement.getBoundingClientRect().left
-        > coordinatesOfMiddle;
-      const isNotVerticalBellowMiddle = !vertical && thumbElement.getBoundingClientRect().left
-        < coordinatesOfMiddle;
-      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_min') as HTMLElement;
-      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_max') as HTMLElement;
-      const isLabelsExist = labelElementMin && labelElementMax;
-
-      if (isVerticalAboveMiddle) {
-        thumbMax.style.zIndex = '200';
-        thumbMin.style.zIndex = '100';
-        if (isLabelsExist) {
-          labelElementMax.style.zIndex = '200';
-          labelElementMin.style.zIndex = '100';
-        }
-        return;
-      }
-      if (isVerticalBelowMiddle) {
-        thumbMax.style.zIndex = '100';
-        thumbMin.style.zIndex = '200';
-        if (isLabelsExist) {
-          labelElementMax.style.zIndex = '100';
-          labelElementMin.style.zIndex = '200';
-        }
-        return;
-      }
-
-      if (isNotVerticalAboveMiddle) {
-        thumbMax.style.zIndex = '100';
-        thumbMin.style.zIndex = '200';
-        if (isLabelsExist) {
-          labelElementMin.style.zIndex = '100';
-          labelElementMax.style.zIndex = '200';
-        }
-      } else if (isNotVerticalBellowMiddle) {
-        thumbMax.style.zIndex = '200';
-        thumbMin.style.zIndex = '100';
-        if (isLabelsExist) {
-          labelElementMin.style.zIndex = '200';
-          labelElementMax.style.zIndex = '100';
-        }
       }
     }
 }
