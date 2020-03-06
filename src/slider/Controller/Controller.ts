@@ -1,130 +1,78 @@
 import Model from '../Model/Model';
 import View from '../views/View/View';
-import ViewHandle from '../views/ViewHandle/ViewHandle';
-import ViewOnTrack from '../views/ViewOnTrack/ViewOnTrack';
-import ViewUpdating from '../views/ViewUpdating/ViewUpdating';
-import ViewOptional from '../views/ViewOptional/ViewOptional';
 import {
-  ScaleValue, ScaleCoordinatesOptions, FromValueToCoordinate, SliderValueOptions,
+  ScaleCoordinatesOptions, FromValueToCoordinate, SliderValueOptions,
   DistanceOptions, CoordinateOfMiddleOptions, SliderOptionsForInit,
 } from '../../types/types';
 
 class Controller {
-  private model: Model;
+  private model: Model = new Model();
 
-  private view: View;
+  private view: View = new View();
 
-  private viewHandle: ViewHandle;
+  private sliderOptions: SliderOptionsForInit;
 
-  private viewOnTrack: ViewOnTrack;
-
-  private viewUpdating: ViewUpdating;
-
-  private viewOptional: ViewOptional = new ViewOptional();
-
-  constructor(model) {
-    this.model = model;
-  }
 
   public init(): void {
-    this.subscribeToViewOptional();
-
-    this.view = new View(this.viewOptional);
-    this.subscribe();
-
-    const sliderInitValues = this.getSliderOptions();
-    const sliderSettings = {
-      $element: sliderInitValues.$element,
-      min: sliderInitValues.min,
-      max: sliderInitValues.max,
-      range: sliderInitValues.range,
-      vertical: sliderInitValues.vertical,
-      progress: sliderInitValues.progress,
-      step: sliderInitValues.step,
+    const {
+      $element, min, max, range, vertical, progress, step, value, valueMin, valueMax, label,
+    } = this.sliderOptions;
+    const sliderOptions = {
+      $element, min, max, range, vertical, progress, step,
     };
 
+    this.subscribe();
+    this.view.getSliderOptions(sliderOptions);
+
+    const sliderValues = this.model.updateState({
+      min, max, value, valueMin, valueMax,
+    });
 
     this.view.createElements({
-      ...sliderSettings,
-      value: sliderInitValues.value,
-      valueMin: sliderInitValues.valueMin,
-      valueMax: sliderInitValues.valueMax,
-      label: sliderInitValues.label,
+      ...sliderOptions,
+      value: sliderValues.value,
+      valueMin: sliderValues.valueMin,
+      valueMax: sliderValues.valueMax,
+      label,
     });
-
-    this.viewOnTrack = new ViewOnTrack(this.view);
-    this.viewUpdating = new ViewUpdating();
-    this.viewHandle = new ViewHandle({
-      view: this.view,
-      viewOnTrack: this.viewOnTrack,
-      viewUpdating: this.viewUpdating,
-    });
-    this.subscribeToHandle();
-    this.viewHandle.addDragAndDrop(sliderSettings);
-    this.subscribeToTrack();
-    this.subscribeToViewUpdating();
   }
 
-  private getSliderOptions(): SliderOptionsForInit {
-    return {
-      $element: this.model.$element,
-      min: this.model.min,
-      max: this.model.max,
-      range: this.model.range,
-      vertical: this.model.vertical,
-      progress: this.model.progress,
-      step: this.model.step,
-      value: this.model.value,
-      valueMin: this.model.valueMin,
-      valueMax: this.model.valueMax,
-      label: this.model.label,
-    };
+  public getSliderOptions(options: SliderOptionsForInit): void {
+    this.sliderOptions = options;
   }
 
-  private getScaleCoordinates(options: ScaleCoordinatesOptions): ScaleValue {
-    return this.model.calculateLeftScaleCoordinates(options);
+  private getScaleCoordinates(options: ScaleCoordinatesOptions): void {
+    const scaleData = this.model.calculateLeftScaleCoordinates(options);
+    this.view.setScaleData(scaleData);
   }
 
-  private static getCoordinates(options: FromValueToCoordinate): number {
-    return Model.calculateFromValueToCoordinates(options);
+  private getCoordinates(options: FromValueToCoordinate): void {
+    const coordinate = Model.calculateFromValueToCoordinates(options);
+    this.view.setCoordinate(coordinate);
   }
 
-  private getValue(options: SliderValueOptions): number {
-    return this.model.calculateSliderValue(options);
+  private getValue(options: SliderValueOptions): void {
+    const value = this.model.calculateSliderValue(options);
+    this.view.setLabelValue(value);
   }
 
-  private static getDistance(options: DistanceOptions): number {
-    return Model.calculateThumbDistance(options);
+  private getDistance(options: DistanceOptions): void {
+    const distance = Model.calculateThumbDistance(options);
+    this.view.getDistance(distance);
   }
 
-  private static getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
-    return Model.calculateCoordinatesOfMiddle(options);
+  private getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): void {
+    const coordinateOfMiddle = Model.calculateCoordinatesOfMiddle(options);
+    this.view.getCoordinateOfMiddle(coordinateOfMiddle);
   }
 
   private subscribe(): void {
-    this.view.subscribe({ method: Controller.getCoordinates, type: 'getCoordinates' });
+    this.model.subscribe({ method: this.model.validateValue.bind(this.model), type: 'validateValue' });
+    this.view.subscribe({ method: this.getCoordinates.bind(this), type: 'getCoordinates' });
     this.view.subscribe({ method: this.getValue.bind(this), type: 'getValue' });
-  }
-
-  private subscribeToHandle(): void {
-    this.viewHandle.subscribe({ method: this.getScaleCoordinates.bind(this), type: 'getScaleValue' });
-    this.viewHandle.subscribe({ method: Controller.getDistance, type: 'getDistance' });
-  }
-
-  private subscribeToTrack(): void {
-    this.viewOnTrack.subscribe({
-      method: this.getScaleCoordinates.bind(this),
-      type: 'getScaleValue',
-    });
-    this.viewOnTrack.subscribe({ method: Controller.getCoordinatesOfMiddle, type: 'getCoordinatesOfMiddle' });
-  }
-
-  private subscribeToViewUpdating(): void {
-    this.viewUpdating.subscribe({ method: Controller.getCoordinatesOfMiddle, type: 'getCoordinatesOfMiddle' });
-  }
-
-  private subscribeToViewOptional(): void {
-    this.viewOptional.subscribe({ method: this.getScaleCoordinates.bind(this), type: 'getScaleValue' });
+    this.view.subscribe({ method: this.getDistance.bind(this), type: 'getDistance' });
+    this.view.subscribe({ method: this.getCoordinatesOfMiddle.bind(this), type: 'getCoordinatesOfMiddle' });
+    this.view.subscribe({ method: this.getScaleCoordinates.bind(this), type: 'getScaleData' });
   }
 }
 

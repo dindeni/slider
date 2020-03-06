@@ -1,17 +1,9 @@
-import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 import { SliderElementOptions } from '../../../types/types';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import ViewOnTrack from '../ViewOnTrack/ViewOnTrack';
-import Observable from '../../Observable/Observable';
 
-interface ConstructorForHandle {
-  view: View;
-  viewOnTrack: ViewOnTrack;
-  viewUpdating: ViewUpdating;
-}
-
-class ViewHandle extends Observable {
+class ViewHandle {
     private coordinateXStart: number;
 
     private shift: number;
@@ -44,20 +36,14 @@ class ViewHandle extends Observable {
 
     private trackHeight: number;
 
-    private viewOptional: ViewOptional = new ViewOptional();
-
-    private view: View;
+    readonly view: View;
 
     private viewOnTrack: ViewOnTrack;
 
-    private viewUpdating: ViewUpdating = new ViewUpdating();
+    private viewUpdating: ViewUpdating;
 
-    constructor(options: ConstructorForHandle) {
-      super();
-      const { view, viewOnTrack, viewUpdating } = options;
+    constructor(view) {
       this.view = view;
-      this.viewOnTrack = viewOnTrack;
-      this.viewUpdating = viewUpdating;
     }
 
     public addDragAndDrop(options: SliderElementOptions): void {
@@ -78,7 +64,7 @@ class ViewHandle extends Observable {
       this.thumbElement = (thumbCollection.get(0));
 
       if (step) {
-        const stepData = this.notifyAllForScale({
+        this.view.notifyAll({
           value: {
             min,
             max,
@@ -87,11 +73,11 @@ class ViewHandle extends Observable {
             trackWidth: this.trackWidth,
             trackHeight: this.trackHeight,
           },
-          type: 'getScaleValue',
+          type: 'getScaleData',
         });
 
-        this.coordinateStep = stepData.coordinates;
-        this.stepValues = stepData.value;
+        this.coordinateStep = this.view.scaleData.coordinates;
+        this.stepValues = this.view.scaleData.value;
       }
 
       this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
@@ -125,19 +111,20 @@ class ViewHandle extends Observable {
         step,
       }));
 
-      this.viewOptional = new ViewOptional();
+      this.viewUpdating = new ViewUpdating(this.view);
+      this.viewOnTrack = new ViewOnTrack(this.view);
     }
 
     private handleDocumentMousemove(event): void {
       event.preventDefault();
 
-      const thumbDistance = this.vertical ? this.notifyAll({
+      this.vertical ? this.view.notifyAll({
         value: {
           coordinateStart: this.coordinateYStart,
           coordinateMove: event.screenY,
         },
         type: 'getDistance',
-      }) : this.notifyAll({
+      }) : this.view.notifyAll({
         value:
         { coordinateStart: this.coordinateXStart, coordinateMove: event.screenX },
         type: 'getDistance',
@@ -149,7 +136,7 @@ class ViewHandle extends Observable {
         range: this.range,
         trackWidth: this.trackWidth,
         trackHeight: this.trackHeight,
-        thumbDistance,
+        thumbDistance: this.view.distance,
         thumbElement: this.thumbElement,
         event,
         shift: this.shift,

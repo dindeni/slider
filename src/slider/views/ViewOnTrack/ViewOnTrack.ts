@@ -1,7 +1,6 @@
 import View from '../View/View';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import { ExtremumOptions, SliderBasicOptions, TrackSizesOptions } from '../../../types/types';
-import Observable from '../../Observable/Observable';
 
 interface OptionsForChangeOnTrack extends ExtremumOptions, TrackSizesOptions{
   vertical: boolean;
@@ -54,7 +53,7 @@ interface OptionsForStepRangeSettingVertical extends OptionsForStepRangeSettings
   thumbMaxTop: number;
 }
 
-class ViewOnTrack extends Observable {
+class ViewOnTrack {
   private rem = 0.077;
 
   private currentCoordinateStep: number;
@@ -63,15 +62,13 @@ class ViewOnTrack extends Observable {
 
   private thumbTop: number;
 
-  private view: View;
+  readonly view: View;
 
-  private viewUpdatingCoordinates: ViewUpdating = new ViewUpdating();
+  private viewUpdatingCoordinates: ViewUpdating = new ViewUpdating(this.view);
 
   constructor(view) {
-    super();
     this.view = view;
   }
-
 
   public handleTrackElementClick(options: TrackClickOptions): void {
     const {
@@ -152,7 +149,7 @@ class ViewOnTrack extends Observable {
     };
     const siblingElementCoordinate = getCoordinateForSiblingElement();
 
-    const scaleCoordinates = this.notifyAllForScale({
+    this.view.notifyAll({
       value: {
         min,
         max,
@@ -161,11 +158,11 @@ class ViewOnTrack extends Observable {
         trackWidth,
         trackHeight,
       },
-      type: 'getScaleValue',
+      type: 'getScaleData',
     });
 
     const stepDistance = distance + thumbElement.getBoundingClientRect().width;
-    const indexOfCoordinate = scaleCoordinates.coordinates.findIndex(
+    const indexOfCoordinate = this.view.scaleData.coordinates.findIndex(
       (value, index, array) => {
         const isDistanceAbove0 = stepDistance > value && stepDistance
           < array[index + 1] && siblingElementCoordinate !== value;
@@ -175,7 +172,7 @@ class ViewOnTrack extends Observable {
         return isFirstCoordinate || isDistanceAbove0 || isLastCoordinate;
       },
     );
-    this.currentCoordinateStep = scaleCoordinates.coordinates[indexOfCoordinate];
+    this.currentCoordinateStep = this.view.scaleData.coordinates[indexOfCoordinate];
 
     const thumbNode = thumbElement;
     vertical ? thumbNode.style.top = `${this.currentCoordinateStep * this.rem}rem`
@@ -249,12 +246,12 @@ class ViewOnTrack extends Observable {
       const thumbMaxTop = thumbMax.getBoundingClientRect().top;
       const thumbHeight = thumbElement.getBoundingClientRect().height;
 
-      const coordinatesOfMiddle = vertical ? this.notifyAll({
+      vertical ? this.view.notifyAll({
         value:
         { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
         type: 'getCoordinatesOfMiddle',
       })
-        : this.notifyAll({
+        : this.view.notifyAll({
           value:
           { start: trackElement.getBoundingClientRect().left, itemSize: trackWidth },
           type: 'getCoordinatesOfMiddle',
@@ -284,7 +281,7 @@ class ViewOnTrack extends Observable {
         range,
         event,
         thumbElement,
-        coordinatesOfMiddle,
+        coordinatesOfMiddle: this.view.coordinateOfMiddle,
         thumbMin,
         thumbMax,
         parentElementOfTrack,
@@ -314,14 +311,14 @@ class ViewOnTrack extends Observable {
               { thumbElement: thumbMax, event, ...optionsForUpdateStep },
             );
             break;
-          case vertical ? coordinatesOfMiddle - thumbHeight > event.pageY - window.scrollY
-            : event.pageX < coordinatesOfMiddle:
+          case vertical ? this.view.coordinateOfMiddle - thumbHeight > event.pageY - window.scrollY
+            : event.pageX < this.view.coordinateOfMiddle:
             this.updateElementsOnTrack(
               { thumbElement: thumbMin, event, ...optionsForUpdateStep },
             );
             break;
-          case vertical ? coordinatesOfMiddle - thumbHeight < event.pageY - window.scrollY
-            : event.pageX > coordinatesOfMiddle:
+          case vertical ? this.view.coordinateOfMiddle - thumbHeight < event.pageY - window.scrollY
+            : event.pageX > this.view.coordinateOfMiddle:
             this.updateElementsOnTrack(
               { thumbElement: thumbMax, event, ...optionsForUpdateStep },
             );

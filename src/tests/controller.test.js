@@ -23,9 +23,8 @@ describe('Controller init', () => {
       step: undefined,
     };
 
-    const model = new Model();
-    const controller = new Controller(model);
-    model.getSliderOptions(optionsForElements);
+    const controller = new Controller();
+    controller.getSliderOptions(optionsForElements);
     controller.init();
   };
 

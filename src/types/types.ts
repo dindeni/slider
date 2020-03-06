@@ -44,7 +44,7 @@ interface FromValueToCoordinate extends ExtremumOptions{
   trackSize: number;
 }
 
-interface ScaleValue {
+interface ScaleData {
   value: number[];
   coordinates: number[];
   shortValue: number[];
@@ -77,6 +77,6 @@ interface CoordinateOfMiddleOptions {
 export {
   SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
   ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions, TrackSizesOptions,
-  FromValueToCoordinate, ScaleValue, ScaleCoordinatesOptions, SliderValueOptions, DistanceOptions,
+  FromValueToCoordinate, ScaleData, ScaleCoordinatesOptions, SliderValueOptions, DistanceOptions,
   CoordinateOfMiddleOptions,
 };

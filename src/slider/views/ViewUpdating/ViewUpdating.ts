@@ -1,7 +1,6 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
 import { RangeAndVerticalOptions, TrackSizesOptions } from '../../../types/types';
 import View from '../View/View';
-import Observable from '../../Observable/Observable';
 
 interface ThumbUpdatingOptions extends RangeAndVerticalOptions, TrackSizesOptions{
   step: number | undefined;
@@ -64,7 +63,7 @@ interface SettingZIndexOptions extends TrackSizesOptions{
   thumbMax?: HTMLElement;
 }
 
-class ViewUpdating extends Observable {
+class ViewUpdating {
   private rem = 0.077;
 
   private thumbLeft: number;
@@ -73,9 +72,14 @@ class ViewUpdating extends Observable {
 
   private thumbElement: HTMLElement;
 
-  private viewOptional: ViewOptional = new ViewOptional();
+  private viewOptional: ViewOptional;
 
-  private view: View = new View(this.viewOptional);
+  readonly view: View;
+
+  constructor(view) {
+    this.view = view;
+    this.viewOptional = new ViewOptional(this.view);
+  }
 
   public updateThumbCoordinates(options: ThumbUpdatingOptions): void {
     const {
@@ -386,13 +390,17 @@ class ViewUpdating extends Observable {
       const start = vertical ? trackElement.getBoundingClientRect().top + window.scrollY
         : trackElement.getBoundingClientRect().left;
 
-      const coordinatesOfMiddle = this.notifyAll({
+      this.view.notifyAll({
         value:
         { start, itemSize: vertical ? trackHeight : trackWidth },
         type: 'getCoordinatesOfMiddle',
       });
       ViewOptional.changeZIndex({
-        coordinatesOfMiddle, vertical, thumbMax, thumbMin, thumbElement: this.thumbElement,
+        coordinatesOfMiddle: this.view.coordinateOfMiddle,
+        vertical,
+        thumbMax,
+        thumbMin,
+        thumbElement: this.thumbElement,
       });
     }
   }

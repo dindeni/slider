@@ -1,5 +1,9 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
-import { SliderElementOptions, RangeAndVerticalOptions, ExtremumOptions } from '../../../types/types';
+import ViewHandle from '../ViewHandle/ViewHandle';
+import ViewUpdating from '../ViewUpdating/ViewUpdating';
+import {
+  SliderElementOptions, RangeAndVerticalOptions, ExtremumOptions, ScaleData,
+} from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
 interface OptionsForStylingElements extends RangeAndVerticalOptions{
@@ -78,17 +82,27 @@ class View extends Observable {
 
   private thumbCoordinateMax: number;
 
+  public coordinate: number;
+
   private min: number;
 
   private max: number;
 
+  private valueForLabel: number;
+
   private viewOptional: ViewOptional;
 
-  constructor(viewOptional) {
-    super();
-    this.viewOptional = viewOptional;
-  }
+  private viewHandle: ViewHandle;
 
+  private viewUpdating: ViewUpdating;
+
+  public scaleData: ScaleData;
+
+  public sliderSettings: SliderElementOptions;
+
+  public distance: number;
+
+  public coordinateOfMiddle: number;
 
   public createElements(options: SliderElementOptions): void {
     const {
@@ -108,6 +122,10 @@ class View extends Observable {
       .appendTo($wrapper);
 
     this.createThumb({ range, vertical, wrapper: $wrapper });
+
+    this.viewOptional = new ViewOptional(this);
+    this.viewHandle = new ViewHandle(this);
+    this.viewUpdating = new ViewUpdating(this);
 
     if (step) {
       const optionsForScale = {
@@ -135,13 +153,68 @@ class View extends Observable {
     if (progress) {
       this.initializeProgress({ vertical, range, $wrapper });
     }
+    this.viewHandle.addDragAndDrop(this.sliderSettings);
+  }
+
+  public setLabelValue(value: number): void {
+    this.valueForLabel = value;
+  }
+
+  public setScaleData(scaleData: ScaleData): void {
+    this.scaleData = scaleData;
+  }
+
+  public getSliderOptions(sliderSettings: SliderElementOptions): void {
+    this.sliderSettings = sliderSettings;
+  }
+
+  public getDistance(distance: number): void {
+    this.distance = distance;
+  }
+
+  public getCoordinateOfMiddle(coordinateOfMiddle: number): void {
+    this.coordinateOfMiddle = coordinateOfMiddle;
+  }
+
+  public updateData(options: UpdatingDataOptions): void {
+    const {
+      min, max, trackSize, distance, vertical, thumbElement, progress,
+    } = options;
+
+    const valueOptions = {
+      min,
+      max,
+      trackSize: Math.round(trackSize),
+      distance: distance / this.REM,
+    };
+    this.notifyAll({ value: valueOptions, type: 'getValue' });
+
+    const optionsForLabel = {
+      value: Math.round(this.valueForLabel),
+      coordinate: distance,
+      vertical,
+      thumbElement,
+    };
+
+    const isDistance = distance || distance === 0;
+    if (isDistance) {
+      this.updateLabelValue(optionsForLabel);
+    }
+
+    if (progress) {
+      this.viewOptional.stylingProgress({
+        progressSize: distance,
+        vertical,
+        thumbElement,
+      });
+    }
   }
 
   private initializeProgress(options: OptionsForInitializingProgress): void {
     const { range, vertical, $wrapper } = options;
 
     ViewOptional.createProgress({ range, wrapper: $wrapper });
-    const viewOptional = new ViewOptional();
+    const viewOptional = new ViewOptional(this.notifyAll);
     if (range) {
       viewOptional.stylingProgress({
         progressSize: this.thumbCoordinateMin,
@@ -181,6 +254,10 @@ class View extends Observable {
     }
   }
 
+  public setCoordinate(value: number): void {
+    this.coordinate = value;
+  }
+
   public stylingElements(options: OptionsForStylingElements): void {
     const {
       range, vertical, wrapper, step,
@@ -188,26 +265,29 @@ class View extends Observable {
 
     this.trackSize = wrapper.find('.slider__track').width() || 0;
     if (range) {
-      this.thumbCoordinateMin = this.notifyAll({
+      this.notifyAll({
         value: {
           value: this.valueMin || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
+      this.thumbCoordinateMin = this.coordinate;
 
-      this.thumbCoordinateMax = this.notifyAll({
+      this.notifyAll({
         value: {
           value: this.valueMax || this.max, min: this.min, max: this.max, trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
+      this.thumbCoordinateMax = this.coordinate;
     } else {
-      this.thumbCoordinate = this.notifyAll({
+      this.notifyAll({
         value: {
           value: this.value || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
+      this.thumbCoordinate = this.coordinate;
     }
     this.setStepCoordinates({ step, range });
 
@@ -369,40 +449,6 @@ class View extends Observable {
 
       vertical ? $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
         : $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
-    }
-  }
-
-  public updateData(options: UpdatingDataOptions): void {
-    const {
-      min, max, trackSize, distance, vertical, thumbElement, progress,
-    } = options;
-
-    const valueOptions = {
-      min,
-      max,
-      trackSize: Math.round(trackSize),
-      distance: distance / this.REM,
-    };
-
-    const value: number = this.notifyAll({ value: valueOptions, type: 'getValue' });
-    const optionsForLabel = {
-      value: Math.round(value),
-      coordinate: distance,
-      vertical,
-      thumbElement,
-    };
-
-    const isDistance = distance || distance === 0;
-    if (isDistance) {
-      this.updateLabelValue(optionsForLabel);
-    }
-
-    if (progress) {
-      this.viewOptional.stylingProgress({
-        progressSize: distance,
-        vertical,
-        thumbElement,
-      });
     }
   }
 }

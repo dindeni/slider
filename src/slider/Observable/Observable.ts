@@ -1,19 +1,10 @@
-import { ScaleValue } from '../../types/types';
-
-interface Observer {
-  method: Function;
-}
-
-interface ObserverAndType extends Observer{
+interface ObserverAndType{
   type: string;
+  method: Function;
 }
 
 class Observable {
   public observers: ObserverAndType[] = [];
-
-  private resultOfMethod: number;
-
-  private resultOfMethodForScale: ScaleValue;
 
   public subscribe({ method, type }: ObserverAndType): void{
     const checkHasMethod = (): boolean => this.observers.some((value) => value.type === type);
@@ -22,22 +13,12 @@ class Observable {
     }
   }
 
-  public notifyAll(data: { value; type: string }): number {
+  public notifyAll(data: { value: any; type: string }): void {
     this.observers.forEach((observer) => {
       if (observer.type === data.type) {
-        this.resultOfMethod = observer.method(data.value);
+        observer.method(data.value);
       }
     });
-    return this.resultOfMethod;
-  }
-
-  public notifyAllForScale(data: { value; type: string }): ScaleValue {
-    this.observers.forEach((observer) => {
-      if (observer.type === 'getScaleValue') {
-        this.resultOfMethodForScale = observer.method(data.value);
-      }
-    });
-    return this.resultOfMethodForScale;
   }
 }
 

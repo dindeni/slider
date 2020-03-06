@@ -62,32 +62,31 @@ class Panel {
 
     const isValueValid = range ? valueToNumber >= min && valueToNumber <= max
       && isValueMinMaxValid : valueToNumber >= min && valueToNumber < max;
-    const validation = {
-      checkRangeValue: (): number | undefined => {
-        if (isValueValid) {
-          Panel.deleteErrorElement(element);
-          return valueToNumber;
-        }
-        Panel.deleteErrorElement(element);
-        this.createErrorElement({ element, text: 'invalid value' });
-        return undefined;
-      },
 
-      checkStepValue: (): number | undefined => {
-        if (isValidStepValue) {
-          Panel.deleteErrorElement(element);
-          return valueToNumber;
-        }
+    const validateRangeValue = (): number | undefined => {
+      if (isValueValid) {
         Panel.deleteErrorElement(element);
-        this.createErrorElement({ element, text: 'value must be a multiple of step' });
-        return undefined;
-      },
+        return valueToNumber;
+      }
+      Panel.deleteErrorElement(element);
+      this.createErrorElement({ element, text: 'invalid value' });
+      return undefined;
+    };
+
+    const validateStepValue = (): number | undefined => {
+      if (isValidStepValue) {
+        Panel.deleteErrorElement(element);
+        return valueToNumber;
+      }
+      Panel.deleteErrorElement(element);
+      this.createErrorElement({ element, text: 'value must be a multiple of step' });
+      return undefined;
     };
 
     if (step) {
-      const resultMinMax = validation.checkRangeValue();
-      return resultMinMax || resultMinMax === 0 ? validation.checkStepValue() : undefined;
-    } return validation.checkRangeValue();
+      const resultMinMax = validateRangeValue()
+      return resultMinMax || resultMinMax === 0 ? validateStepValue() : undefined;
+    } return validateRangeValue();
   }
 
   private createErrorElement(options: ErrorCreationOptions): null {

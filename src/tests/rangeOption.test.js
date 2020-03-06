@@ -1,5 +1,4 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
 import { dispatchMove } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
@@ -30,9 +29,8 @@ describe('Range', () => {
       label: true,
       step: undefined,
     };
-    const model = new Model();
-    const controller = new Controller(model);
-    model.getSliderOptions(optionsForElements);
+    const controller = new Controller();
+    controller.getSliderOptions(optionsForElements);
     controller.init();
     document.documentElement.style.fontSize = '13px';
   };

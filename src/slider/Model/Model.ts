@@ -1,6 +1,6 @@
 import {
-  SliderOptionsForInit, FromValueToCoordinate, ScaleValue, ScaleCoordinatesOptions,
-  SliderValueOptions, DistanceOptions, CoordinateOfMiddleOptions,
+  FromValueToCoordinate, ScaleData, ScaleCoordinatesOptions,
+  SliderValueOptions, DistanceOptions, CoordinateOfMiddleOptions, ExtremumOptions,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
 
@@ -9,24 +9,19 @@ interface MovingPercentOptions {
   distance: number;
 }
 
+interface SliderValues{
+  value: number | undefined;
+  valueMin: number | undefined;
+  valueMax: number | undefined;
+}
+
+interface OptionsForValidation extends ExtremumOptions, SliderValues{
+}
+
 class Model extends Observable {
     public sliderValuePercent: number;
 
     public sliderValue: number;
-
-    public min: number;
-
-    public max: number;
-
-    public $element: JQuery;
-
-    public range: boolean;
-
-    public vertical: boolean;
-
-    public step: number | undefined;
-
-    public progress: boolean;
 
     public value: number | undefined;
 
@@ -34,26 +29,19 @@ class Model extends Observable {
 
     public valueMax: number | undefined;
 
-    public label: boolean | undefined;
-
     private dataForScale: number[] = [];
 
-    public getSliderOptions(options: SliderOptionsForInit): void {
+    public updateState(options): SliderValues {
       const {
-        $element, range, vertical, min, max, step, progress, value, valueMin, valueMax, label,
+        min, max, value, valueMin, valueMax,
       } = options;
-
-      this.min = min;
-      this.max = max;
-      this.$element = $element;
-      this.range = range;
-      this.vertical = vertical;
-      this.step = step;
-      this.progress = progress;
-      this.value = this.validateValue(value);
-      this.valueMin = this.validateValue(valueMin);
-      this.valueMax = this.validateValue(valueMax);
-      this.label = label;
+      this.notifyAll({
+        value: {
+          min, max, value, valueMin, valueMax,
+        },
+        type: 'validateValue',
+      });
+      return { value: this.value, valueMin: this.valueMin, valueMax: this.valueMax };
     }
 
     public static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
@@ -65,17 +53,24 @@ class Model extends Observable {
       return Number((((value - min) * unit) * rem).toFixed(2));
     }
 
-    public validateValue(value: number | undefined):
-    number | undefined {
-      if (value) {
-        if (value > this.max) {
-          return this.max;
-        }
-        if (value < this.min) {
-          return this.min;
-        }
-      }
-      return value;
+    public validateValue(options: OptionsForValidation): void {
+      const {
+        min, max, value, valueMin, valueMax,
+      } = options;
+      const validate = (checkedValue): number | undefined => {
+        if (checkedValue) {
+          if (checkedValue > max) {
+            return max;
+          }
+          if (checkedValue < min) {
+            return min;
+          }
+          return checkedValue;
+        } return undefined;
+      };
+      this.value = validate(value);
+      this.valueMin = validate(valueMin);
+      this.valueMax = validate(valueMax);
     }
 
     public calculateSliderValue(options: SliderValueOptions): number {
@@ -96,7 +91,7 @@ class Model extends Observable {
       return this.sliderValue;
     }
 
-    public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleValue {
+    public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleData {
       const {
         min, max, step, vertical, trackWidth, trackHeight,
       } = options;

@@ -23,7 +23,8 @@ module.exports = {
   },
   rules: {
   'no-unused-expressions': [2, {allowTernary: true}],
-  'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}]
+  'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}],
+  '@typescript-eslint/no-explicit-any': 'off',
   },
   settings: {
     'import/resolver': {
