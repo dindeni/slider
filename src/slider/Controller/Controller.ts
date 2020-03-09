@@ -12,6 +12,7 @@ class Controller {
 
   private sliderOptions: SliderOptionsForInit;
 
+  private sliderValue: number;
 
   public init(): void {
     const {
@@ -52,8 +53,8 @@ class Controller {
   }
 
   private getValue(options: SliderValueOptions): void {
-    const value = this.model.calculateSliderValue(options);
-    this.view.setLabelValue(value);
+    this.sliderValue = this.model.calculateSliderValue(options);
+    this.view.setLabelValue(this.sliderValue);
   }
 
   private getDistance(options: DistanceOptions): void {

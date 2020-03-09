@@ -3,7 +3,6 @@ import DemoPage from '../demo/DemoPage/DemoPage';
 import '../slider/sliderInit/sliderInit.ts';
 import style from '../blocks/slider/slider.scss';
 import demoStyle from '../blocks/demo/demo.scss';
-import { dispatchMove } from './_serviceFunctions';
 
 describe('DemoPage', async () => {
   const sliderSettings = [
@@ -88,86 +87,5 @@ describe('DemoPage', async () => {
       expect(wrapper.querySelector('.js-demo__field-settings_vertical')).not.toBeNull();
       return expect(wrapper.querySelector('.js-demo__field-settings_range')).not.toBeNull();
     });
-  });
-
-  describe('After dispatch', () => {
-    let label;
-    beforeAll(() => {
-      label = document.querySelectorAll('.js-slider__label');
-      let thumbX;
-      let thumbY;
-      let thumbMin;
-      let thumbMinX;
-      let thumbMinY;
-      let thumbMax;
-      let thumbMaxX;
-      let thumbMaxY;
-      Array.from(document.querySelectorAll('.js-index__wrapper'))
-        .map((wrapper, index) => {
-          const thumb = wrapper.querySelectorAll('.js-slider__thumb');
-          switch (index) {
-            case 0:
-              thumbX = thumb[0].getBoundingClientRect().left;
-              thumbY = thumb[0].getBoundingClientRect().top;
-              dispatchMove(thumb[0], thumbX, thumbY, 50, 0);
-              break;
-            case 1:
-              [thumbMin] = thumb;
-              thumbMinX = thumbMin.getBoundingClientRect().left;
-              thumbMinY = thumbMin.getBoundingClientRect().top;
-              dispatchMove(thumbMin, thumbMinX, thumbMinY, 0, 50);
-              [, thumbMax] = thumb;
-              thumbMaxX = thumbMax.getBoundingClientRect().left;
-              thumbMaxY = thumbMax.getBoundingClientRect().top;
-              dispatchMove(thumbMax, thumbMaxX, thumbMaxY, 0, -50);
-              break;
-            case 2:
-              [thumbMin] = thumb;
-              thumbMinX = thumbMin.getBoundingClientRect().left;
-              thumbMinY = thumbMin.getBoundingClientRect().top;
-              dispatchMove(thumbMin, thumbMinX, thumbMinY, 50, 0);
-              [, thumbMax] = thumb;
-              thumbMaxX = thumbMax.getBoundingClientRect().left;
-              thumbMaxY = thumbMax.getBoundingClientRect().top;
-              dispatchMove(thumbMax, thumbMinX, thumbMinY, -50, 0);
-              break;
-            default:
-              thumbX = thumb[0].getBoundingClientRect().left;
-              thumbY = thumb[0].getBoundingClientRect().top;
-              dispatchMove(thumb[0], thumbX, thumbY, 0, 50);
-              break;
-          }
-          return undefined;
-        });
-    });
-
-    it('should first slider input value min to be equal label value',
-      () => {
-        const input = formsList[0].querySelector('.js-demo__field-value_min');
-        expect(input.value).toBe(label[0].textContent);
-      });
-    it('should first slider input value max to be equal label value',
-      () => {
-        const input = formsList[0].querySelector('.js-demo__field-value_max');
-        expect(input.value).toBe(label[1].textContent);
-      });
-
-    it('third slider input min value to be equal label value',
-      () => {
-        const input = formsList[2].querySelector('.js-demo__field-value_min');
-        expect(input.value).toBe(label[4].textContent);
-      });
-
-    it('third slider input max value to be equal label value',
-      () => {
-        const input = formsList[2].querySelector('.js-demo__field-value_max');
-        expect(input.value).toBe(label[5].textContent);
-      });
-
-    it('should fourth slider input value to be equal label value',
-      () => {
-        const input = formsList[3].querySelector('.js-demo__field-value');
-        expect(input.value).toBe(label[4].textContent);
-      });
   });
 });

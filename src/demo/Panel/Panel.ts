@@ -84,7 +84,7 @@ class Panel {
     };
 
     if (step) {
-      const resultMinMax = validateRangeValue()
+      const resultMinMax = validateRangeValue();
       return resultMinMax || resultMinMax === 0 ? validateStepValue() : undefined;
     } return validateRangeValue();
   }

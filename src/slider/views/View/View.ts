@@ -190,7 +190,7 @@ class View extends Observable {
     this.notifyAll({ value: valueOptions, type: 'getValue' });
 
     const optionsForLabel = {
-      value: Math.round(this.valueForLabel),
+      value: this.valueForLabel,
       coordinate: distance,
       vertical,
       thumbElement,

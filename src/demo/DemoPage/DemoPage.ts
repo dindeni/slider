@@ -5,7 +5,7 @@ interface ObservingInputOptions extends SliderBasicOptions{
   element: HTMLElement;
 }
 
-interface ObservingLabelOptions extends ExtremumOptions{
+interface ObservingLabelOptions{
   element: HTMLElement;
   range: boolean;
   vertical: boolean;
@@ -32,18 +32,18 @@ interface OptionsForGettingInputValues {
   min: number;
 }
 
-interface FromThumbToInputOptions extends ExtremumOptions{
+interface ForMutationRecord {
+  mutationRecord: MutationRecord[];
   thumbElement: HTMLElement;
-  vertical: boolean;
-  inputElement: HTMLElement;
-  trackWidth: number;
-  trackHeight: number;
+  inputElement: HTMLInputElement;
 }
 
 class DemoPage extends Panel {
     private sliderSettings: [Slider, Slider, Slider, Slider];
 
     private settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
+
+    private sliderController;
 
     public loadSliders(): void {
       this.sliderSettings = [
@@ -68,7 +68,8 @@ class DemoPage extends Panel {
             scale,
           };
           DemoPage.createElements(optionsForElements);
-          $(formWrapper).slider(this.sliderSettings[index]);
+          this.sliderController = $(formWrapper).slider(this.sliderSettings[index]);
+
           DemoPage.setInputValue({
             element: formWrapper as HTMLElement,
             settings: this.sliderSettings[index],
@@ -84,11 +85,9 @@ class DemoPage extends Panel {
             progress: this.sliderSettings[index].progress,
           };
 
-          DemoPage.observeThumb({
+          this.observeThumb({
             element: formWrapper as HTMLElement,
             range: this.sliderSettings[index].range,
-            min: this.sliderSettings[index].min,
-            max: this.sliderSettings[index].max,
             vertical: this.sliderSettings[index].vertical,
           });
 
@@ -206,11 +205,9 @@ class DemoPage extends Panel {
         progress: settings.progress,
       };
       this.observeInput(optionsForInput);
-      DemoPage.observeThumb({
+      this.observeThumb({
         element,
         range: settings.range,
-        min: settings.min,
-        max: settings.max,
         vertical: settings.vertical,
       });
     }
@@ -272,62 +269,51 @@ class DemoPage extends Panel {
       return { sliderValue, settings };
     }
 
-    private static observeThumb(options: ObservingLabelOptions): void {
+    private observeThumb(options: ObservingLabelOptions): void {
       const {
-        element, range, min, max, vertical,
+        element, range, vertical,
       } = options;
-
-      const track: HTMLElement = element.querySelector('.js-slider__track') as HTMLElement;
-      const trackWidth = track.getBoundingClientRect().width;
-      const trackHeight = track.getBoundingClientRect().height;
 
       if (range) {
         const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_min') as HTMLElement;
         const inputElementMin: HTMLInputElement = element.querySelector('.js-demo__field-value_min') as HTMLInputElement;
-        const watchThumbMin = (): void => {
-          DemoPage.setInputValueFromThumb({
-            min,
-            max,
-            vertical,
-            trackWidth,
-            trackHeight,
-            inputElement: inputElementMin,
-            thumbElement: thumbElementMin,
-          });
-        };
-        const observerMin = new MutationObserver(watchThumbMin);
-        observerMin.observe(thumbElementMin as HTMLElement, {
-          childList: true,
-          attributes: true,
-          characterData: true,
-        });
-
         const thumbElementMax: HTMLElement = element.querySelector('.js-slider__thumb_max') as HTMLElement;
         const inputElementMax: HTMLInputElement = element.querySelector('.js-demo__field-value_max') as HTMLInputElement;
-        const watchThumbMax = (): void => {
-          DemoPage.setInputValueFromThumb({
-            min,
-            max,
-            vertical,
-            trackWidth,
-            trackHeight,
-            inputElement: inputElementMax,
-            thumbElement: thumbElementMax,
-          });
+
+        const watchThumb = (recordOptions: ForMutationRecord): void => {
+          const { mutationRecord, inputElement, thumbElement } = recordOptions;
+
+          if (mutationRecord[0].oldValue) {
+            const oldValue = vertical ? (mutationRecord[0].oldValue.match(/(?<=top:).\d+(.?\d+)?rem/) || [])[0].trim()
+              : (mutationRecord[0].oldValue.match(/(?<=left:).\d+(.?\d+)?rem/) || [])[0].trim();
+            const positionOfThumb = vertical ? thumbElement.style.top : thumbElement.style.left;
+
+            if (parseFloat(positionOfThumb) !== parseFloat(oldValue)) {
+              const input = inputElement;
+              input.value = this.sliderController.sliderValue;
+            }
+          }
         };
-        const observerMax = new MutationObserver(watchThumbMax);
-        observerMax.observe(thumbElementMax as HTMLElement, {
-          childList: true,
+
+        const observerMin = new MutationObserver((mutationRecord) => watchThumb(
+          { mutationRecord, thumbElement: thumbElementMin, inputElement: inputElementMin },
+        ));
+        observerMin.observe(thumbElementMin as HTMLElement, {
           attributes: true,
-          characterData: true,
+          attributeOldValue: true,
+        });
+        const observerMax = new MutationObserver((mutationRecord) => watchThumb(
+          { mutationRecord, thumbElement: thumbElementMax, inputElement: inputElementMax },
+        ));
+        observerMax.observe(thumbElementMax as HTMLElement, {
+          attributes: true,
+          attributeOldValue: true,
         });
       } else {
         const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
         const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
         const watchThumb = (): void => {
-          DemoPage.setInputValueFromThumb({
-            min, max, vertical, trackWidth, trackHeight, inputElement, thumbElement,
-          });
+          inputElement.value = this.sliderController.sliderValue;
         };
         const observer = new MutationObserver(watchThumb);
         observer.observe(thumbElement as HTMLElement, {
@@ -336,18 +322,6 @@ class DemoPage extends Panel {
           characterData: true,
         });
       }
-    }
-
-    private static setInputValueFromThumb(options: FromThumbToInputOptions): void {
-      const {
-        thumbElement, vertical, min, max, inputElement, trackWidth, trackHeight,
-      } = options;
-
-      const valueLeft = vertical ? parseFloat(thumbElement.style.top) / 0.077
-        : parseFloat(thumbElement.style.left) / 0.077;
-      const sliderValue = vertical ? (min + ((max - min) * (valueLeft / trackHeight)))
-        : (min + ((max - min) * (valueLeft / trackWidth)));
-      (inputElement as HTMLInputElement).value = Math.round(sliderValue).toString();
     }
 }
 

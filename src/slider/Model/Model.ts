@@ -88,7 +88,7 @@ class Model extends Observable {
         this.sliderValue = min + ((max - min)
         * (this.sliderValuePercent)) / 100;
       }
-      return this.sliderValue;
+      return Math.round(this.sliderValue);
     }
 
     public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleData {
