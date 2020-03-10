@@ -5,7 +5,7 @@ const controller = new Controller();
 
 declare global {
   interface JQuery {
-    slider(options?: SliderOptions): Controller;
+    slider(options?: SliderOptions): number;
     }
 }
 
@@ -16,7 +16,7 @@ const initSlider = (options: SliderOptionsForInit): void => {
 
 /* eslint-disable func-names */
 
-$.fn.slider = function (options?: SliderOptions): Controller {
+$.fn.slider = function (options?: SliderOptions): number {
   const optionsDefault = {
     progress: false,
     min: 0,
@@ -35,5 +35,5 @@ $.fn.slider = function (options?: SliderOptions): Controller {
 
   initSlider(config);
 
-  return controller;
+  return controller.getPublicValue.bind(controller);
 };

@@ -43,7 +43,7 @@ class DemoPage extends Panel {
 
     private settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
 
-    private sliderController;
+    private slider;
 
     public loadSliders(): void {
       this.sliderSettings = [
@@ -68,7 +68,7 @@ class DemoPage extends Panel {
             scale,
           };
           DemoPage.createElements(optionsForElements);
-          this.sliderController = $(formWrapper).slider(this.sliderSettings[index]);
+          this.slider = $(formWrapper).slider(this.sliderSettings[index]);
 
           DemoPage.setInputValue({
             element: formWrapper as HTMLElement,
@@ -290,7 +290,7 @@ class DemoPage extends Panel {
 
             if (parseFloat(positionOfThumb) !== parseFloat(oldValue)) {
               const input = inputElement;
-              input.value = this.sliderController.sliderValue;
+              input.value = this.slider();
             }
           }
         };
@@ -313,7 +313,7 @@ class DemoPage extends Panel {
         const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
         const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
         const watchThumb = (): void => {
-          inputElement.value = this.sliderController.sliderValue;
+          inputElement.value = this.slider;
         };
         const observer = new MutationObserver(watchThumb);
         observer.observe(thumbElement as HTMLElement, {

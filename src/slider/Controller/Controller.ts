@@ -12,7 +12,7 @@ class Controller {
 
   private sliderOptions: SliderOptionsForInit;
 
-  private sliderValue: number;
+  public sliderValue: number;
 
   public init(): void {
     const {
@@ -40,6 +40,10 @@ class Controller {
 
   public getSliderOptions(options: SliderOptionsForInit): void {
     this.sliderOptions = options;
+  }
+
+  public getPublicValue(): number {
+    return this.sliderValue;
   }
 
   private getScaleCoordinates(options: ScaleCoordinatesOptions): void {
