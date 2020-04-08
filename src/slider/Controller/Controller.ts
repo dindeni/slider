@@ -1,3 +1,4 @@
+import autoBind from 'auto-bind';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import {
@@ -13,6 +14,10 @@ class Controller {
   private sliderOptions: SliderOptionsForInit;
 
   public sliderValue: number;
+
+  constructor() {
+    autoBind(this);
+  }
 
   public init(): void {
     const {
@@ -72,12 +77,12 @@ class Controller {
   }
 
   private subscribe(): void {
-    this.model.subscribe({ method: this.model.validateValue.bind(this.model), type: 'validateValue' });
-    this.view.subscribe({ method: this.getCoordinates.bind(this), type: 'getCoordinates' });
-    this.view.subscribe({ method: this.getValue.bind(this), type: 'getValue' });
-    this.view.subscribe({ method: this.getDistance.bind(this), type: 'getDistance' });
-    this.view.subscribe({ method: this.getCoordinatesOfMiddle.bind(this), type: 'getCoordinatesOfMiddle' });
-    this.view.subscribe({ method: this.getScaleCoordinates.bind(this), type: 'getScaleData' });
+    this.model.subscribe({ method: this.model.validateValue, type: 'validateValue' });
+    this.view.subscribe({ method: this.getCoordinates, type: 'getCoordinates' });
+    this.view.subscribe({ method: this.getValue, type: 'getValue' });
+    this.view.subscribe({ method: this.getDistance, type: 'getDistance' });
+    this.view.subscribe({ method: this.getCoordinatesOfMiddle, type: 'getCoordinatesOfMiddle' });
+    this.view.subscribe({ method: this.getScaleCoordinates, type: 'getScaleData' });
   }
 }
 

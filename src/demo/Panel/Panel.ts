@@ -46,8 +46,8 @@ class Panel {
 
     const checkRangeValue = (): boolean | undefined => {
       if (range) {
-        const minElement = wrapper.querySelector('.js-demo__field-value_min');
-        const maxElement = wrapper.querySelector('.js-demo__field-value_max');
+        const minElement = wrapper.querySelector('.js-demo__field-value_type_min');
+        const maxElement = wrapper.querySelector('.js-demo__field-value_type_max');
         const valueMin = Number((minElement as HTMLInputElement).value);
         const valueMax = Number((maxElement as HTMLInputElement).value);
 
@@ -115,10 +115,10 @@ class Panel {
     } = options;
 
     const convertedValue: boolean | number | undefined | null = Panel.convertInputValue(value);
-    const isMin = element.classList.contains('js-demo__field-settings_min');
-    const isMax = element.classList.contains('js-demo__field-settings_max');
+    const isMin = element.classList.contains('js-demo__field-settings_type_min');
+    const isMax = element.classList.contains('js-demo__field-settings_type_max');
     const isCheckbox = (element as HTMLInputElement).type === 'checkbox';
-    const isStep = element.classList.contains('js-demo__field-settings_step');
+    const isStep = element.classList.contains('js-demo__field-settings_type_step');
     switch (true) {
       case isMin:
         Panel.deleteErrorElement(element);
@@ -158,22 +158,22 @@ class Panel {
     );
 
     const $inputValue = settings.range ? $('<div class="demo__field-wrapper">'
-      + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_min js-demo__field-value_min"></label></div>'
-      + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_max js-demo__field-value_max"></label></div>')
+      + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_min js-demo__field-value_type_min"></label></div>'
+      + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_max js-demo__field-value_type_max"></label></div>')
       : $('<div class="demo__field-wrapper">'
         + '<label class="demo__mark">value<input type="number" class="demo__field-value js-demo__field-value"></label></div>');
 
     const $settingsInputs = $(`<div class="demo__field-wrapper demo__field-wrapper_for-checkbox"> progress
        <input type="checkbox" id="progress-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_progress js-demo__field-settings_progress"><label for="progress-${formIndex}" class="demo__mark"></label></div>`
-      + '<div class="demo__field-wrapper"><label class="demo__mark">min<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_min js-demo__field-settings_min">'
+      + '<div class="demo__field-wrapper"><label class="demo__mark">min<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_min js-demo__field-settings_type_min">'
       + '</label></div><div class="demo__field-wrapper">'
-      + '<label class="demo__mark">max<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_max js-demo__field-settings_max"></label></div>'
-      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">vertical<input type="checkbox" id="vertical-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_vertical js-demo__field-settings_vertical"><label for="vertical-${formIndex}" class="demo__mark"></label></div>`
+      + '<label class="demo__mark">max<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_max js-demo__field-settings_type_max"></label></div>'
+      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">vertical<input type="checkbox" id="vertical-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_type_type_vertical js-demo__field-settings_type_vertical"><label for="vertical-${formIndex}" class="demo__mark"></label></div>`
       + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">range<input type="checkbox" id="range-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_range js-demo__field-settings_range"><label for="range-${formIndex}" class="demo__mark"></label></div>`
       + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">scale<input type="checkbox" id="scale-${formIndex}" ${scale ? 'checked=true' : ''} class="demo__field-scale js-demo__field-scale"><label for="scale-${formIndex}" class="demo__mark"></label></div>`
       + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">label<input type="checkbox" id="label-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_for-label js-demo__field-settings_for-label" ${settings.label ? 'checked=true' : ''}><label for="label-${formIndex}" class="demo__mark"></label></div>`);
 
-    const $scaleElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_step js-demo__field-settings_step"></label></div>');
+    const $scaleElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_step js-demo__field-settings_type_step"></label></div>');
 
     $inputValue.appendTo($(form));
     $settingsInputs.appendTo($(form));
@@ -189,8 +189,8 @@ class Panel {
     } = options;
 
     const step = (max - min) / 5;
-    const $stepElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_step js-demo__field-settings_step"></label></div>');
-    $stepElement.find('.js-demo__field-settings_step').val(step);
+    const $stepElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_step js-demo__field-settings_type_step"></label></div>');
+    $stepElement.find('.js-demo__field-settings_type_step').val(step);
     $stepElement.appendTo($(form));
   }
 
@@ -202,10 +202,10 @@ class Panel {
     const { range, min, max } = settings;
 
     if (range) {
-      const minInput = (element.querySelector('.js-demo__field-value_min') as HTMLInputElement);
+      const minInput = (element.querySelector('.js-demo__field-value_type_min') as HTMLInputElement);
       settings.valueMin ? minInput.value = settings.valueMin.toString()
         : minInput.value = min.toString();
-      const maxInput = (element.querySelector('.js-demo__field-value_max') as HTMLInputElement);
+      const maxInput = (element.querySelector('.js-demo__field-value_type_max') as HTMLInputElement);
       settings.valueMax ? maxInput.value = settings.valueMax.toString()
         : maxInput.value = max.toString();
     } else {

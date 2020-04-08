@@ -238,8 +238,8 @@ class ViewOnTrack {
       trackWidth, trackHeight, step, trackElement, event, distance, coordinatesStep,
     } = options;
     if (range) {
-      const thumbMin = parentElementOfTrack.querySelector('.js-slider__thumb_min') as HTMLElement;
-      const thumbMax = parentElementOfTrack.querySelector('.js-slider__thumb_max') as HTMLElement;
+      const thumbMin = parentElementOfTrack.querySelector('.js-slider__thumb_type_min') as HTMLElement;
+      const thumbMax = parentElementOfTrack.querySelector('.js-slider__thumb_type_max') as HTMLElement;
       const thumbMinLeft = thumbMin.getBoundingClientRect().left;
       const thumbMaxLeft = thumbMax.getBoundingClientRect().left;
       const thumbMinTop = thumbMin.getBoundingClientRect().top;

@@ -1,3 +1,4 @@
+import autoBind from 'auto-bind';
 import View from '../View/View';
 import { SliderElementOptions } from '../../../types/types';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
@@ -44,6 +45,7 @@ class ViewHandle {
 
     constructor(view) {
       this.view = view;
+      autoBind(this);
     }
 
     public addDragAndDrop(options: SliderElementOptions): void {
@@ -80,10 +82,10 @@ class ViewHandle {
         this.stepValues = this.view.scaleData.value;
       }
 
-      this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
+      this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown);
       if (range) {
         this.thumbElementMax = thumbCollection.get(1);
-        this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown.bind(this));
+        this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown);
       }
 
       Array.from($element.find('.js-slider__thumb')).map((value) => {
@@ -165,7 +167,7 @@ class ViewHandle {
       if (event.target.classList.contains('js-slider__thumb')) {
         this.thumbElement = event.target;
 
-        const isVertical = (event.target as HTMLElement).classList.contains('js-slider__thumb_vertical');
+        const isVertical = (event.target as HTMLElement).classList.contains('js-slider__thumb_type_vertical');
         if (isVertical) {
           this.coordinateYStart = event.screenY;
           this.shift = parseFloat((event.target as HTMLElement).style.top);
@@ -173,14 +175,13 @@ class ViewHandle {
           this.coordinateXStart = event.screenX;
           this.shift = parseFloat((event.target as HTMLElement).style.left);
         }
-        const bindMove = this.handleDocumentMousemove.bind(this);
 
         const handleDocumentMouseup = (): void => {
-          document.removeEventListener('mousemove', bindMove);
+          document.removeEventListener('mousemove', this.handleDocumentMousemove);
           document.removeEventListener('mouseup', handleDocumentMouseup);
         };
 
-        document.addEventListener('mousemove', bindMove);
+        document.addEventListener('mousemove', this.handleDocumentMousemove);
         document.removeEventListener('mouseup', handleDocumentMouseup);
         document.addEventListener('mouseup', handleDocumentMouseup);
       }

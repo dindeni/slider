@@ -150,7 +150,7 @@ class DemoPage extends Panel {
             max,
           });
         } else if (isScaleElementNotChecked) {
-          ((event.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_step') as HTMLElement).remove();
+          ((event.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_type_step') as HTMLElement).remove();
         }
 
         ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement)
@@ -254,11 +254,11 @@ class DemoPage extends Panel {
 
       const sliderValue: {notRange?: number; min?: number; max?: number} = {};
       Array.from(inputValueElements).map((input: HTMLElement) => {
-        if (input.classList.contains('js-demo__field-value_min')) {
+        if (input.classList.contains('js-demo__field-value_type_min')) {
           const valueMin = checkValue(Number((input as HTMLInputElement).value));
           sliderValue.min = valueMin;
           sliderValue.notRange = valueMin;
-        } else if (input.classList.contains('js-demo__field-value_max')) {
+        } else if (input.classList.contains('js-demo__field-value_type_max')) {
           sliderValue.max = checkValue(Number((input as HTMLInputElement).value));
         } else {
           sliderValue.notRange = Number((input as HTMLInputElement).value);
@@ -275,10 +275,10 @@ class DemoPage extends Panel {
       } = options;
 
       if (range) {
-        const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_min') as HTMLElement;
-        const inputElementMin: HTMLInputElement = element.querySelector('.js-demo__field-value_min') as HTMLInputElement;
-        const thumbElementMax: HTMLElement = element.querySelector('.js-slider__thumb_max') as HTMLElement;
-        const inputElementMax: HTMLInputElement = element.querySelector('.js-demo__field-value_max') as HTMLInputElement;
+        const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_type_min') as HTMLElement;
+        const inputElementMin: HTMLInputElement = element.querySelector('.js-demo__field-value_type_min') as HTMLInputElement;
+        const thumbElementMax: HTMLElement = element.querySelector('.js-slider__thumb_type_max') as HTMLElement;
+        const inputElementMax: HTMLInputElement = element.querySelector('.js-demo__field-value_type_max') as HTMLInputElement;
 
         const watchThumb = (recordOptions: ForMutationRecord): void => {
           const { mutationRecord, inputElement, thumbElement } = recordOptions;
@@ -313,8 +313,9 @@ class DemoPage extends Panel {
         const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
         const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
         const watchThumb = (): void => {
-          inputElement.value = this.slider;
+          inputElement.value = this.slider();
         };
+
         const observer = new MutationObserver(watchThumb);
         observer.observe(thumbElement as HTMLElement, {
           childList: true,

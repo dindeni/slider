@@ -173,8 +173,8 @@ class ViewOptional {
 
       const $thumb = $(thumbElement);
 
-      ($thumb.is('.js-slider__thumb_min')
-      || $thumb.is('.js-slider__thumb_max')) ? this.makeRangeProgress(
+      ($thumb.is('.js-slider__thumb_type_min')
+      || $thumb.is('.js-slider__thumb_type_max')) ? this.makeRangeProgress(
           { vertical, thumbElement, progressSize },
         ) : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
     }
@@ -205,8 +205,8 @@ class ViewOptional {
       > coordinatesOfMiddle;
       const isNotVerticalBellowMiddle = !vertical && thumbElement.getBoundingClientRect().left
       < coordinatesOfMiddle;
-      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_min') as HTMLElement;
-      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_max') as HTMLElement;
+      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
+      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_type_max') as HTMLElement;
       const isLabelsExist = labelElementMin && labelElementMax;
 
       if (isVerticalAboveMiddle) {
@@ -252,8 +252,8 @@ class ViewOptional {
 
       const $track = wrapper.find('.js-slider__track');
       if (range) {
-        $('<div class="slider__progress js-slider__progress slider__progress_min js-slider__progress_min"></div>').appendTo($track);
-        $('<div class="slider__progress js-slider__progress slider__progress_max js-slider__progress_max"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress slider__progress_type_min js-slider__progress_type_min"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress slider__progress_type_max js-slider__progress_type_max"></div>').appendTo($track);
       } else {
         $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
       }
@@ -275,8 +275,8 @@ class ViewOptional {
       });
 
       if (range) {
-        const $thumbElementMin = wrapper.find('.js-slider__thumb_min');
-        const $thumbElementMax = wrapper.find('.js-slider__thumb_max');
+        const $thumbElementMin = wrapper.find('.js-slider__thumb_type_min');
+        const $thumbElementMax = wrapper.find('.js-slider__thumb_type_max');
 
         $thumbElementMin.css({
           left: '-0.62rem',
@@ -302,14 +302,14 @@ class ViewOptional {
 
       const $thumb = $(thumbElement);
       if (vertical) {
-        if ($thumb.is('.js-slider__thumb_min')) {
+        if ($thumb.is('.js-slider__thumb_type_min')) {
           const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
             .children[0] as HTMLElement;
           divProgressMin.style.height = `${progressSize}rem`;
           divProgressMin.style.width = '0.38rem';
         } else {
           const divProgressMax = $thumb.siblings('.js-slider__track').children(
-            '.js-slider__progress_max',
+            '.js-slider__progress_type_max',
           );
           const divTrack = $thumb.siblings('.js-slider__track');
           divProgressMax.css({
@@ -320,13 +320,13 @@ class ViewOptional {
             bottom: '0rem',
           });
         }
-      } else if ($thumb.is('.js-slider__thumb_min')) {
+      } else if ($thumb.is('.js-slider__thumb_type_min')) {
         const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
           .children[0] as HTMLElement;
         divProgressMin.style.width = `${progressSize}rem`;
       } else {
         const divProgressMax = $thumb.siblings('.js-slider__track').children(
-          '.js-slider__progress_max',
+          '.js-slider__progress_type_max',
         );
         const divTrack = $thumb.siblings('.js-slider__track');
         divProgressMax.css({

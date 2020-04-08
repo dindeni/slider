@@ -4,7 +4,8 @@
     "target": "es6",
     "sourceMap": true,
     "noEmitOnError": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules"

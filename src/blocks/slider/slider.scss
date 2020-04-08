@@ -33,7 +33,7 @@
       left: 0;
       z-index: -1;
     }
-    &_vertical::before{
+    &_type_vertical::before{
       width: 3.5rem;
       height: 2.15rem;
       background: url("icon-label-vertical.svg") no-repeat;
@@ -58,7 +58,7 @@
     border-radius: 50%;
     position: absolute;
     top: 0.92rem;
-    &_min{
+    &_type_min{
       z-index: 100;
     }
   }

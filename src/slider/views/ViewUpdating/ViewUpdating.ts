@@ -97,8 +97,8 @@ class ViewUpdating {
       thumbMinTop: number | undefined; thumbMaxTop: number | undefined;
     } => {
       if (range) {
-        const thumbMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_min') as HTMLElement;
-        const thumbMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_max') as HTMLElement;
+        const thumbMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_type_min') as HTMLElement;
+        const thumbMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_type_max') as HTMLElement;
         const thumbMinLeft = parseFloat((thumbMin as HTMLElement).style.left);
         const thumbMaxLeft = parseFloat((thumbMax as HTMLElement).style.left);
         const thumbMinTop = parseFloat((thumbMin as HTMLElement).style.top);
@@ -250,7 +250,7 @@ class ViewUpdating {
       .parentElement as HTMLElement).querySelector('.slider__track') as HTMLElement).getBoundingClientRect().left;
     const thumbRangeFlag: {above: boolean; below: boolean} = { above: false, below: false };
     if (range) {
-      const isThumbMin = this.thumbElement.classList.contains('js-slider__thumb_min');
+      const isThumbMin = this.thumbElement.classList.contains('js-slider__thumb_type_min');
       if (isThumbMin) {
         const thumbMaxLeft = parseFloat((this.thumbElement.nextElementSibling as HTMLElement)
           .style.left);
@@ -321,7 +321,7 @@ class ViewUpdating {
 
     const thumbRangeFlag: {above: boolean; below: boolean} = { above: false, below: false };
     if (range) {
-      const isThumbMin = this.thumbElement.classList.contains('js-slider__thumb_min');
+      const isThumbMin = this.thumbElement.classList.contains('js-slider__thumb_type_min');
       if (isThumbMin) {
         const thumbMaxTop = parseFloat((this.thumbElement.nextElementSibling as HTMLElement)
           .style.top);

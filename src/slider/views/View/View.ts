@@ -6,12 +6,12 @@ import {
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
-interface OptionsForStylingElements extends RangeAndVerticalOptions{
+interface OptionsForStylingElements extends RangeAndVerticalOptions {
   wrapper: JQuery;
   step: number | undefined;
 }
 
-interface LabelCreationOptions extends RangeAndVerticalOptions{
+interface LabelCreationOptions extends RangeAndVerticalOptions {
   initialValue: number;
   max: number;
   $wrapper: JQuery;
@@ -24,11 +24,11 @@ interface UpdatingLabelOptions {
   thumbElement: HTMLElement | JQuery;
 }
 
-interface ThumbCreationOptions extends RangeAndVerticalOptions{
+interface ThumbCreationOptions extends RangeAndVerticalOptions {
   wrapper: JQuery;
 }
 
-interface UpdatingDataOptions extends ExtremumOptions{
+interface UpdatingDataOptions extends ExtremumOptions {
   trackSize: number;
   distance: number;
   vertical;
@@ -37,7 +37,7 @@ interface UpdatingDataOptions extends ExtremumOptions{
   step?: boolean;
 }
 
-interface OptionsForInitializingProgress extends RangeAndVerticalOptions{
+interface OptionsForInitializingProgress extends RangeAndVerticalOptions {
   $wrapper: JQuery;
 }
 
@@ -115,9 +115,8 @@ class View extends Observable {
     this.valueMin = valueMin || undefined;
     this.valueMax = valueMax || undefined;
 
-    const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_step js-slider_step"></div>')
-      .appendTo($element) : $('<div class="slider js-slider"></div>')
-      .appendTo($element);
+    const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_type_step js-slider_type_step"></div>')
+      .appendTo($element) : $('<div class="slider js-slider"></div>').appendTo($element);
     this.$trackElement = $('<div class="slider__track js-slider__track"></div>')
       .appendTo($wrapper);
 
@@ -239,16 +238,16 @@ class View extends Observable {
     const { range, vertical, wrapper } = options;
 
     if (range) {
-      vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_min js-slider__thumb_min">'
-          + '</div>').appendTo(wrapper)
-        : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_min js-slider__thumb_min">'
+      vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_min js-slider__thumb_type_min">'
+        + '</div>').appendTo(wrapper)
+        : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_min js-slider__thumb_type_min">'
           + '</div>').appendTo(wrapper);
-      vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical slider__thumb_max js-slider__thumb_max">'
-          + '</div>').appendTo(wrapper)
-        : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_max js-slider__thumb_max">'
+      vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_max js-slider__thumb_type_max">'
+        + '</div>').appendTo(wrapper)
+        : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max">'
           + '</div>').appendTo(wrapper);
     } else {
-      vertical ? this.$thumbElement = $('<div class="slider__thumb js-slider__thumb slider__thumb_vertical js-slider__thumb_vertical"></div>')
+      vertical ? this.$thumbElement = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical"></div>')
         .appendTo(wrapper) : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"></div>')
         .appendTo(wrapper);
     }
@@ -298,8 +297,8 @@ class View extends Observable {
         left: `${this.thumbCoordinate}rem`,
       });
     } else if (isRangeVertical) {
-      this.$thumbElementMin = wrapper.find('.js-slider__thumb_min');
-      this.$thumbElementMax = wrapper.find('.js-slider__thumb_max');
+      this.$thumbElementMin = wrapper.find('.js-slider__thumb_type_min');
+      this.$thumbElementMax = wrapper.find('.js-slider__thumb_type_max');
 
       this.$thumbElementMin.css({
         left: `${this.thumbCoordinateMin}rem`,
@@ -355,7 +354,7 @@ class View extends Observable {
       });
 
       this.thumbCoordinate = stepData.coordinate
-      || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
+        || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
 
       this.value = stepData.value;
     }
@@ -380,7 +379,7 @@ class View extends Observable {
           top: `${this.thumbCoordinate - this.LABEL_TOP_CORRECTION}rem`,
           left: `${this.LABEL_OFFSET_TOP}rem`,
         });
-        $labelElement.addClass('slider__label_vertical');
+        $labelElement.addClass('slider__label_type_vertical');
       }
     }
   }
@@ -388,7 +387,7 @@ class View extends Observable {
   private createRangeLabel(options: OptionsForCreateRangeLabel): void {
     const { vertical, $wrapper } = options;
 
-    const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_min js-slider__label_min"></div>')
+    const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_type_min js-slider__label_type_min"></div>')
       .appendTo($wrapper);
     if (vertical) {
       $labelElementMin.css({
@@ -396,7 +395,7 @@ class View extends Observable {
         top: `${this.thumbCoordinateMin - this.LABEL_TOP_CORRECTION}rem`,
         zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.REM ? 100 : 50,
       });
-      $labelElementMin.addClass('slider__label_vertical');
+      $labelElementMin.addClass('slider__label_type_vertical');
     } else {
       $labelElementMin.css({
         left: `${this.thumbCoordinateMin - this.LABEL_OFFSET_LEFT}rem`,
@@ -405,7 +404,7 @@ class View extends Observable {
     }
     $labelElementMin.text(this.valueMin || this.min);
 
-    const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_max js-slider__label_max"></div>')
+    const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_type_max js-slider__label_type_max"></div>')
       .appendTo($wrapper);
     if (vertical) {
       $labelElementMax.css({
@@ -413,7 +412,7 @@ class View extends Observable {
         left: `${this.LABEL_OFFSET_TOP}rem`,
         zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.REM ? 50 : 100,
       });
-      $labelElementMax.addClass('slider__label_vertical');
+      $labelElementMax.addClass('slider__label_type_vertical');
     } else {
       $labelElementMax.css({
         left: `${this.thumbCoordinateMax - this.LABEL_OFFSET_LEFT}rem`,
@@ -429,16 +428,16 @@ class View extends Observable {
     } = options;
 
     const $thumb = $(thumbElement);
-    const isThumbMinOrMax = $thumb.is('.slider__thumb_min')
-        || $thumb.is('.slider__thumb_max');
+    const isThumbMinOrMax = $thumb.is('.slider__thumb_type_min')
+      || $thumb.is('.slider__thumb_type_max');
     if (isThumbMinOrMax) {
-      if ($thumb.is('.slider__thumb_min')) {
-        const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_min');
+      if ($thumb.is('.slider__thumb_type_min')) {
+        const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_type_min');
         labelElementMin.text(value);
         vertical ? labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
           : labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
       } else {
-        const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_max');
+        const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_type_max');
         $labelElementMax.text(value);
         vertical ? $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
           : $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
