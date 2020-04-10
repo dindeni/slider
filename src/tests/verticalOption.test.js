@@ -1,5 +1,4 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
-import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
 import { dispatchMove } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';

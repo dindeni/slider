@@ -1,6 +1,5 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
 import style from '../blocks/slider/slider.scss';
 

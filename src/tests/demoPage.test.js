@@ -68,8 +68,8 @@ describe('DemoPage', async () => {
       );
       Array.from(inputValueElement).map((form, index) => {
         if (sliderSettings[index].range) {
-          return expect(form.querySelector('.js-demo__field-value_min').value
-                        && form.querySelector('.js-demo__field-value_max').value)
+          return expect(form.querySelector('.js-demo__field-value_type_min').value
+                        && form.querySelector('.js-demo__field-value_type_max').value)
             .toBe(sliderSettings[index].min.toString()
                         && sliderSettings[index].max.toString());
         }
@@ -81,11 +81,11 @@ describe('DemoPage', async () => {
 
   it('should inputs settings exist', () => {
     Array.from(formsList).map((wrapper) => {
-      expect(wrapper.querySelector('.js-demo__field-settings_progress')).not.toBeNull();
-      expect(wrapper.querySelector('.js-demo__field-settings_min')).not.toBeNull();
-      expect(wrapper.querySelector('.js-demo__field-settings_max')).not.toBeNull();
-      expect(wrapper.querySelector('.js-demo__field-settings_vertical')).not.toBeNull();
-      return expect(wrapper.querySelector('.js-demo__field-settings_range')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_type_progress')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_type_min')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_type_max')).not.toBeNull();
+      expect(wrapper.querySelector('.js-demo__field-settings_type_vertical')).not.toBeNull();
+      return expect(wrapper.querySelector('.js-demo__field-settings_type_range')).not.toBeNull();
     });
   });
 });

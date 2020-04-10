@@ -284,8 +284,9 @@ class DemoPage extends Panel {
           const { mutationRecord, inputElement, thumbElement } = recordOptions;
 
           if (mutationRecord[0].oldValue) {
-            const oldValue = vertical ? (mutationRecord[0].oldValue.match(/(?<=top:).\d+(.?\d+)?rem/) || [])[0].trim()
-              : (mutationRecord[0].oldValue.match(/(?<=left:).\d+(.?\d+)?rem/) || [])[0].trim();
+            const oldValue = vertical ? (mutationRecord[0].oldValue.match(/(top: )\d+(.\d+)?rem/) || [])[0].trim().replace(/top: /, '')
+              : (mutationRecord[0].oldValue.match(/[^left:]*rem/) || [])[0].trim();
+
             const positionOfThumb = vertical ? thumbElement.style.top : thumbElement.style.left;
 
             if (parseFloat(positionOfThumb) !== parseFloat(oldValue)) {

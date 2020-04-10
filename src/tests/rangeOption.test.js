@@ -44,17 +44,17 @@ describe('Range', () => {
 
 
   const findElements = () => {
-    divThumbMin = document.querySelector('.js-slider__thumb_min');
-    divThumbMax = document.querySelector('.js-slider__thumb_max');
+    divThumbMin = document.querySelector('.js-slider__thumb_type_min');
+    divThumbMax = document.querySelector('.js-slider__thumb_type_max');
     divThumbLeftMin = divThumbMin.getBoundingClientRect().left;
     divThumbTopMin = divThumbMin.getBoundingClientRect().top;
     divThumbLeftMax = divThumbMax.getBoundingClientRect().left;
     divThumbTopMax = divThumbMax.getBoundingClientRect().top;
     divTrack = document.querySelector('.js-slider__track');
-    divLabelMin = document.querySelector('.js-slider__label_min');
-    divLabelMax = document.querySelector('.js-slider__label_max');
-    divProgressMin = document.querySelector('.js-slider__progress_min');
-    divProgressMax = document.querySelector('.js-slider__progress_max');
+    divLabelMin = document.querySelector('.js-slider__label_type_min');
+    divLabelMax = document.querySelector('.js-slider__label_type_max');
+    divProgressMin = document.querySelector('.js-slider__progress_type_min');
+    divProgressMax = document.querySelector('.js-slider__progress_type_max');
 
     divTrack.style.width = '20.02rem';
     divTrack.style.height = '0.385rem';

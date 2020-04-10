@@ -1,6 +1,5 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
-import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
@@ -28,7 +27,7 @@ describe('View', () => {
       label: true,
       step: undefined,
     };
-    
+
     const controller = new Controller();
     controller.getSliderOptions(optionsForElements);
     controller.init();

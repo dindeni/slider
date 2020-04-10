@@ -2,25 +2,29 @@
 
 [Github pages](https://dindeni.github.io/slider)
 
-#### Разворачивание и запуск проекта:<br>
+#### Разворачивание и запуск проекта:
 
-`npm install`
+  `npm install`
 
-`npm run develop`
-
-#### Запуск тестов:<br>
-
-`karma start`
-
-`npm test`
+  `npm run develop`
 
 #### Создание production версии проекта:
 
-`npm run build`
+  `npm run build`
+
+#### Разворачивание проекта на github pages:
+
+  `npm run deploy`
+
+#### Запуск тестов:
+
+  `karma start`
+
+  `npm test`
 
 Диаграмма плагина:
 
-![link](./src/uml.jpg)
+  ![link](./src/uml.jpg)
 
 Описание:  
 
@@ -28,7 +32,7 @@
 создаются и используются экземпляры вспомогательных классов view, получаются данные
 настроек из Jquery обертки sliderInit.ts. ViewOptional добавляет дополнительные
 возможности на основе координат. ViewHandle занимается обработка событий.
-ViewUpdating обновляет состояние визуальных елементов слайдера.
+ViewUpdating обновляет состояние визуальных элементов слайдера.
 ViewOnTrack занимается отрисовкой событий на треке слайдера. Все слои view оповещают Controller об
 изменениях во views.
 
