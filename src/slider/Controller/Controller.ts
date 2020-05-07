@@ -28,7 +28,7 @@ class Controller {
     };
 
     this.subscribe();
-    this.view.getSliderOptions(sliderOptions);
+    this.view.getSliderOptions(this.sliderOptions);
 
     const sliderValues = this.model.updateState({
       min, max, value, valueMin, valueMax,

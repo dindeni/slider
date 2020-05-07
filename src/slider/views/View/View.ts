@@ -68,12 +68,6 @@ class View extends Observable {
 
   private LABEL_OFFSET_TOP = -4.2;
 
-  private value: number | undefined;
-
-  private valueMin: number | undefined;
-
-  private valueMax: number | undefined;
-
   private trackSize: number;
 
   private thumbCoordinate: number;
@@ -83,10 +77,6 @@ class View extends Observable {
   private thumbCoordinateMax: number;
 
   public coordinate: number;
-
-  private min: number;
-
-  private max: number;
 
   private valueForLabel: number;
 
@@ -106,14 +96,8 @@ class View extends Observable {
 
   public createElements(options: SliderElementOptions): void {
     const {
-      $element, range, vertical, min, max, step, progress, value, valueMin, valueMax, label,
+      $element, range, vertical, min, max, step, progress, label,
     } = options;
-
-    this.min = min;
-    this.max = max;
-    this.value = value || undefined;
-    this.valueMin = valueMin || undefined;
-    this.valueMax = valueMax || undefined;
 
     const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_type_step js-slider_type_step"></div>')
       .appendTo($element) : $('<div class="slider js-slider"></div>').appendTo($element);
@@ -266,7 +250,10 @@ class View extends Observable {
     if (range) {
       this.notifyAll({
         value: {
-          value: this.valueMin || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+          value: this.sliderSettings.valueMin || this.sliderSettings.min,
+          min: this.sliderSettings.min,
+          max: this.sliderSettings.max,
+          trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
@@ -274,7 +261,10 @@ class View extends Observable {
 
       this.notifyAll({
         value: {
-          value: this.valueMax || this.max, min: this.min, max: this.max, trackSize: this.trackSize,
+          value: this.sliderSettings.valueMax || this.sliderSettings.max,
+          min: this.sliderSettings.min,
+          max: this.sliderSettings.max,
+          trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
@@ -282,7 +272,10 @@ class View extends Observable {
     } else {
       this.notifyAll({
         value: {
-          value: this.value || this.min, min: this.min, max: this.max, trackSize: this.trackSize,
+          value: this.sliderSettings.value || this.sliderSettings.min,
+          min: this.sliderSettings.min,
+          max: this.sliderSettings.max,
+          trackSize: this.trackSize,
         },
         type: 'getCoordinates',
       });
@@ -314,8 +307,8 @@ class View extends Observable {
       this.viewOptional.makeVertical({
         range,
         wrapper,
-        min: this.min,
-        max: this.max,
+        min: this.sliderSettings.min,
+        max: this.sliderSettings.max,
         coordinates: {
           notRange: this.thumbCoordinate,
           min: this.thumbCoordinateMin,
@@ -337,17 +330,17 @@ class View extends Observable {
 
       stepData.coordinateMin || stepData.coordinateMin === 0
         ? this.thumbCoordinateMin = stepData.coordinateMin * this.REM
-        : this.thumbCoordinateMin = this.min * this.REM;
+        : this.thumbCoordinateMin = this.sliderSettings.min * this.REM;
 
       stepData.coordinateMax || stepData.coordinateMax === 0
         ? this.thumbCoordinateMax = stepData.coordinateMax * this.REM
-        : this.thumbCoordinateMax = this.max * this.REM;
+        : this.thumbCoordinateMax = this.sliderSettings.max * this.REM;
 
       if (stepData.coordinateMax) {
-        this.thumbCoordinateMax = (stepData.coordinateMax || this.max) * this.REM;
+        this.thumbCoordinateMax = (stepData.coordinateMax || this.sliderSettings.max) * this.REM;
       }
-      this.valueMin = stepData.valueMin;
-      this.valueMax = stepData.valueMax;
+      this.sliderSettings.valueMin = stepData.valueMin;
+      this.sliderSettings.valueMax = stepData.valueMax;
     } else if (isStepNotRange) {
       const stepData = this.viewOptional.correctStepCoordinate({
         coordinate: this.thumbCoordinate,
@@ -356,7 +349,7 @@ class View extends Observable {
       this.thumbCoordinate = stepData.coordinate
         || stepData.coordinate === 0 ? stepData.coordinate * this.REM : 0;
 
-      this.value = stepData.value;
+      this.sliderSettings.value = stepData.value;
     }
   }
 
@@ -373,7 +366,7 @@ class View extends Observable {
       $labelElement.css({
         left: `${this.thumbCoordinate - this.LABEL_OFFSET_LEFT}rem`,
       });
-      $labelElement.text(this.value || this.min);
+      $labelElement.text(this.sliderSettings.value || this.sliderSettings.min);
       if (vertical) {
         $labelElement.css({
           top: `${this.thumbCoordinate - this.LABEL_TOP_CORRECTION}rem`,
@@ -402,7 +395,7 @@ class View extends Observable {
         zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.REM ? 100 : 50,
       });
     }
-    $labelElementMin.text(this.valueMin || this.min);
+    $labelElementMin.text(this.sliderSettings.valueMin || this.sliderSettings.min);
 
     const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_type_max js-slider__label_type_max"></div>')
       .appendTo($wrapper);
@@ -419,7 +412,7 @@ class View extends Observable {
         zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.REM ? 50 : 100,
       });
     }
-    $labelElementMax.text(this.valueMax || this.max);
+    $labelElementMax.text(this.sliderSettings.valueMax || this.sliderSettings.max);
   }
 
   public updateLabelValue(options: UpdatingLabelOptions): void {
