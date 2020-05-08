@@ -87,10 +87,11 @@ class ViewOnTrack {
       const trackWidth = trackElement.getBoundingClientRect().width;
 
       const getDistance = (): number => {
-        const thumbDistance = vertical ? event.pageY - window.scrollY
-          - trackElement.getBoundingClientRect().top + thumbElement.getBoundingClientRect()
-          .height / 2 : event.pageX - trackElement.getBoundingClientRect().left
-          - thumbElement.getBoundingClientRect().width / 2;
+        const thumbDistance = vertical
+          ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top + thumbElement
+            .getBoundingClientRect().height / 2
+          : event.pageX - trackElement.getBoundingClientRect().left
+            - thumbElement.getBoundingClientRect().width / 2;
         if (thumbDistance < 0) {
           return 0;
         }
@@ -225,7 +226,8 @@ class ViewOnTrack {
       vertical,
       thumbElement,
       progress,
-      progressSize: vertical ? parseFloat(thumbElement.style.top)
+      progressSize: vertical
+        ? parseFloat(thumbElement.style.top)
         : parseFloat(thumbElement.style.left),
       coordinateStep,
     };
@@ -246,11 +248,11 @@ class ViewOnTrack {
       const thumbMaxTop = thumbMax.getBoundingClientRect().top;
       const thumbHeight = thumbElement.getBoundingClientRect().height;
 
-      vertical ? this.view.notifyAll({
-        value:
-        { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
-        type: 'getCoordinatesOfMiddle',
-      })
+      vertical
+        ? this.view.notifyAll({
+          value: { start: trackElement.getBoundingClientRect().top, itemSize: trackHeight },
+          type: 'getCoordinatesOfMiddle',
+        })
         : this.view.notifyAll({
           value:
           { start: trackElement.getBoundingClientRect().left, itemSize: trackWidth },
@@ -299,27 +301,27 @@ class ViewOnTrack {
         this.setRangeStepElementsVertical({ thumbMinTop, thumbMaxTop, ...optionsForStepUpdates });
       } else {
         switch (true) {
-          case vertical ? thumbMinTop > event.pageY - window.scrollY
-            : event.pageX < thumbMinLeft:
-            this.updateElementsOnTrack(
+          case vertical
+            ? thumbMinTop > event.pageY - window.scrollY
+            : event.pageX < thumbMinLeft: this.updateElementsOnTrack(
               { thumbElement: thumbMin, event, ...optionsForUpdateStep },
             );
             break;
-          case vertical ? thumbMaxTop < event.pageY - window.scrollY
-            : event.pageX > thumbMaxLeft:
-            this.updateElementsOnTrack(
+          case vertical
+            ? thumbMaxTop < event.pageY - window.scrollY
+            : event.pageX > thumbMaxLeft: this.updateElementsOnTrack(
               { thumbElement: thumbMax, event, ...optionsForUpdateStep },
             );
             break;
-          case vertical ? this.view.coordinateOfMiddle - thumbHeight > event.pageY - window.scrollY
-            : event.pageX < this.view.coordinateOfMiddle:
-            this.updateElementsOnTrack(
+          case vertical
+            ? this.view.coordinateOfMiddle - thumbHeight > event.pageY - window.scrollY
+            : event.pageX < this.view.coordinateOfMiddle: this.updateElementsOnTrack(
               { thumbElement: thumbMin, event, ...optionsForUpdateStep },
             );
             break;
-          case vertical ? this.view.coordinateOfMiddle - thumbHeight < event.pageY - window.scrollY
-            : event.pageX > this.view.coordinateOfMiddle:
-            this.updateElementsOnTrack(
+          case vertical
+            ? this.view.coordinateOfMiddle - thumbHeight < event.pageY - window.scrollY
+            : event.pageX > this.view.coordinateOfMiddle: this.updateElementsOnTrack(
               { thumbElement: thumbMax, event, ...optionsForUpdateStep },
             );
             break;
@@ -349,48 +351,52 @@ class ViewOnTrack {
       coordinatesStep,
     };
     switch (true) {
-      case coordinatesOfMiddle < event.pageX && event.pageX < thumbMinLeft
-        && event.pageX < thumbMaxLeft: this.updateStepElementsOnTrack(
-          {
-            thumbElement: thumbMin,
-            coordinatesStep,
-            siblingElement: thumbMax,
-            ...optionsForUpdateStep,
-          },
-        );
+      case coordinatesOfMiddle < event.pageX
+        && event.pageX < thumbMinLeft
+        && event.pageX < thumbMaxLeft: this.updateStepElementsOnTrack({
+          thumbElement: thumbMin,
+          coordinatesStep,
+          siblingElement: thumbMax,
+          ...optionsForUpdateStep,
+        });
         break;
-      case coordinatesOfMiddle < event.pageX && event.pageX > thumbMinLeft
+      case coordinatesOfMiddle < event.pageX
+        && event.pageX > thumbMinLeft
         && event.pageX < thumbMaxLeft: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
+      case coordinatesOfMiddle > event.pageX
+        && event.pageX > thumbMinLeft
         && event.pageX > thumbMaxLeft: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle > event.pageX && event.pageX > thumbMinLeft
+      case coordinatesOfMiddle > event.pageX
+        && event.pageX > thumbMinLeft
         && event.pageX < thumbMaxLeft: this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case thumbMinLeft < coordinatesOfMiddle && thumbMaxLeft < coordinatesOfMiddle
+      case thumbMinLeft < coordinatesOfMiddle
+        && thumbMaxLeft < coordinatesOfMiddle
         && event.pageX > coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case thumbMinLeft > coordinatesOfMiddle && thumbMaxLeft > coordinatesOfMiddle
+      case thumbMinLeft > coordinatesOfMiddle
+        && thumbMaxLeft > coordinatesOfMiddle
         && event.pageX < coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case event.pageX > thumbMaxLeft && event.pageX > coordinatesOfMiddle:
-        this.updateStepElementsOnTrack(
+      case event.pageX > thumbMaxLeft
+        && event.pageX > coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case event.pageX < thumbMinLeft && event.pageX < coordinatesOfMiddle:
-        this.updateStepElementsOnTrack(
+      case event.pageX < thumbMinLeft
+        && event.pageX < coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
@@ -420,46 +426,61 @@ class ViewOnTrack {
     const pageY = event.pageY - window.scrollY;
 
     switch (true) {
-      case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
-      && thumbMaxTop < coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
+      case coordinatesOfMiddle > pageY
+      && thumbMinTop < coordinatesOfMiddle
+      && thumbMaxTop < coordinatesOfMiddle
+      && pageY > thumbMaxTop && pageY > thumbMinTop:
         this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
-      && thumbMaxTop > coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
+      case coordinatesOfMiddle < pageY
+      && thumbMinTop > coordinatesOfMiddle
+      && thumbMaxTop > coordinatesOfMiddle
+      && pageY < thumbMaxTop
+      && pageY < thumbMinTop:
         this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle < pageY && thumbMinTop > coordinatesOfMiddle
-      && thumbMaxTop > coordinatesOfMiddle && pageY > thumbMaxTop && pageY > thumbMinTop:
+      case coordinatesOfMiddle < pageY
+      && thumbMinTop > coordinatesOfMiddle
+      && thumbMaxTop > coordinatesOfMiddle
+      && pageY > thumbMaxTop
+      && pageY > thumbMinTop:
         this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle > pageY && thumbMinTop < coordinatesOfMiddle
-      && thumbMaxTop < coordinatesOfMiddle && pageY < thumbMaxTop && pageY < thumbMinTop:
+      case coordinatesOfMiddle > pageY
+      && thumbMinTop < coordinatesOfMiddle
+      && thumbMaxTop < coordinatesOfMiddle
+      && pageY < thumbMaxTop
+      && pageY < thumbMinTop:
         this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle > pageY && thumbMinTop < pageY
+      case coordinatesOfMiddle > pageY
+      && thumbMinTop < pageY
       && thumbMaxTop > coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle < pageY && thumbMinTop < pageY
+      case coordinatesOfMiddle < pageY
+      && thumbMinTop < pageY
       && thumbMaxTop > coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle > pageY && thumbMinTop > pageY
+      case coordinatesOfMiddle > pageY
+      && thumbMinTop > pageY
       && thumbMaxTop > coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMin, siblingElement: thumbMax, ...optionsForUpdateStep },
         );
         break;
-      case coordinatesOfMiddle < pageY && thumbMinTop < pageY
+      case coordinatesOfMiddle < pageY
+      && thumbMinTop < pageY
       && thumbMaxTop < coordinatesOfMiddle: this.updateStepElementsOnTrack(
           { thumbElement: thumbMax, siblingElement: thumbMin, ...optionsForUpdateStep },
         );

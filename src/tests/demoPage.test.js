@@ -54,7 +54,7 @@ describe('DemoPage', async () => {
   describe('Before dispatch', () => {
     it('should form elements exist', () => {
       const formElements = document.querySelectorAll('.js-demo');
-      Array.from(formElements).map((value) => expect(value).not.toBeNull());
+      [...formElements].forEach((value) => expect(value).not.toBeNull());
     });
 
     it('should sliders exist', () => {

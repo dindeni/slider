@@ -80,8 +80,7 @@ class Model extends Observable {
 
       this.calculateSliderMovePercent({ trackSize, distance });
 
-      const isBelow0 = this.sliderValuePercent <= 0
-      || !this.sliderValuePercent;
+      const isBelow0 = this.sliderValuePercent <= 0 || !this.sliderValuePercent;
       if (isBelow0) {
         this.sliderValue = min;
       } else {
@@ -110,7 +109,8 @@ class Model extends Observable {
         let stepCount = 0;
         for (let i = min; i <= max; i += step) {
           const fractionOfValue = stepCount / (max - min);
-          const coordinatesItems = vertical ? Number((fractionOfValue * height).toFixed(2))
+          const coordinatesItems = vertical
+            ? Number((fractionOfValue * height).toFixed(2))
             : Number((fractionOfValue * trackWidth).toFixed(2));
           scaleValue.value.push(i);
           scaleValue.coordinates.push(coordinatesItems);
@@ -132,21 +132,15 @@ class Model extends Observable {
         scaleValue.shortCoordinates = scaleValue.coordinates;
 
         while (scaleValue.shortValue.length > 10) {
-          scaleValue.shortValue = scaleValue.shortValue.filter((value, index) => {
-            const isIndex0OrEven = index === 0 || index % 2 === 0;
-            if (isIndex0OrEven) {
-              return true;
-            } return false;
-          });
+          scaleValue.shortValue = scaleValue.shortValue.filter(
+            (value, index) => index === 0 || index % 2 === 0,
+          );
         }
 
         while (scaleValue.shortCoordinates.length > 10) {
-          scaleValue.shortCoordinates = scaleValue.shortCoordinates.filter((value, index) => {
-            const isIndex0OrEven = index === 0 || index % 2 === 0;
-            if (isIndex0OrEven) {
-              return true;
-            } return false;
-          });
+          scaleValue.shortCoordinates = scaleValue.shortCoordinates.filter(
+            (value, index) => index === 0 || index % 2 === 0,
+          );
         }
         return scaleValue;
       } return {

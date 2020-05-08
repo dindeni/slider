@@ -78,7 +78,8 @@ class ViewOptional {
       this.view.scaleData.shortValue.map((item, index) => {
         const $itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo($ul);
 
-        return vertical ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index] - scaleTopPositionCorrection) * this.rem}rem` })
+        return vertical
+          ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index] - scaleTopPositionCorrection) * this.rem}rem` })
           : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index] * this.rem}rem` });
       });
     }
@@ -99,47 +100,49 @@ class ViewOptional {
       let indexMaxFlag: boolean;
       let indexFlag: boolean;
 
-      this.view.scaleData.coordinates.map((value, index) => {
+      this.view.scaleData.coordinates.forEach((value, index) => {
         const checkedCoordinate = Number((value * this.rem).toFixed(2));
         const isCoordinateMinAndMax = (coordinateMin || coordinateMin === 0)
          && (coordinateMax || coordinateMax === 0);
         if (isCoordinateMinAndMax) {
           switch (true) {
-            case !indexMinFlag && checkedCoordinate === coordinateMin
-            && coordinateMax === coordinateMin
-             && index === this.view.scaleData.coordinates.length - 1:
-              indexMinFlag = true;
+            case !indexMinFlag
+              && checkedCoordinate === coordinateMin
+              && coordinateMax === coordinateMin
+              && index === this.view.scaleData.coordinates.length - 1: indexMinFlag = true;
               result.coordinateMin = this.view.scaleData.coordinates[index - 1];
               result.valueMin = this.view.scaleData.value[index - 1];
               break;
-            case !indexMinFlag && checkedCoordinate === coordinateMin:
-              indexMinFlag = true;
+            case !indexMinFlag
+              && checkedCoordinate === coordinateMin: indexMinFlag = true;
               result.coordinateMin = this.view.scaleData.coordinates[index];
               result.valueMin = this.view.scaleData.value[index];
               break;
-            case (coordinateMin || coordinateMin === 0) && !indexMinFlag
-             && checkedCoordinate > coordinateMin:
-              indexMinFlag = true;
+            case (coordinateMin || coordinateMin === 0)
+              && !indexMinFlag
+              && checkedCoordinate > coordinateMin: indexMinFlag = true;
               result.coordinateMin = this.view.scaleData.coordinates[index - 1];
               result.valueMin = this.view.scaleData.value[index - 1];
               break;
             default: break;
           }
           switch (true) {
-            case !indexMaxFlag && checkedCoordinate === coordinateMax
-             && coordinateMax === coordinateMin && index === 0:
-              indexMaxFlag = true;
+            case !indexMaxFlag
+              && checkedCoordinate === coordinateMax
+              && coordinateMax === coordinateMin && index === 0: indexMaxFlag = true;
               result.coordinateMax = this.view.scaleData.coordinates[index + 1];
               result.valueMax = this.view.scaleData.value[index + 1];
               break;
-            case !indexMaxFlag && checkedCoordinate === coordinateMax:
-              indexMaxFlag = true;
+            case !indexMaxFlag
+              && checkedCoordinate === coordinateMax: indexMaxFlag = true;
               result.coordinateMax = this.view.scaleData.coordinates[index];
               result.valueMax = this.view.scaleData.value[index];
               break;
-            case (coordinateMin || coordinateMin === 0) && coordinateMax && !indexMaxFlag
-             && checkedCoordinate > coordinateMin && checkedCoordinate > coordinateMax:
-              indexMaxFlag = true;
+            case (coordinateMin || coordinateMin === 0)
+              && coordinateMax
+              && !indexMaxFlag
+              && checkedCoordinate > coordinateMin
+              && checkedCoordinate > coordinateMax: indexMaxFlag = true;
               result.coordinateMax = this.view.scaleData.coordinates[index];
               result.valueMax = this.view.scaleData.value[index];
               break;
@@ -148,20 +151,17 @@ class ViewOptional {
         }
         if (coordinate) {
           switch (true) {
-            case !indexFlag && checkedCoordinate === coordinate:
-              indexFlag = true;
+            case !indexFlag && checkedCoordinate === coordinate: indexFlag = true;
               result.coordinate = this.view.scaleData.coordinates[index];
               result.value = this.view.scaleData.value[index];
               break;
-            case !indexFlag && checkedCoordinate > coordinate:
-              indexFlag = true;
+            case !indexFlag && checkedCoordinate > coordinate: indexFlag = true;
               result.coordinate = this.view.scaleData.coordinates[index - 1];
               result.value = this.view.scaleData.value[index - 1];
               break;
             default: return undefined;
           }
         }
-        return undefined;
       });
       return result;
     }
@@ -174,9 +174,9 @@ class ViewOptional {
       const $thumb = $(thumbElement);
 
       ($thumb.is('.js-slider__thumb_type_min')
-      || $thumb.is('.js-slider__thumb_type_max')) ? this.makeRangeProgress(
-          { vertical, thumbElement, progressSize },
-        ) : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
+      || $thumb.is('.js-slider__thumb_type_max'))
+        ? this.makeRangeProgress({ vertical, thumbElement, progressSize })
+        : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
     }
 
     private static makeSingleProgress(options: MakingProgressOptions): void {

@@ -88,7 +88,7 @@ class ViewHandle {
         this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown);
       }
 
-      Array.from($element.find('.js-slider__thumb')).map((value) => {
+      [...$element.find('.js-slider__thumb')].forEach((value) => {
         this.trackElement = (((value as HTMLElement).parentElement as HTMLElement)
           .querySelector('.js-slider__track') as HTMLElement);
 
@@ -98,7 +98,6 @@ class ViewHandle {
         this.range = range;
         this.vertical = vertical;
         this.progress = progress;
-        return undefined;
       });
 
       trackElement.addEventListener('click', (event) => this.viewOnTrack.handleTrackElementClick({
@@ -120,17 +119,18 @@ class ViewHandle {
     private handleDocumentMousemove(event): void {
       event.preventDefault();
 
-      this.vertical ? this.view.notifyAll({
-        value: {
-          coordinateStart: this.coordinateYStart,
-          coordinateMove: event.screenY,
-        },
-        type: 'getDistance',
-      }) : this.view.notifyAll({
-        value:
-        { coordinateStart: this.coordinateXStart, coordinateMove: event.screenX },
-        type: 'getDistance',
-      });
+      this.vertical
+        ? this.view.notifyAll({
+          value: {
+            coordinateStart: this.coordinateYStart,
+            coordinateMove: event.screenY,
+          },
+          type: 'getDistance',
+        })
+        : this.view.notifyAll({
+          value: { coordinateStart: this.coordinateXStart, coordinateMove: event.screenX },
+          type: 'getDistance',
+        });
 
       this.viewUpdating.updateThumbCoordinates({
         step: this.step,

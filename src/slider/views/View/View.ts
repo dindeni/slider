@@ -99,8 +99,9 @@ class View extends Observable {
       $element, range, vertical, min, max, step, progress, label,
     } = options;
 
-    const $wrapper: JQuery = step ? $('<div class="slider js-slider slider_type_step js-slider_type_step"></div>')
-      .appendTo($element) : $('<div class="slider js-slider"></div>').appendTo($element);
+    const $wrapper: JQuery = step
+      ? $('<div class="slider js-slider slider_type_step js-slider_type_step"></div>').appendTo($element)
+      : $('<div class="slider js-slider"></div>').appendTo($element);
     this.$trackElement = $('<div class="slider__track js-slider__track"></div>')
       .appendTo($wrapper);
 
@@ -117,8 +118,7 @@ class View extends Observable {
         max,
         step,
         trackWidth: vertical ? this.$trackElement.height() || 0 : this.$trackElement.width() || 0,
-        trackHeight: vertical ? this.$trackElement.width() || 0
-          : this.$trackElement.height() || 0,
+        trackHeight: vertical ? this.$trackElement.width() || 0 : this.$trackElement.height() || 0,
         wrapper: $wrapper,
       };
       this.viewOptional.createScale(optionsForScale);
@@ -222,18 +222,16 @@ class View extends Observable {
     const { range, vertical, wrapper } = options;
 
     if (range) {
-      vertical ? this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_min js-slider__thumb_type_min">'
-        + '</div>').appendTo(wrapper)
-        : this.$thumbElementMin = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_min js-slider__thumb_type_min">'
-          + '</div>').appendTo(wrapper);
-      vertical ? this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_max js-slider__thumb_type_max">'
-        + '</div>').appendTo(wrapper)
-        : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max">'
-          + '</div>').appendTo(wrapper);
+      this.$thumbElementMin = vertical
+        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_min js-slider__thumb_type_min"></div>').appendTo(wrapper)
+        : $('<div class="slider__thumb js-slider__thumb slider__thumb_type_min js-slider__thumb_type_min"></div>').appendTo(wrapper);
+      this.$thumbElementMax = vertical
+        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(wrapper)
+        : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(wrapper);
     } else {
-      vertical ? this.$thumbElement = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical"></div>')
-        .appendTo(wrapper) : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"></div>')
-        .appendTo(wrapper);
+      this.$thumbElement = vertical
+        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical"></div>').appendTo(wrapper)
+        : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"></div>').appendTo(wrapper);
     }
   }
 
@@ -361,8 +359,7 @@ class View extends Observable {
     if (range) {
       this.createRangeLabel({ $wrapper, vertical });
     } else {
-      const $labelElement = $('<div class="slider__label js-slider__label"></div>')
-        .appendTo($wrapper);
+      const $labelElement = $('<div class="slider__label js-slider__label"></div>').appendTo($wrapper);
       $labelElement.css({
         left: `${this.thumbCoordinate - this.LABEL_OFFSET_LEFT}rem`,
       });

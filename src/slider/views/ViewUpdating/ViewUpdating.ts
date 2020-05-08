@@ -191,9 +191,11 @@ class ViewUpdating {
           this.thumbElement.style.top = `${0}rem`;
           this.thumbTop = 0;
           break;
-        case thumbElement === thumbMin && Boolean((thumbMaxTop || thumbMaxTop === 0)
+        case thumbElement === thumbMin
+          && Boolean((thumbMaxTop || thumbMaxTop === 0)
           && (shift + distance > thumbMaxTop)): return;
-        case thumbElement === thumbMax && Boolean((thumbMinTop || thumbMinTop === 0)
+        case thumbElement === thumbMax
+          && Boolean((thumbMinTop || thumbMinTop === 0)
           && (shift + distance < thumbMinTop)): return;
         default: this.thumbElement.style.top = `${shift + distance}rem`;
           this.thumbTop = shift + distance;
@@ -201,15 +203,17 @@ class ViewUpdating {
     } else {
       switch (true) {
         case distance + shift >= trackWidth * this.rem
-        && thumbElement !== thumbMin: this.thumbElement.style.left = `${trackWidth * this.rem}rem`;
+          && thumbElement !== thumbMin: this.thumbElement.style.left = `${trackWidth * this.rem}rem`;
           this.thumbLeft = trackWidth * this.rem;
           break;
         case distance + shift < 0 && thumbElement !== thumbMax: this.thumbElement.style.left = `${0}rem`;
           this.thumbLeft = 0;
           break;
-        case thumbElement === thumbMin && Boolean((thumbMaxLeft || thumbMaxLeft === 0)
+        case thumbElement === thumbMin
+          && Boolean((thumbMaxLeft || thumbMaxLeft === 0)
           && (shift + distance > thumbMaxLeft)): return;
-        case thumbElement === thumbMax && Boolean((thumbMinLeft || thumbMinLeft === 0)
+        case thumbElement === thumbMax
+          && Boolean((thumbMinLeft || thumbMinLeft === 0)
           && (shift + distance < thumbMinLeft)): return;
         default: this.thumbElement.style.left = `${shift + distance}rem`;
           this.thumbLeft = shift + distance;
@@ -268,17 +272,19 @@ class ViewUpdating {
       }
     }
 
-    const isAbove0 = range ? numberCoordinateLeft <= trackWidth * this.rem
+    const isAbove0 = range
+      ? numberCoordinateLeft <= trackWidth * this.rem
         && thumbRangeFlag.above && distanceOfPageX >= coordinatesStep[index]
         + (coordinatesStep[index + 1] - coordinatesStep[index]) / 2
       : numberCoordinateLeft < trackWidth * this.rem
         && distanceOfPageX >= coordinatesStep[index]
         + (coordinatesStep[index + 1] - coordinatesStep[index]) / 2;
 
-    const isBelow0 = range ? numberCoordinateLeft >= Number((numberTranslation * this.rem)
-      .toFixed(5)) && thumbRangeFlag.below
+    const isBelow0 = range
+      ? numberCoordinateLeft >= Number((numberTranslation * this.rem).toFixed(5))
+        && thumbRangeFlag.below
         && distanceOfPageX <= coordinatesStep[index]
-        - (coordinatesStep[index] - coordinatesStep[index - 1]) / 2
+          - (coordinatesStep[index] - coordinatesStep[index - 1]) / 2
       : numberCoordinateLeft >= Number((numberTranslation * this.rem).toFixed(5))
         && distanceOfPageX <= coordinatesStep[index]
         - (coordinatesStep[index] - coordinatesStep[index - 1]) / 2;
@@ -339,23 +345,26 @@ class ViewUpdating {
       }
     }
 
-    const nextCoordinate = coordinatesStep[index + 1] === 0 ? 0
+    const nextCoordinate = coordinatesStep[index + 1] === 0
+      ? 0
       : coordinatesStep[index + 1] || coordinatesStep[coordinatesStep.length - 1];
-    const isAbove0 = range ? numberCoordinateTop <= trackHeight * this.rem
-      && thumbRangeFlag.above && distanceOfPageY >= coordinatesStep[index]
-      + (nextCoordinate - coordinatesStep[index]) / 2
-      : numberCoordinateTop < trackHeight * this.rem && distanceOfPageY
-      >= coordinatesStep[index]
-      + (coordinatesStep[index + 1] - coordinatesStep[index]) / 2;
+    const isAbove0 = range
+      ? numberCoordinateTop <= trackHeight * this.rem
+        && thumbRangeFlag.above && distanceOfPageY >= coordinatesStep[index]
+        + (nextCoordinate - coordinatesStep[index]) / 2
+      : numberCoordinateTop < trackHeight * this.rem && distanceOfPageY >= coordinatesStep[index]
+        + (coordinatesStep[index + 1] - coordinatesStep[index]) / 2;
 
-    const previousCoordinate = coordinatesStep[index - 1] === 0 ? 0
+    const previousCoordinate = coordinatesStep[index - 1] === 0
+      ? 0
       : coordinatesStep[index - 1] || coordinatesStep[1];
-    const isBelow0 = range ? numberCoordinateTop <= trackHeight * this.rem
-      && thumbRangeFlag.below && distanceOfPageY <= coordinatesStep[index]
-      - (coordinatesStep[index] - previousCoordinate) / 2
+    const isBelow0 = range
+      ? numberCoordinateTop <= trackHeight * this.rem
+        && thumbRangeFlag.below && distanceOfPageY <= coordinatesStep[index]
+        - (coordinatesStep[index] - previousCoordinate) / 2
       : numberCoordinateTop <= trackHeight * this.rem
-      && numberCoordinateTop !== 0 && distanceOfPageY <= coordinatesStep[index]
-      - (coordinatesStep[index] - coordinatesStep[index - 1]) / 2;
+        && numberCoordinateTop !== 0 && distanceOfPageY <= coordinatesStep[index]
+        - (coordinatesStep[index] - coordinatesStep[index - 1]) / 2;
 
     if (isAbove0) {
       this.thumbElement.style.top = `${ViewUpdating.validateCoordinate(

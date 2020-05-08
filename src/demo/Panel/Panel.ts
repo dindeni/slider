@@ -51,7 +51,8 @@ class Panel {
         const valueMin = Number((minElement as HTMLInputElement).value);
         const valueMax = Number((maxElement as HTMLInputElement).value);
 
-        return element === minElement ? valueToNumber < valueMax
+        return element === minElement
+          ? valueToNumber < valueMax
           : valueToNumber > valueMin;
       }
       return undefined;
@@ -60,8 +61,9 @@ class Panel {
 
     const isValidStepValue = step && (valueToNumber - min) % step === 0;
 
-    const isValueValid = range ? valueToNumber >= min && valueToNumber <= max
-      && isValueMinMaxValid : valueToNumber >= min && valueToNumber < max;
+    const isValueValid = range
+      ? valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid
+      : valueToNumber >= min && valueToNumber < max;
 
     const validateRangeValue = (): number | undefined => {
       if (isValueValid) {
@@ -153,11 +155,12 @@ class Panel {
       settings, form, scale,
     } = options;
 
-    const formIndex = Array.from(document.querySelectorAll('.js-demo')).findIndex(
+    const formIndex = [...document.querySelectorAll('.js-demo')].findIndex(
       (value) => form === value,
     );
 
-    const $inputValue = settings.range ? $('<div class="demo__field-wrapper">'
+    const $inputValue = settings.range
+      ? $('<div class="demo__field-wrapper">'
       + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_min js-demo__field-value_type_min"></label></div>'
       + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_max js-demo__field-value_type_max"></label></div>')
       : $('<div class="demo__field-wrapper">'
@@ -213,7 +216,7 @@ class Panel {
       settings.value ? input.value = settings.value.toString() : input.value = min.toString();
     }
 
-    Array.from(element.querySelectorAll('.js-demo__field-settings')).map((input, index) => {
+    [...element.querySelectorAll('.js-demo__field-settings')].forEach((input, index) => {
       const inputElement = (input as HTMLInputElement);
       const isSettingValue = Object.values(settings)[index]
         || Object.values(settings)[index] === 0;
@@ -222,7 +225,6 @@ class Panel {
       } else if (isSettingValue) {
         inputElement.value = Object.values(settings)[index];
       }
-      return inputElement;
     });
   }
 }

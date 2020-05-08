@@ -58,8 +58,8 @@ class DemoPage extends Panel {
         },
       ];
 
-      Array.from(document.querySelectorAll('.js-index__wrapper'))
-        .map((formWrapper, index) => {
+      [...document.querySelectorAll('.js-index__wrapper')]
+        .forEach((formWrapper, index) => {
           const scale = this.sliderSettings[index].step !== undefined;
 
           const optionsForElements = {
@@ -91,7 +91,7 @@ class DemoPage extends Panel {
             vertical: this.sliderSettings[index].vertical,
           });
 
-          return this.observeInput(optionsForInput);
+          this.observeInput(optionsForInput);
         });
     }
 
@@ -177,12 +177,12 @@ class DemoPage extends Panel {
 
       settings.value = sliderValue.notRange;
       settings.valueMin = sliderValue.min === sliderValue.max
-      && sliderValue.min === settings.max && settings.step
-        ? sliderValue.min - settings.step : sliderValue.min;
+        && sliderValue.min === settings.max
+        && settings.step ? sliderValue.min - settings.step : sliderValue.min;
 
       settings.valueMax = sliderValue.min === sliderValue.max
-      && sliderValue.max === settings.min && settings.step
-        ? sliderValue.max + settings.step : sliderValue.max;
+        && sliderValue.max === settings.min
+        && settings.step ? sliderValue.max + settings.step : sliderValue.max;
 
       const scale = settings.step !== undefined;
       const form = element.querySelector('.js-demo') as HTMLElement;
@@ -228,7 +228,7 @@ class DemoPage extends Panel {
       };
       const inputSettings = element.querySelectorAll('.js-demo__field-settings');
       const inputValueElements = element.querySelectorAll('.js-demo__field-value');
-      Array.from(inputSettings).map((input, index) => {
+      [...inputSettings].map((input, index) => {
         const key = this.settingsKeys[index];
 
         const setInputValue = (): boolean | string | number | undefined | null => {
@@ -253,7 +253,7 @@ class DemoPage extends Panel {
       };
 
       const sliderValue: {notRange?: number; min?: number; max?: number} = {};
-      Array.from(inputValueElements).map((input: HTMLElement) => {
+      [...inputValueElements].forEach((input: HTMLElement) => {
         if (input.classList.contains('js-demo__field-value_type_min')) {
           const valueMin = checkValue(Number((input as HTMLInputElement).value));
           sliderValue.min = valueMin;
@@ -264,7 +264,6 @@ class DemoPage extends Panel {
           sliderValue.notRange = Number((input as HTMLInputElement).value);
           sliderValue.min = Number((input as HTMLInputElement).value);
         }
-        return undefined;
       });
       return { sliderValue, settings };
     }
@@ -284,14 +283,14 @@ class DemoPage extends Panel {
           const { mutationRecord, inputElement, thumbElement } = recordOptions;
 
           if (mutationRecord[0].oldValue) {
-            const oldValue = vertical ? (mutationRecord[0].oldValue.match(/(top: )\d+(.\d+)?rem/) || [])[0].trim().replace(/top: /, '')
+            const oldValue = vertical
+              ? (mutationRecord[0].oldValue.match(/(top: )\d+(.\d+)?rem/) || [])[0].trim().replace(/top: /, '')
               : (mutationRecord[0].oldValue.match(/[^left:]*rem/) || [])[0].trim();
 
             const positionOfThumb = vertical ? thumbElement.style.top : thumbElement.style.left;
 
             if (parseFloat(positionOfThumb) !== parseFloat(oldValue)) {
-              const input = inputElement;
-              input.value = this.slider();
+              inputElement.value = this.slider();
             }
           }
         };
