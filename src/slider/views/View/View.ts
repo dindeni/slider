@@ -24,10 +24,6 @@ interface UpdatingLabelOptions {
   thumbElement: HTMLElement | JQuery;
 }
 
-interface ThumbCreationOptions extends RangeAndVerticalOptions {
-  wrapper: JQuery;
-}
-
 interface UpdatingDataOptions extends ExtremumOptions {
   trackSize: number;
   distance: number;
@@ -35,10 +31,6 @@ interface UpdatingDataOptions extends ExtremumOptions {
   thumbElement: HTMLElement;
   progress: boolean;
   step?: boolean;
-}
-
-interface OptionsForInitializingProgress extends RangeAndVerticalOptions {
-  $wrapper: JQuery;
 }
 
 interface SettingStepCoordinatesOptions {
@@ -52,8 +44,6 @@ interface OptionsForCreateRangeLabel {
 }
 
 class View extends Observable {
-  private $trackElement: JQuery;
-
   private $thumbElement: JQuery;
 
   private $thumbElementMin: JQuery;
@@ -76,6 +66,8 @@ class View extends Observable {
 
   private thumbCoordinateMax: number;
 
+  public $trackElement: JQuery;
+
   public coordinate: number;
 
   private valueForLabel: number;
@@ -94,18 +86,19 @@ class View extends Observable {
 
   public coordinateOfMiddle: number;
 
-  public createElements(options: SliderElementOptions): void {
+  public $wrapper: JQuery;
+
+  public createElements(): void {
     const {
       $element, range, vertical, min, max, step, progress, label,
-    } = options;
+    } = this.sliderSettings;
 
-    const $wrapper: JQuery = step
-      ? $('<div class="slider js-slider slider_type_step js-slider_type_step"></div>').appendTo($element)
-      : $('<div class="slider js-slider"></div>').appendTo($element);
-    this.$trackElement = $('<div class="slider__track js-slider__track"></div>')
-      .appendTo($wrapper);
-
-    this.createThumb({ range, vertical, wrapper: $wrapper });
+    this.$wrapper = $element.find('.js-slider');
+    if (this.$wrapper.length === 0) {
+      this.createBasicNodes($element);
+    }
+    this.$trackElement = this.$wrapper.find('.js-slider__track');
+    this.createThumb({ range, vertical });
 
     this.viewOptional = new ViewOptional(this);
     this.viewHandle = new ViewHandle(this);
@@ -119,24 +112,32 @@ class View extends Observable {
         step,
         trackWidth: vertical ? this.$trackElement.height() || 0 : this.$trackElement.width() || 0,
         trackHeight: vertical ? this.$trackElement.width() || 0 : this.$trackElement.height() || 0,
-        wrapper: $wrapper,
+        wrapper: this.$wrapper,
       };
       this.viewOptional.createScale(optionsForScale);
     }
 
     this.stylingElements({
-      range, vertical, wrapper: $wrapper, step,
+      range, vertical, wrapper: this.$wrapper, step,
     });
     if (label) {
       this.createLabel({
-        initialValue: min, vertical, range, max, $wrapper,
+        initialValue: min, vertical, range, max, $wrapper: this.$wrapper,
       });
     }
 
     if (progress) {
-      this.initializeProgress({ vertical, range, $wrapper });
+      this.initializeProgress({ vertical, range });
     }
     this.viewHandle.addDragAndDrop(this.sliderSettings);
+  }
+
+  private createBasicNodes($element): void {
+    const $slider = $(`<div class="slider js-slider">
+      <div class="slider__track js-slider__track"></div><div class="slider__thumb js-slider__thumb"></div>
+      </div>`);
+    $slider.appendTo($element);
+    this.$wrapper = $element.find('.js-slider');
   }
 
   public setLabelValue(value: number): void {
@@ -193,48 +194,6 @@ class View extends Observable {
     }
   }
 
-  private initializeProgress(options: OptionsForInitializingProgress): void {
-    const { range, vertical, $wrapper } = options;
-
-    ViewOptional.createProgress({ range, wrapper: $wrapper });
-    const viewOptional = new ViewOptional(this.notifyAll);
-    if (range) {
-      viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinateMin,
-        vertical,
-        thumbElement: this.$thumbElementMin.get(0),
-      });
-      viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinateMax,
-        vertical,
-        thumbElement: this.$thumbElementMax.get(0),
-      });
-    } else {
-      viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinate,
-        vertical,
-        thumbElement: this.$thumbElement.get(0),
-      });
-    }
-  }
-
-  private createThumb(options: ThumbCreationOptions): void {
-    const { range, vertical, wrapper } = options;
-
-    if (range) {
-      this.$thumbElementMin = vertical
-        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_min js-slider__thumb_type_min"></div>').appendTo(wrapper)
-        : $('<div class="slider__thumb js-slider__thumb slider__thumb_type_min js-slider__thumb_type_min"></div>').appendTo(wrapper);
-      this.$thumbElementMax = vertical
-        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(wrapper)
-        : this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(wrapper);
-    } else {
-      this.$thumbElement = vertical
-        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical"></div>').appendTo(wrapper)
-        : this.$thumbElement = $('<div class="slider__thumb js-slider__thumb"></div>').appendTo(wrapper);
-    }
-  }
-
   public setCoordinate(value: number): void {
     this.coordinate = value;
   }
@@ -246,61 +205,19 @@ class View extends Observable {
 
     this.trackSize = wrapper.find('.slider__track').width() || 0;
     if (range) {
-      this.notifyAll({
-        value: {
-          value: this.sliderSettings.valueMin || this.sliderSettings.min,
-          min: this.sliderSettings.min,
-          max: this.sliderSettings.max,
-          trackSize: this.trackSize,
-        },
-        type: 'getCoordinates',
-      });
-      this.thumbCoordinateMin = this.coordinate;
-
-      this.notifyAll({
-        value: {
-          value: this.sliderSettings.valueMax || this.sliderSettings.max,
-          min: this.sliderSettings.min,
-          max: this.sliderSettings.max,
-          trackSize: this.trackSize,
-        },
-        type: 'getCoordinates',
-      });
-      this.thumbCoordinateMax = this.coordinate;
+      this.thumbCoordinateMin = this.getThumbCoordinates(
+        this.sliderSettings.valueMin || this.sliderSettings.min,
+      );
+      this.thumbCoordinateMax = this.getThumbCoordinates(
+        this.sliderSettings.valueMax || this.sliderSettings.max,
+      );
     } else {
-      this.notifyAll({
-        value: {
-          value: this.sliderSettings.value || this.sliderSettings.min,
-          min: this.sliderSettings.min,
-          max: this.sliderSettings.max,
-          trackSize: this.trackSize,
-        },
-        type: 'getCoordinates',
-      });
-      this.thumbCoordinate = this.coordinate;
+      this.thumbCoordinateMax = this.getThumbCoordinates(
+        this.sliderSettings.value || this.sliderSettings.min,
+      );
     }
     this.setStepCoordinates({ step, range });
 
-    const isRangeVertical = range && !vertical;
-    if (!isRangeVertical) {
-      this.$thumbElement = wrapper.find('.js-slider__thumb');
-      this.$thumbElement.css({
-        left: `${this.thumbCoordinate}rem`,
-      });
-    } else if (isRangeVertical) {
-      this.$thumbElementMin = wrapper.find('.js-slider__thumb_type_min');
-      this.$thumbElementMax = wrapper.find('.js-slider__thumb_type_max');
-
-      this.$thumbElementMin.css({
-        left: `${this.thumbCoordinateMin}rem`,
-        zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.REM ? 100 : 50,
-      });
-
-      this.$thumbElementMax.css({
-        left: `${this.thumbCoordinateMax}rem`,
-        zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.REM ? 50 : 100,
-      });
-    }
     if (vertical) {
       this.viewOptional.makeVertical({
         range,
@@ -313,6 +230,79 @@ class View extends Observable {
           max: this.thumbCoordinateMax,
         },
       });
+    } else if (range) {
+      this.$thumbElementMin = wrapper.find('.js-slider__thumb_type_min');
+      this.$thumbElementMax = wrapper.find('.js-slider__thumb_type_max');
+
+      this.$thumbElementMin.css({
+        left: `${this.thumbCoordinateMin}rem`,
+        zIndex: this.thumbCoordinateMin > (this.trackSize / 2) * this.REM ? 100 : 50,
+      });
+
+      this.$thumbElementMax.css({
+        left: `${this.thumbCoordinateMax}rem`,
+        zIndex: this.thumbCoordinateMax > (this.trackSize / 2) * this.REM ? 50 : 100,
+      });
+    } else {
+      this.$thumbElement = wrapper.find('.js-slider__thumb');
+      this.$thumbElement.css({
+        left: `${this.thumbCoordinate}rem`,
+      });
+    }
+  }
+
+  private getThumbCoordinates(value): number {
+    this.notifyAll({
+      value: {
+        value,
+        min: this.sliderSettings.min,
+        max: this.sliderSettings.max,
+        trackSize: this.trackSize,
+      },
+      type: 'getCoordinates',
+    });
+    return this.coordinate;
+  }
+
+  private initializeProgress(options: RangeAndVerticalOptions): void {
+    const { range, vertical } = options;
+
+    this.viewOptional.createProgress(range);
+    if (range) {
+      this.viewOptional.stylingProgress({
+        progressSize: this.thumbCoordinateMin,
+        vertical,
+        thumbElement: this.$thumbElementMin.get(0),
+      });
+
+      this.viewOptional.stylingProgress({
+        progressSize: this.thumbCoordinateMax,
+        vertical,
+        thumbElement: this.$thumbElementMax.get(0),
+      });
+    } else {
+      this.viewOptional.stylingProgress({
+        progressSize: this.thumbCoordinate,
+        vertical,
+        thumbElement: this.$thumbElement.get(0),
+      });
+    }
+  }
+
+  private createThumb(options: RangeAndVerticalOptions): void {
+    const { range, vertical } = options;
+
+    if (range) {
+      this.$thumbElementMin = vertical
+        ? this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')
+        : this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min');
+      this.$thumbElementMax = vertical
+        ? $('<div class="slider__thumb js-slider__thumb slider__thumb_type_vertical js-slider__thumb_type_vertical slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(this.$wrapper)
+        : $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>').appendTo(this.$wrapper);
+    } else {
+      this.$thumbElement = vertical
+        ? this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_vertical js-slider__thumb_type_vertical')
+        : this.$wrapper.find('.js-slider__thumb');
     }
   }
 
@@ -326,13 +316,13 @@ class View extends Observable {
         coordinateMax: this.thumbCoordinateMax,
       });
 
-      stepData.coordinateMin || stepData.coordinateMin === 0
-        ? this.thumbCoordinateMin = stepData.coordinateMin * this.REM
-        : this.thumbCoordinateMin = this.sliderSettings.min * this.REM;
+      this.thumbCoordinateMin = stepData.coordinateMin || stepData.coordinateMin === 0
+        ? stepData.coordinateMin * this.REM
+        : this.sliderSettings.min * this.REM;
 
-      stepData.coordinateMax || stepData.coordinateMax === 0
-        ? this.thumbCoordinateMax = stepData.coordinateMax * this.REM
-        : this.thumbCoordinateMax = this.sliderSettings.max * this.REM;
+      this.thumbCoordinateMax = stepData.coordinateMax || stepData.coordinateMax === 0
+        ? stepData.coordinateMax * this.REM
+        : this.sliderSettings.max * this.REM;
 
       if (stepData.coordinateMax) {
         this.thumbCoordinateMax = (stepData.coordinateMax || this.sliderSettings.max) * this.REM;

@@ -20,27 +20,10 @@ class Controller {
   }
 
   public init(): void {
-    const {
-      $element, min, max, range, vertical, progress, step, value, valueMin, valueMax, label,
-    } = this.sliderOptions;
-    const sliderOptions = {
-      $element, min, max, range, vertical, progress, step,
-    };
-
     this.subscribe();
     this.view.getSliderOptions(this.sliderOptions);
 
-    const sliderValues = this.model.updateState({
-      min, max, value, valueMin, valueMax,
-    });
-
-    this.view.createElements({
-      ...sliderOptions,
-      value: sliderValues.value,
-      valueMin: sliderValues.valueMin,
-      valueMax: sliderValues.valueMax,
-      label,
-    });
+    this.view.createElements();
   }
 
   public getSliderOptions(options: SliderOptionsForInit): void {

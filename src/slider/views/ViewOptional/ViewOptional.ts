@@ -162,6 +162,7 @@ class ViewOptional {
             default: return undefined;
           }
         }
+        return undefined;
       });
       return result;
     }
@@ -181,14 +182,15 @@ class ViewOptional {
 
     private static makeSingleProgress(options: MakingProgressOptions): void {
       const { thumbElement, vertical, progressSize } = options;
-      const progressElement = (thumbElement.previousElementSibling as HTMLElement)
-        .children[0] as HTMLElement;
 
+      const $progressElement = $(thumbElement).find('.js-slider__progress');
       if (vertical) {
-        progressElement.style.height = `${progressSize}rem`;
-        progressElement.style.width = '0.38rem';
+        $progressElement.css({
+          height: `${progressSize}rem`,
+          width: '0.38rem',
+        });
       } else {
-        progressElement.style.width = `${progressSize}rem`;
+        $progressElement.css({ width: `${progressSize}rem` });
       }
     }
 
@@ -245,17 +247,12 @@ class ViewOptional {
       }
     }
 
-    public static createProgress(options: CreationProgressOptions): void {
-      const {
-        range, wrapper,
-      } = options;
-
-      const $track = wrapper.find('.js-slider__track');
+    public createProgress(range): void {
       if (range) {
-        $('<div class="slider__progress js-slider__progress slider__progress_type_min js-slider__progress_type_min"></div>').appendTo($track);
-        $('<div class="slider__progress js-slider__progress slider__progress_type_max js-slider__progress_type_max"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress slider__progress_type_min js-slider__progress_type_min"></div>').appendTo(this.view.$trackElement);
+        $('<div class="slider__progress js-slider__progress slider__progress_type_max js-slider__progress_type_max"></div>').appendTo(this.view.$trackElement);
       } else {
-        $('<div class="slider__progress js-slider__progress"></div>').appendTo($track);
+        $('<div class="slider__progress js-slider__progress"></div>').appendTo(this.view.$trackElement);
       }
     }
 
@@ -301,40 +298,31 @@ class ViewOptional {
       const { thumbElement, vertical, progressSize } = options;
 
       const $thumb = $(thumbElement);
+      const $track = $thumb.parent().find('.js-slider__track');
+      const $progressMin = $thumb.parent().find('.js-slider__progress_type_min');
+      const $progressMax = $thumb.parent().find('.js-slider__progress_type_max');
       if (vertical) {
-        if ($thumb.is('.js-slider__thumb_type_min')) {
-          const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
-            .children[0] as HTMLElement;
-          divProgressMin.style.height = `${progressSize}rem`;
-          divProgressMin.style.width = '0.38rem';
-        } else {
-          const divProgressMax = $thumb.siblings('.js-slider__track').children(
-            '.js-slider__progress_type_max',
-          );
-          const divTrack = $thumb.siblings('.js-slider__track');
-          divProgressMax.css({
-            height: `${(divTrack.height() || 0) * this.rem - progressSize}rem`,
+        $thumb.is('.js-slider__thumb_type_min')
+          ? $progressMin.css({
+            width: '0.38rem',
+            height: `${progressSize}rem`,
+          })
+          : $progressMax.css({
+            height: `${($track.height() || 0) * this.rem - progressSize}rem`,
             width: '0.38rem',
             position: 'absolute',
             right: '0rem',
             bottom: '0rem',
           });
-        }
-      } else if ($thumb.is('.js-slider__thumb_type_min')) {
-        const divProgressMin = (thumbElement.previousElementSibling as HTMLElement)
-          .children[0] as HTMLElement;
-        divProgressMin.style.width = `${progressSize}rem`;
       } else {
-        const divProgressMax = $thumb.siblings('.js-slider__track').children(
-          '.js-slider__progress_type_max',
-        );
-        const divTrack = $thumb.siblings('.js-slider__track');
-        divProgressMax.css({
-          width: `${(divTrack.width() || 0) * this.rem - progressSize}rem`,
-          position: 'absolute',
-          right: '0rem',
-          top: '0rem',
-        });
+        $thumb.is('.js-slider__thumb_type_min')
+          ? $progressMin.css({ width: `${progressSize}rem` })
+          : $progressMax.css({
+            width: `${($track.width() || 0) * this.rem - progressSize}rem`,
+            position: 'absolute',
+            right: '0rem',
+            top: '0rem',
+          });
       }
     }
 }
