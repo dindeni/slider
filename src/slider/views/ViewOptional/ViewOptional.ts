@@ -96,74 +96,25 @@ class ViewOptional {
          valueMax: this.view.scaleData.value[this.view.scaleData.value.length - 1],
          value: this.view.scaleData.value[0],
        };
-      let indexMinFlag: boolean;
-      let indexMaxFlag: boolean;
-      let indexFlag: boolean;
 
-      this.view.scaleData.coordinates.forEach((value, index) => {
-        const checkedCoordinate = Number((value * this.rem).toFixed(2));
-        const isCoordinateMinAndMax = (coordinateMin || coordinateMin === 0)
-         && (coordinateMax || coordinateMax === 0);
-        if (isCoordinateMinAndMax) {
-          switch (true) {
-            case !indexMinFlag
-              && checkedCoordinate === coordinateMin
-              && coordinateMax === coordinateMin
-              && index === this.view.scaleData.coordinates.length - 1: indexMinFlag = true;
-              result.coordinateMin = this.view.scaleData.coordinates[index - 1];
-              result.valueMin = this.view.scaleData.value[index - 1];
-              break;
-            case !indexMinFlag
-              && checkedCoordinate === coordinateMin: indexMinFlag = true;
-              result.coordinateMin = this.view.scaleData.coordinates[index];
-              result.valueMin = this.view.scaleData.value[index];
-              break;
-            case (coordinateMin || coordinateMin === 0)
-              && !indexMinFlag
-              && checkedCoordinate > coordinateMin: indexMinFlag = true;
-              result.coordinateMin = this.view.scaleData.coordinates[index - 1];
-              result.valueMin = this.view.scaleData.value[index - 1];
-              break;
-            default: break;
-          }
-          switch (true) {
-            case !indexMaxFlag
-              && checkedCoordinate === coordinateMax
-              && coordinateMax === coordinateMin && index === 0: indexMaxFlag = true;
-              result.coordinateMax = this.view.scaleData.coordinates[index + 1];
-              result.valueMax = this.view.scaleData.value[index + 1];
-              break;
-            case !indexMaxFlag
-              && checkedCoordinate === coordinateMax: indexMaxFlag = true;
-              result.coordinateMax = this.view.scaleData.coordinates[index];
-              result.valueMax = this.view.scaleData.value[index];
-              break;
-            case (coordinateMin || coordinateMin === 0)
-              && coordinateMax
-              && !indexMaxFlag
-              && checkedCoordinate > coordinateMin
-              && checkedCoordinate > coordinateMax: indexMaxFlag = true;
-              result.coordinateMax = this.view.scaleData.coordinates[index];
-              result.valueMax = this.view.scaleData.value[index];
-              break;
-            default: return undefined;
-          }
-        }
-        if (coordinate) {
-          switch (true) {
-            case !indexFlag && checkedCoordinate === coordinate: indexFlag = true;
-              result.coordinate = this.view.scaleData.coordinates[index];
-              result.value = this.view.scaleData.value[index];
-              break;
-            case !indexFlag && checkedCoordinate > coordinate: indexFlag = true;
-              result.coordinate = this.view.scaleData.coordinates[index - 1];
-              result.value = this.view.scaleData.value[index - 1];
-              break;
-            default: return undefined;
-          }
-        }
-        return undefined;
-      });
+      if (coordinateMin) {
+        const data = this.checkStepData(coordinateMin);
+        result.coordinateMin = data.coordinate;
+        result.valueMin = data.value;
+      }
+
+      if (coordinateMax) {
+        const data = this.checkStepData(coordinateMax);
+        result.coordinateMax = data.coordinate;
+        result.valueMax = data.value;
+      }
+
+      if (coordinate) {
+        const data = this.checkStepData(coordinate);
+        result.coordinate = data.coordinate;
+        result.value = data.coordinate;
+      }
+
       return result;
     }
 
@@ -180,6 +131,19 @@ class ViewOptional {
         : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
     }
 
+    private checkStepData(checkedCoordinate: number): { coordinate: number; value: number } {
+      const coordinate = this.view.scaleData.coordinates.reduce((reducer, current) => {
+        const reducerValue = Number((reducer * this.rem).toFixed(2));
+        const currentValue = Number((current * this.rem).toFixed(2));
+        return (Math.abs(currentValue - checkedCoordinate)
+          < Math.abs(reducerValue - checkedCoordinate)) ? current : reducer;
+      });
+      const index = this.view.scaleData.coordinates.findIndex((value) => value === coordinate);
+      const value = this.view.scaleData.value[index];
+      return { coordinate, value };
+    }
+
+
     private static makeSingleProgress(options: MakingProgressOptions): void {
       const { thumbElement, vertical, progressSize } = options;
 
@@ -194,55 +158,31 @@ class ViewOptional {
       }
     }
 
-    public static changeZIndex(options: ChangingZIndexOptions): undefined {
+    public static changeZIndex(options: ChangingZIndexOptions): void {
       const {
         coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
       } = options;
 
-      const isVerticalAboveMiddle = vertical && thumbElement.getBoundingClientRect().top
-      + window.scrollY < coordinatesOfMiddle;
-      const isVerticalBelowMiddle = vertical && thumbElement.getBoundingClientRect().top
-      + window.scrollY > coordinatesOfMiddle;
-      const isNotVerticalAboveMiddle = !vertical && thumbElement.getBoundingClientRect().left
-      > coordinatesOfMiddle;
-      const isNotVerticalBellowMiddle = !vertical && thumbElement.getBoundingClientRect().left
-      < coordinatesOfMiddle;
+      const isLessMiddle = (vertical && thumbElement.getBoundingClientRect().top
+      + window.scrollY < coordinatesOfMiddle)
+      || (!vertical && thumbElement.getBoundingClientRect().left < coordinatesOfMiddle);
       const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
       const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_type_max') as HTMLElement;
       const isLabelsExist = labelElementMin && labelElementMax;
 
-      if (isVerticalAboveMiddle) {
+      if (isLessMiddle) {
         thumbMax.style.zIndex = '200';
         thumbMin.style.zIndex = '100';
         if (isLabelsExist) {
           labelElementMax.style.zIndex = '200';
           labelElementMin.style.zIndex = '100';
         }
-        return;
-      }
-      if (isVerticalBelowMiddle) {
+      } else {
         thumbMax.style.zIndex = '100';
         thumbMin.style.zIndex = '200';
         if (isLabelsExist) {
           labelElementMax.style.zIndex = '100';
           labelElementMin.style.zIndex = '200';
-        }
-        return;
-      }
-
-      if (isNotVerticalAboveMiddle) {
-        thumbMax.style.zIndex = '100';
-        thumbMin.style.zIndex = '200';
-        if (isLabelsExist) {
-          labelElementMin.style.zIndex = '100';
-          labelElementMax.style.zIndex = '200';
-        }
-      } else if (isNotVerticalBellowMiddle) {
-        thumbMax.style.zIndex = '200';
-        thumbMin.style.zIndex = '100';
-        if (isLabelsExist) {
-          labelElementMin.style.zIndex = '200';
-          labelElementMax.style.zIndex = '100';
         }
       }
     }
