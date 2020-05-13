@@ -46,9 +46,9 @@ interface OptionsForCreateRangeLabel {
 class View extends Observable {
   private $thumbElement: JQuery;
 
-  private $thumbElementMin: JQuery;
+  public $thumbElementMin: JQuery;
 
-  private $thumbElementMax: JQuery;
+  public $thumbElementMax: JQuery;
 
   private LABEL_OFFSET_LEFT = 0.62;
 
@@ -212,7 +212,7 @@ class View extends Observable {
         this.sliderSettings.valueMax || this.sliderSettings.max,
       );
     } else {
-      this.thumbCoordinateMax = this.getThumbCoordinates(
+      this.thumbCoordinate = this.getThumbCoordinates(
         this.sliderSettings.value || this.sliderSettings.min,
       );
     }

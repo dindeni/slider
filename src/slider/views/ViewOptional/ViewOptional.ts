@@ -41,15 +41,15 @@ interface ChangingZIndexOptions {
   thumbElement: HTMLElement;
 }
 
-interface CreationProgressOptions {
-  range: boolean | undefined;
-  wrapper: JQuery;
-}
-
 interface MakingProgressOptions {
   thumbElement: HTMLElement;
   vertical: boolean;
   progressSize: number;
+}
+
+interface CheckingStepDataOptions {
+  checkedCoordinate: number;
+  data: { coordinates: number[]; value: number[] };
 }
 
 class ViewOptional {
@@ -98,19 +98,28 @@ class ViewOptional {
        };
 
       if (coordinateMin) {
-        const data = this.checkStepData(coordinateMin);
+        const data = this.checkStepData({
+          checkedCoordinate: coordinateMin,
+          data: this.view.scaleData,
+        });
         result.coordinateMin = data.coordinate;
         result.valueMin = data.value;
       }
 
       if (coordinateMax) {
-        const data = this.checkStepData(coordinateMax);
+        const data = this.checkStepData({
+          checkedCoordinate: coordinateMax,
+          data: this.view.scaleData,
+        });
         result.coordinateMax = data.coordinate;
         result.valueMax = data.value;
       }
 
       if (coordinate) {
-        const data = this.checkStepData(coordinate);
+        const data = this.checkStepData({
+          checkedCoordinate: coordinate,
+          data: this.view.scaleData,
+        });
         result.coordinate = data.coordinate;
         result.value = data.coordinate;
       }
@@ -131,15 +140,17 @@ class ViewOptional {
         : ViewOptional.makeSingleProgress({ vertical, thumbElement, progressSize });
     }
 
-    private checkStepData(checkedCoordinate: number): { coordinate: number; value: number } {
-      const coordinate = this.view.scaleData.coordinates.reduce((reducer, current) => {
+    public checkStepData(options: CheckingStepDataOptions): { coordinate: number; value: number } {
+      const { checkedCoordinate, data } = options;
+
+      const coordinate = data.coordinates.reduce((reducer, current) => {
         const reducerValue = Number((reducer * this.rem).toFixed(2));
         const currentValue = Number((current * this.rem).toFixed(2));
         return (Math.abs(currentValue - checkedCoordinate)
           < Math.abs(reducerValue - checkedCoordinate)) ? current : reducer;
       });
-      const index = this.view.scaleData.coordinates.findIndex((value) => value === coordinate);
-      const value = this.view.scaleData.value[index];
+      const index = data.coordinates.findIndex((value) => value === coordinate);
+      const value = data.value[index];
       return { coordinate, value };
     }
 
@@ -147,7 +158,8 @@ class ViewOptional {
     private static makeSingleProgress(options: MakingProgressOptions): void {
       const { thumbElement, vertical, progressSize } = options;
 
-      const $progressElement = $(thumbElement).find('.js-slider__progress');
+      const $progressElement = $(thumbElement).parent().find('.js-slider__progress');
+
       if (vertical) {
         $progressElement.css({
           height: `${progressSize}rem`,
