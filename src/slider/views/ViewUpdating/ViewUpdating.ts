@@ -58,9 +58,9 @@ interface ThumbExtremumOptions {
 class ViewUpdating {
   private rem = 0.077;
 
-  private thumbLeft: number;
+  public thumbLeft: number;
 
-  private thumbTop: number;
+  public thumbTop: number;
 
   private thumbElement: HTMLElement;
 
@@ -165,7 +165,8 @@ class ViewUpdating {
       && ((thumbElement === thumbMin
       && thumbMaxLeft
       && (shift + distance < thumbMaxLeft))
-      || (thumbElement === thumbMax && (thumbMinLeft || thumbMinLeft === 0)
+      || (thumbElement === thumbMax
+      && (thumbMinLeft || thumbMinLeft === 0)
       && (shift + distance > thumbMinLeft)));
     const isValidMinAndMaxTop = vertical
       && ((thumbElement === thumbMin
@@ -189,7 +190,7 @@ class ViewUpdating {
       setRangeCoordinate();
     } else {
       this.thumbElement.style[this.keyCoordinate] = `${shift + distance}rem`;
-      vertical ? this.thumbLeft = shift + distance : this.thumbTop = shift + distance;
+      vertical ? this.thumbTop = shift + distance : this.thumbLeft = shift + distance;
     }
     this.checkThumbExtremum({ vertical, trackWidth, trackHeight });
   }
@@ -219,14 +220,17 @@ class ViewUpdating {
       data: { coordinates: coordinatesStep, value: stepValues },
     });
     const coordinateKey = vertical ? 'top' : 'left';
-    const thumbMinCoordinate = parseFloat(this.view.$thumbElementMin[0].style[coordinateKey]);
-    const thumbMaxCoordinate = parseFloat(this.view.$thumbElementMax[0].style[coordinateKey]);
+    const thumbMinCoordinate = thumbMin ? parseFloat(thumbMin.style[coordinateKey]) : undefined;
+    const thumbMaxCoordinate = thumbMax
+      ? parseFloat((thumbMax as HTMLElement).style[coordinateKey])
+      : undefined;
 
     const isValidCoordinate = !range
       || (thumbElement === thumbMax
+      && (thumbMinCoordinate || thumbMinCoordinate === 0)
       && (data.coordinate * this.rem) > thumbMinCoordinate)
       || (thumbElement === thumbMin
-      && (data.coordinate * this.rem) < thumbMaxCoordinate);
+      && thumbMaxCoordinate && (data.coordinate * this.rem) < thumbMaxCoordinate);
 
     if (isValidCoordinate) {
       this.thumbElement.style[coordinateKey] = `${data.coordinate * this.rem}rem`;

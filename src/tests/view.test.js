@@ -33,11 +33,6 @@ describe('View', () => {
     controller.init();
   };
 
-  const turnOnProgress = () => {
-    divProgress = document.querySelector('.js-slider__progress');
-    divProgress.style.width = '0rem';
-  };
-
   const addStyle = () => {
     const styleElement = document.createElement('style');
     styleElement.innerHTML = style;
@@ -51,6 +46,7 @@ describe('View', () => {
     divThumbTop = divThumb.getBoundingClientRect().top;
     divTrack = document.querySelector('.js-slider__track');
     divLabel = document.querySelector('.js-slider__label');
+    divProgress = document.querySelector('.js-slider__progress');
 
     divTrack.style.width = '20.02rem';
     divThumb.style.left = '0rem';
@@ -60,7 +56,6 @@ describe('View', () => {
     document.body.innerHTML = '';
     await addStyle();
     await createElements();
-    await turnOnProgress();
     await findElements();
     const styleElement = document.createElement('style');
     styleElement.innerHTML = style;
