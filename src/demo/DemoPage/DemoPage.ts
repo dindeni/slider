@@ -41,20 +41,20 @@ interface ForMutationRecord {
 class DemoPage extends Panel {
     private sliderSettings: [Slider, Slider, Slider, Slider];
 
-    private settingsKeys = ['progress', 'min', 'max', 'vertical', 'range', 'label', 'step'];
+    private settingsKeys = ['min', 'max', 'progress', 'vertical', 'range', 'label', 'step'];
 
     private slider;
 
     public loadSliders(): void {
       this.sliderSettings = [
         {
-          progress: true, min: 100, max: 500, vertical: false, range: true, label: true,
+          min: 100, max: 500, progress: true, vertical: false, range: true, label: true,
         }, {
-          progress: true, min: 0, max: 100, vertical: true, range: true, label: true,
+          min: 0, max: 100, progress: true, vertical: true, range: true, label: true,
         }, {
-          progress: true, min: 0, max: 500, vertical: false, range: true, label: true, step: 100,
+          min: 0, max: 500, progress: true, vertical: false, range: true, label: true, step: 100,
         }, {
-          progress: false, min: 0, max: 1000, vertical: true, range: false, label: true, step: 250,
+          min: 0, max: 1000, progress: false, vertical: true, range: false, label: true, step: 250,
         },
       ];
 
@@ -114,18 +114,17 @@ class DemoPage extends Panel {
         min, max, step, range, event, element, demoElement,
       } = options;
       const optionForSetting = {
-        value: (event.target as HTMLInputElement).value,
+        value: (event.target as HTMLInputElement),
         element: event.target as HTMLElement,
         min,
         max,
       };
-      const settingValue: boolean | number | undefined | null = this.validateSettings(
-        optionForSetting,
-      );
+
       const optionsForValue = {
         element: event.target as HTMLInputElement,
-        value: (event.target as HTMLElement).classList.contains('js-demo__field-value')
-          ? (event.target as HTMLInputElement).value : 'null',
+        value: (event.target as HTMLElement).classList.contains('js-panel__field-value')
+          ? (event.target as HTMLInputElement).value
+          : 'null',
         min,
         max,
         step,
@@ -133,31 +132,16 @@ class DemoPage extends Panel {
         wrapper: event.currentTarget as HTMLElement,
       };
 
-      const inputValue: number | undefined = this.validateValue(optionsForValue);
+      const isValidValueOrSetting = (event.target as HTMLElement).classList.contains('js-panel__field-value')
+        ? this.validateValue(optionsForValue)
+        : this.validateSettings(optionForSetting);
 
-      const isValidValueOrSetting = settingValue !== null || inputValue || inputValue === 0;
-      if (isValidValueOrSetting) {
-        const scaleElement = element.querySelector('.js-demo__field-scale');
-        const isScaleElementChecked = event.target === scaleElement
-          && (event.target as HTMLInputElement).checked;
-        const isScaleElementNotChecked = event.target === scaleElement
-          && !(event.target as HTMLInputElement).checked;
 
-        if (isScaleElementChecked) {
-          DemoPage.createStepSetting({
-            form: event.currentTarget as HTMLElement,
-            min,
-            max,
-          });
-        } else if (isScaleElementNotChecked) {
-          ((event.currentTarget as HTMLElement).querySelector('.js-demo__field-settings_type_step') as HTMLElement).remove();
-        }
-
+      if (isValidValueOrSetting !== null) {
         ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement)
           .remove();
 
         const { sliderValue, settings } = this.getInputValues({ element, min });
-
         this.updateSlider({
           event, element, demoElement, sliderValue, settings,
         });
@@ -165,15 +149,7 @@ class DemoPage extends Panel {
     }
 
     private updateSlider(options: OptionsForUpdatingSlider): void {
-      const {
-        event, element, demoElement, settings, sliderValue,
-      } = options;
-
-      while ((event.currentTarget as HTMLElement).firstChild as HTMLElement) {
-        ((event.currentTarget as HTMLElement).firstChild as HTMLElement).remove();
-      }
-      const clonedDemoElement = demoElement.cloneNode(true);
-      element.replaceChild(clonedDemoElement, demoElement);
+      const { element, settings, sliderValue } = options;
 
       settings.value = sliderValue.notRange;
       settings.valueMin = sliderValue.min === sliderValue.max
@@ -184,9 +160,8 @@ class DemoPage extends Panel {
         && sliderValue.max === settings.min
         && settings.step ? sliderValue.max + settings.step : sliderValue.max;
 
-      const scale = settings.step !== undefined;
       const form = element.querySelector('.js-demo') as HTMLElement;
-      DemoPage.createElements({ settings, form, scale });
+      DemoPage.createElements({ settings, form });
       DemoPage.setInputValue({
         element: form,
         settings,
@@ -217,17 +192,19 @@ class DemoPage extends Panel {
       const { element, min } = options;
 
       let settings: Slider = {
-        progress: true,
         min: 0,
         max: 100,
+        progress: true,
         vertical: false,
         range: false,
         label: false,
         step: undefined,
         value: min,
       };
-      const inputSettings = element.querySelectorAll('.js-demo__field-settings');
-      const inputValueElements = element.querySelectorAll('.js-demo__field-value');
+      const inputSettings = element.querySelectorAll('.js-panel__field-settings');
+      const inputValueElements = element.querySelectorAll('.js-panel__field-value');
+      const inputStep = (element.querySelector('.js-panel__field-step') as HTMLInputElement);
+      const inputScale = element.querySelector('.js-panel__field-settings_type_scale') as HTMLInputElement;
       [...inputSettings].map((input, index) => {
         const key = this.settingsKeys[index];
 
@@ -252,13 +229,17 @@ class DemoPage extends Panel {
         return checkedValue;
       };
 
+      if (inputScale.checked) {
+        settings.step = parseFloat(inputStep.value) || (settings.max - settings.min) / 5;
+      }
+
       const sliderValue: {notRange?: number; min?: number; max?: number} = {};
       [...inputValueElements].forEach((input: HTMLElement) => {
-        if (input.classList.contains('js-demo__field-value_type_min')) {
+        if (input.classList.contains('js-panel__field-value_type_min')) {
           const valueMin = checkValue(Number((input as HTMLInputElement).value));
           sliderValue.min = valueMin;
           sliderValue.notRange = valueMin;
-        } else if (input.classList.contains('js-demo__field-value_type_max')) {
+        } else if (input.classList.contains('js-panel__field-value_type_max')) {
           sliderValue.max = checkValue(Number((input as HTMLInputElement).value));
         } else {
           sliderValue.notRange = Number((input as HTMLInputElement).value);
@@ -275,9 +256,9 @@ class DemoPage extends Panel {
 
       if (range) {
         const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_type_min') as HTMLElement;
-        const inputElementMin: HTMLInputElement = element.querySelector('.js-demo__field-value_type_min') as HTMLInputElement;
+        const inputElementMin: HTMLInputElement = element.querySelector('.js-panel__field-value_type_min') as HTMLInputElement;
         const thumbElementMax: HTMLElement = element.querySelector('.js-slider__thumb_type_max') as HTMLElement;
-        const inputElementMax: HTMLInputElement = element.querySelector('.js-demo__field-value_type_max') as HTMLInputElement;
+        const inputElementMax: HTMLInputElement = element.querySelector('.js-panel__field-value_type_max') as HTMLInputElement;
 
         const watchThumb = (recordOptions: ForMutationRecord): void => {
           const { mutationRecord, inputElement, thumbElement } = recordOptions;

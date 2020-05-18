@@ -1,11 +1,24 @@
 include ../blocks/index/index
+include ../blocks/footer/footer
 
 doctype html
 html(lang="en")
   head
     meta(charset="utf-8")
-    title slider
+    title jquery slider
     meta(name="viewport" content="width=device-width,initial-scale=1")
+    meta(name = "description" content = "Simple jquery slider with various settings")
+    meta(name = "keywords" content = "Jquery slider")
+    meta(name = "msapplication-TileColor" content = "#da532c")
+    meta(name = "theme-color" content = "#ffffff")
+    meta(name = "viewport" content = "width=device-width,initial-scale=1")
+    link(rel = "apple-touch-icon" sizes = "180x180" href = require('../favicons/apple-touch-icon.png'))
+    link(rel = "mask-icon" href = require('../favicons/safari-mask.svg') color = "#4eb7a8")
+    link(rel = "icon" type = "image/png" sizes = "32x32" href = require('../favicons/favicon-32x32.png'))
+    link(rel = "icon" type = "image/png" sizes = "16x16" href = "../favocons/favicon-16x16.png")
+    link(rel = "manifest" href = require('../favicons/site.webmanifest'))
   body
     +index
++footer
+
 

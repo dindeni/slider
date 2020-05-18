@@ -3,7 +3,6 @@ import { ExtremumOptions, Slider } from '../../types/types';
 interface ElementsCreationOptions {
   settings: Slider;
   form: HTMLElement;
-  scale: boolean;
 }
 
 interface InputValueOptions {
@@ -12,17 +11,12 @@ interface InputValueOptions {
   value?: {notRange?: number; min?: number; max?: number};
 }
 
-interface StepSettingsOptions extends ExtremumOptions{
-  form: HTMLElement;
-}
-
 interface ErrorCreationOptions {
   element: HTMLElement;
   text: string;
 }
 
 interface SettingsValidatingOptions extends ExtremumOptions{
-  value: string;
   element: HTMLElement;
 }
 
@@ -38,57 +32,45 @@ class Panel {
   private errorElement: HTMLElement;
 
   public validateValue(options: ValueValidatingOptions):
-    number | undefined {
+    number | null {
     const {
       element, value, min, max, step, range, wrapper,
     } = options;
     const valueToNumber = Number(value);
 
-    const checkRangeValue = (): boolean | undefined => {
+    const checkRangeValue = (): number | null => {
       if (range) {
-        const minElement = wrapper.querySelector('.js-demo__field-value_type_min');
-        const maxElement = wrapper.querySelector('.js-demo__field-value_type_max');
+        const minElement = wrapper.querySelector('.js-panel__field-value_type_min');
+        const maxElement = wrapper.querySelector('.js-panel__field-value_type_max');
         const valueMin = Number((minElement as HTMLInputElement).value);
         const valueMax = Number((maxElement as HTMLInputElement).value);
 
-        return element === minElement
+        const isSablingValueValid = element === minElement
           ? valueToNumber < valueMax
           : valueToNumber > valueMin;
-      }
-      return undefined;
+        const isValidValue = isSablingValueValid && valueToNumber >= min && valueToNumber <= max;
+        if (isValidValue) {
+          Panel.deleteErrorElement(element);
+          return valueToNumber;
+        }
+      } Panel.deleteErrorElement(element);
+      this.createErrorElement({ element, text: 'invalid value' });
+      return null;
     };
-    const isValueMinMaxValid = checkRangeValue();
 
     const isValidStepValue = step && (valueToNumber - min) % step === 0;
-
-    const isValueValid = range
-      ? valueToNumber >= min && valueToNumber <= max && isValueMinMaxValid
-      : valueToNumber >= min && valueToNumber < max;
-
-    const validateRangeValue = (): number | undefined => {
-      if (isValueValid) {
-        Panel.deleteErrorElement(element);
-        return valueToNumber;
-      }
-      Panel.deleteErrorElement(element);
-      this.createErrorElement({ element, text: 'invalid value' });
-      return undefined;
-    };
-
-    const validateStepValue = (): number | undefined => {
+    const checkStepValue = (): number | null => {
       if (isValidStepValue) {
         Panel.deleteErrorElement(element);
-        return valueToNumber;
-      }
-      Panel.deleteErrorElement(element);
+        return checkRangeValue();
+      } Panel.deleteErrorElement(element);
       this.createErrorElement({ element, text: 'value must be a multiple of step' });
-      return undefined;
+      return null;
     };
 
     if (step) {
-      const resultMinMax = validateRangeValue();
-      return resultMinMax || resultMinMax === 0 ? validateStepValue() : undefined;
-    } return validateRangeValue();
+      return checkStepValue();
+    } return checkRangeValue();
   }
 
   private createErrorElement(options: ErrorCreationOptions): null {
@@ -113,24 +95,25 @@ class Panel {
   public validateSettings(options: SettingsValidatingOptions):
     boolean | number | undefined | null {
     const {
-      value, element, min, max,
+      element, min, max,
     } = options;
 
-    const convertedValue: boolean | number | undefined | null = Panel.convertInputValue(value);
-    const isMin = element.classList.contains('js-demo__field-settings_type_min');
-    const isMax = element.classList.contains('js-demo__field-settings_type_max');
+    const { value } = element as HTMLInputElement;
+    const isMin = element.classList.contains('js-panel__field-settings_type_min');
+    const isMax = element.classList.contains('js-panel__field-settings_type_max');
     const isCheckbox = (element as HTMLInputElement).type === 'checkbox';
-    const isStep = element.classList.contains('js-demo__field-settings_type_step');
+    const isStep = element.classList.contains('js-panel__field-step');
+
     switch (true) {
       case isMin:
         Panel.deleteErrorElement(element);
-        return Number(value) < max ? convertedValue
+        return Number((element as HTMLInputElement).value) < max ? Panel.convertInputValue(value)
           : this.createErrorElement({ element, text: 'must be less than max' });
       case isMax:
         Panel.deleteErrorElement(element);
-        return Number(value) > min ? convertedValue
+        return Number((element as HTMLInputElement).value) > min ? Panel.convertInputValue(value)
           : this.createErrorElement({ element, text: 'must be greater than min' });
-      case isStep: return convertedValue;
+      case isStep: return Panel.convertInputValue(value);
       case isCheckbox: return (element as HTMLInputElement).checked;
       default: return null;
     }
@@ -151,50 +134,18 @@ class Panel {
   }
 
   public static createElements(options: ElementsCreationOptions): void {
-    const {
-      settings, form, scale,
-    } = options;
+    const { settings, form } = options;
 
-    const formIndex = [...document.querySelectorAll('.js-demo')].findIndex(
-      (value) => form === value,
-    );
+    const $form = $(form);
+    const $valueWrapperList = $form.find('.js-panel__wrapper_type_value');
+    settings.range
+      ? $valueWrapperList[1].classList.remove('panel__wrapper_hidden')
+      : $valueWrapperList[1].classList.add('panel__wrapper_hidden');
 
-    const $inputValue = settings.range
-      ? $('<div class="demo__field-wrapper">'
-      + '<label class="demo__mark">value min<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_min js-demo__field-value_type_min"></label></div>'
-      + '<div class="demo__field-wrapper"><label class="demo__mark">value max<input type="number" class="demo__field-value js-demo__field-value demo__field-value_type_max js-demo__field-value_type_max"></label></div>')
-      : $('<div class="demo__field-wrapper">'
-        + '<label class="demo__mark">value<input type="number" class="demo__field-value js-demo__field-value"></label></div>');
-
-    const $settingsInputs = $(`<div class="demo__field-wrapper demo__field-wrapper_for-checkbox"> progress
-       <input type="checkbox" id="progress-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_type_progress js-demo__field-settings_type_progress"><label for="progress-${formIndex}" class="demo__mark"></label></div>`
-      + '<div class="demo__field-wrapper"><label class="demo__mark">min<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_min js-demo__field-settings_type_min">'
-      + '</label></div><div class="demo__field-wrapper">'
-      + '<label class="demo__mark">max<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_max js-demo__field-settings_type_max"></label></div>'
-      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">vertical<input type="checkbox" id="vertical-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_type_vertical js-demo__field-settings_type_vertical"><label for="vertical-${formIndex}" class="demo__mark"></label></div>`
-      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">range<input type="checkbox" id="range-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_type_range js-demo__field-settings_type_range"><label for="range-${formIndex}" class="demo__mark"></label></div>`
-      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">scale<input type="checkbox" id="scale-${formIndex}" ${scale ? 'checked=true' : ''} class="demo__field-scale js-demo__field-scale"><label for="scale-${formIndex}" class="demo__mark"></label></div>`
-      + `<div class="demo__field-wrapper demo__field-wrapper_for-checkbox">label<input type="checkbox" id="label-${formIndex}" class="demo__field-settings js-demo__field-settings demo__field-settings_for-label js-demo__field-settings_for-label" ${settings.label ? 'checked=true' : ''}><label for="label-${formIndex}" class="demo__mark"></label></div>`);
-
-    const $scaleElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_step js-demo__field-settings_type_step"></label></div>');
-
-    $inputValue.appendTo($(form));
-    $settingsInputs.appendTo($(form));
-
-    if (scale) {
-      $scaleElement.appendTo($(form));
-    }
-  }
-
-  public static createStepSetting(options: StepSettingsOptions): void {
-    const {
-      form, min, max,
-    } = options;
-
-    const step = (max - min) / 5;
-    const $stepElement = $('<div class="demo__field-wrapper"><label class="demo__mark">step<input type="number" class="demo__field-settings js-demo__field-settings demo__field-settings_type_step js-demo__field-settings_type_step"></label></div>');
-    $stepElement.find('.js-demo__field-settings_type_step').val(step);
-    $stepElement.appendTo($(form));
+    const $wrapperWithStep = $form.find('.js-panel__wrapper_type_step');
+    settings.step
+      ? $wrapperWithStep.removeClass('panel__wrapper_hidden')
+      : $wrapperWithStep.addClass('panel__wrapper_hidden');
   }
 
   public static setInputValue(options: InputValueOptions): void {
@@ -202,30 +153,35 @@ class Panel {
       element, settings,
     } = options;
 
-    const { range, min, max } = settings;
+    const {
+      range, min, max, step,
+    } = settings;
 
     if (range) {
-      const minInput = (element.querySelector('.js-demo__field-value_type_min') as HTMLInputElement);
+      const minInput = (element.querySelector('.js-panel__field-value_type_min') as HTMLInputElement);
       settings.valueMin ? minInput.value = settings.valueMin.toString()
         : minInput.value = min.toString();
-      const maxInput = (element.querySelector('.js-demo__field-value_type_max') as HTMLInputElement);
+      const maxInput = (element.querySelector('.js-panel__field-value_type_max') as HTMLInputElement);
       settings.valueMax ? maxInput.value = settings.valueMax.toString()
         : maxInput.value = max.toString();
     } else {
-      const input = (element.querySelector('.js-demo__field-value') as HTMLInputElement);
+      const input = (element.querySelector('.js-panel__field-value') as HTMLInputElement);
       settings.value ? input.value = settings.value.toString() : input.value = min.toString();
     }
 
-    [...element.querySelectorAll('.js-demo__field-settings')].forEach((input, index) => {
+    [...element.querySelectorAll('.js-panel__field-settings')].forEach((input, index) => {
       const inputElement = (input as HTMLInputElement);
-      const isSettingValue = Object.values(settings)[index]
-        || Object.values(settings)[index] === 0;
+
       if (inputElement.type === 'checkbox') {
         inputElement.checked = Object.values(settings)[index];
-      } else if (isSettingValue) {
+      } else {
         inputElement.value = Object.values(settings)[index];
       }
     });
+
+    if (step) {
+      (element.querySelector('.js-panel__field-step') as HTMLInputElement).value = step.toString();
+    }
   }
 }
 

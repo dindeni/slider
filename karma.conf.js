@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = function (config) {
   config.set({
@@ -12,7 +13,6 @@ module.exports = function (config) {
         random: false,
       },
     },
-
 
     files: [
       'src/tests/*.js',
@@ -29,7 +29,7 @@ module.exports = function (config) {
     webpack: {
       entry: ['jquery'],
       resolve: {
-        extensions: ['.ts', '.tsx', '.js'],
+        extensions: ['.ts', '.tsx', '.js', '.pug'],
       },
       module: {
         rules: [
@@ -56,7 +56,6 @@ module.exports = function (config) {
               'css-loader',
               'postcss-loader',
               'sass-loader',
-
             ],
           },
           {
@@ -65,9 +64,12 @@ module.exports = function (config) {
               loader: 'file-loader',
               options: {
                 outputPath: 'files',
-
               },
             },
+          },
+          {
+            test: /\.pug$/,
+            use: ['pug-loader'],
           },
         ],
       },
@@ -78,21 +80,23 @@ module.exports = function (config) {
           'window.jQuery': 'jquery',
           'window.$': 'jquery',
         }),
+        new HtmlWebpackPlugin({
+          template: './src/blocks/panel/panel.pug',
+          filename: `${path.resolve('./')}/index.html`,
+          inject: 'body',
+        }),
       ],
     },
 
     reporters: ['progress'],
 
-
     port: 9876,
-
 
     colors: true,
 
     logLevel: config.LOG_INFO,
 
     autoWatch: true,
-
 
     browsers: ['Chrome'],
 
