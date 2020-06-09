@@ -237,7 +237,7 @@ class ViewUpdating {
     }
   }
 
-  setRangeZIndex(options: SettingZIndexOptions): void {
+  private setRangeZIndex(options: SettingZIndexOptions): void {
     const {
       vertical, thumbMin, trackElement, trackHeight, trackWidth, thumbMax,
     } = options;

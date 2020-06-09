@@ -154,22 +154,6 @@ class ViewOptional {
       return { coordinate, value };
     }
 
-
-    private static makeSingleProgress(options: MakingProgressOptions): void {
-      const { thumbElement, vertical, progressSize } = options;
-
-      const $progressElement = $(thumbElement).parent().find('.js-slider__progress');
-
-      if (vertical) {
-        $progressElement.css({
-          height: `${progressSize}rem`,
-          width: '0.38rem',
-        });
-      } else {
-        $progressElement.css({ width: `${progressSize}rem` });
-      }
-    }
-
     public static changeZIndex(options: ChangingZIndexOptions): void {
       const {
         coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
@@ -243,6 +227,21 @@ class ViewOptional {
           left: '-0.62rem',
           top: `${coordinates.notRange || 0}rem`,
         });
+      }
+    }
+
+    private static makeSingleProgress(options: MakingProgressOptions): void {
+      const { thumbElement, vertical, progressSize } = options;
+
+      const $progressElement = $(thumbElement).parent().find('.js-slider__progress');
+
+      if (vertical) {
+        $progressElement.css({
+          height: `${progressSize}rem`,
+          width: '0.38rem',
+        });
+      } else {
+        $progressElement.css({ width: `${progressSize}rem` });
       }
     }
 

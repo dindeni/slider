@@ -151,6 +151,16 @@ class Model extends Observable {
       };
     }
 
+    public static calculateThumbDistance(options: DistanceOptions): number {
+      const { coordinateStart, coordinateMove } = options;
+      return coordinateMove - coordinateStart;
+    }
+
+    public static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
+      const { start, itemSize } = options;
+      return start + itemSize / 2;
+    }
+
     private calculateSliderMovePercent(options: MovingPercentOptions): number {
       const { trackSize, distance } = options;
       this.sliderValuePercent = (distance / trackSize) * 100;
@@ -164,16 +174,6 @@ class Model extends Observable {
         default: return this.sliderValuePercent;
       }
       return this.sliderValuePercent;
-    }
-
-    public static calculateThumbDistance(options: DistanceOptions): number {
-      const { coordinateStart, coordinateMove } = options;
-      return coordinateMove - coordinateStart;
-    }
-
-    public static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
-      const { start, itemSize } = options;
-      return start + itemSize / 2;
     }
 }
 

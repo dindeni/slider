@@ -132,14 +132,6 @@ class View extends Observable {
     this.viewHandle.addDragAndDrop(this.sliderSettings);
   }
 
-  private createBasicNodes($element): void {
-    const $slider = $(`<div class="slider js-slider">
-      <div class="slider__track js-slider__track"></div><div class="slider__thumb js-slider__thumb"></div>
-      </div>`);
-    $slider.appendTo($element);
-    this.$wrapper = $element.find('.js-slider');
-  }
-
   public setLabelValue(value: number): void {
     this.valueForLabel = value;
   }
@@ -249,6 +241,14 @@ class View extends Observable {
         left: `${this.thumbCoordinate}rem`,
       });
     }
+  }
+
+  private createBasicNodes($element): void {
+    const $slider = $(`<div class="slider js-slider">
+      <div class="slider__track js-slider__track"></div><div class="slider__thumb js-slider__thumb"></div>
+      </div>`);
+    $slider.appendTo($element);
+    this.$wrapper = $element.find('.js-slider');
   }
 
   private getThumbCoordinates(value): number {
@@ -364,6 +364,35 @@ class View extends Observable {
     }
   }
 
+  public updateLabelValue(options: UpdatingLabelOptions): void {
+    const {
+      value, coordinate, vertical, thumbElement,
+    } = options;
+
+    const $thumb = $(thumbElement);
+    const isThumbMinOrMax = $thumb.is('.slider__thumb_type_min')
+        || $thumb.is('.slider__thumb_type_max');
+    if (isThumbMinOrMax) {
+      if ($thumb.is('.slider__thumb_type_min')) {
+        const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_type_min');
+        labelElementMin.text(value);
+        vertical ? labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+          : labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
+      } else {
+        const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_type_max');
+        $labelElementMax.text(value);
+        vertical ? $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+          : $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
+      }
+    } else {
+      const $labelElement = $(thumbElement).parent().find('.slider__label');
+      $labelElement.text(value);
+
+      vertical ? $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
+        : $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
+    }
+  }
+
   private createRangeLabel(options: OptionsForCreateRangeLabel): void {
     const { vertical, $wrapper } = options;
 
@@ -400,35 +429,6 @@ class View extends Observable {
       });
     }
     $labelElementMax.text(this.sliderSettings.valueMax || this.sliderSettings.max);
-  }
-
-  public updateLabelValue(options: UpdatingLabelOptions): void {
-    const {
-      value, coordinate, vertical, thumbElement,
-    } = options;
-
-    const $thumb = $(thumbElement);
-    const isThumbMinOrMax = $thumb.is('.slider__thumb_type_min')
-      || $thumb.is('.slider__thumb_type_max');
-    if (isThumbMinOrMax) {
-      if ($thumb.is('.slider__thumb_type_min')) {
-        const labelElementMin: JQuery = $(thumbElement).siblings('.js-slider__label_type_min');
-        labelElementMin.text(value);
-        vertical ? labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
-          : labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
-      } else {
-        const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_type_max');
-        $labelElementMax.text(value);
-        vertical ? $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
-          : $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
-      }
-    } else {
-      const $labelElement = $(thumbElement).parent().find('.slider__label');
-      $labelElement.text(value);
-
-      vertical ? $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
-        : $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
-    }
   }
 }
 

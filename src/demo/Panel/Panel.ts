@@ -73,25 +73,6 @@ class Panel {
     } return checkRangeValue();
   }
 
-  private createErrorElement(options: ErrorCreationOptions): null {
-    const {
-      element, text,
-    } = options;
-
-    this.errorElement = document.createElement('span');
-    this.errorElement.textContent = text;
-    this.errorElement.classList.add('error');
-    ((element as HTMLElement).parentElement as HTMLElement)
-      .insertBefore(this.errorElement, null);
-    return null;
-  }
-
-  private static deleteErrorElement(element: HTMLElement): void {
-    if (element.nextElementSibling) {
-      element.nextElementSibling.remove();
-    }
-  }
-
   public validateSettings(options: SettingsValidatingOptions):
     boolean | number | undefined | null {
     const {
@@ -181,6 +162,25 @@ class Panel {
 
     if (step) {
       (element.querySelector('.js-panel__field-step') as HTMLInputElement).value = step.toString();
+    }
+  }
+
+  private createErrorElement(options: ErrorCreationOptions): null {
+    const {
+      element, text,
+    } = options;
+
+    this.errorElement = document.createElement('span');
+    this.errorElement.textContent = text;
+    this.errorElement.classList.add('error');
+    ((element as HTMLElement).parentElement as HTMLElement)
+      .insertBefore(this.errorElement, null);
+    return null;
+  }
+
+  private static deleteErrorElement(element: HTMLElement): void {
+    if (element.nextElementSibling) {
+      element.nextElementSibling.remove();
     }
   }
 }
