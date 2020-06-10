@@ -136,10 +136,11 @@ class DemoPage extends Panel {
         ? this.validateValue(optionsForValue)
         : this.validateSettings(optionForSetting);
 
-
       if (isValidValueOrSetting !== null) {
-        ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement)
-          .remove();
+        const target = event.currentTarget as HTMLElement;
+        const form = target.cloneNode(true) as HTMLElement;
+        (target.parentNode as HTMLElement).replaceChild(form, target);
+        (form.nextElementSibling as HTMLElement).remove();
 
         const { sliderValue, settings } = this.getInputValues({ element, min });
         this.updateSlider({
@@ -292,7 +293,7 @@ class DemoPage extends Panel {
         });
       } else {
         const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
-        const inputElement: HTMLInputElement = element.querySelector('.js-demo__field-value') as HTMLInputElement;
+        const inputElement: HTMLInputElement = element.querySelector('.js-panel__field-value') as HTMLInputElement;
         const watchThumb = (): void => {
           inputElement.value = this.slider();
         };

@@ -1,20 +1,24 @@
 mixin panel()
 
   -
-    const setModifier = (isMin) => isMin ? 'min' : 'max';
-    const createClasses = (index) => `panel__field-value_type_${setModifier(index === 0)} js-panel__field-value_type_${setModifier(index === 0)}`;
+    const modifiers = ['', 'min', 'max'];
+    const createClasses = (index) => {
+      if (index !== 0) {
+        return `panel__field-value_type_${modifiers[index]} js-panel__field-value_type_${modifiers[index]}`;
+      }
+    };
     const settings = ['progress', 'vertical', 'range', 'label', 'scale'];
     const scaleModifier = 'panel__field-settings js-panel__field-settings_type_scale';
 
   div.panel
-    each value, index in Array(2)
+    each value, index in Array(3)
       div.panel__wrapper.panel__wrapper_type_value.js-panel__wrapper_type_value
-        label.panel__mark=`value ${setModifier(index === 0)}`
+        label.panel__mark=`value ${modifiers[index] || ''}`
           input.panel__field-value.js-panel__field-value(type = "number" class = createClasses(index))
 
     each value, index in Array(2)
       div.panel__wrapper
-        label.panel__mark=`${setModifier(index === 0)}`
+        label.panel__mark=`${modifiers[index + 1]}`
         input.panel__field-value.js-panel__field-settings(type = "number")
 
     each value in settings

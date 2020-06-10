@@ -119,9 +119,12 @@ class Panel {
 
     const $form = $(form);
     const $valueWrapperList = $form.find('.js-panel__wrapper_type_value');
-    settings.range
-      ? $valueWrapperList[1].classList.remove('panel__wrapper_hidden')
-      : $valueWrapperList[1].classList.add('panel__wrapper_hidden');
+    if (settings.range) {
+      $valueWrapperList[0].classList.add('panel__wrapper_hidden');
+    } else {
+      $valueWrapperList[1].classList.add('panel__wrapper_hidden');
+      $valueWrapperList[2].classList.add('panel__wrapper_hidden');
+    }
 
     const $wrapperWithStep = $form.find('.js-panel__wrapper_type_step');
     settings.step
@@ -140,14 +143,12 @@ class Panel {
 
     if (range) {
       const minInput = (element.querySelector('.js-panel__field-value_type_min') as HTMLInputElement);
-      settings.valueMin ? minInput.value = settings.valueMin.toString()
-        : minInput.value = min.toString();
+      minInput.value = settings.valueMin ? settings.valueMin.toString() : min.toString();
       const maxInput = (element.querySelector('.js-panel__field-value_type_max') as HTMLInputElement);
-      settings.valueMax ? maxInput.value = settings.valueMax.toString()
-        : maxInput.value = max.toString();
+      maxInput.value = settings.valueMax ? settings.valueMax.toString() : max.toString();
     } else {
       const input = (element.querySelector('.js-panel__field-value') as HTMLInputElement);
-      settings.value ? input.value = settings.value.toString() : input.value = min.toString();
+      input.value = settings.value ? settings.value.toString() : min.toString();
     }
 
     [...element.querySelectorAll('.js-panel__field-settings')].forEach((input, index) => {
