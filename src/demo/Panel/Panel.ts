@@ -121,7 +121,10 @@ class Panel {
     const $valueWrapperList = $form.find('.js-panel__wrapper_type_value');
     if (settings.range) {
       $valueWrapperList[0].classList.add('panel__wrapper_hidden');
+      $valueWrapperList[1].classList.remove('panel__wrapper_hidden');
+      $valueWrapperList[2].classList.remove('panel__wrapper_hidden');
     } else {
+      $valueWrapperList[0].classList.remove('panel__wrapper_hidden');
       $valueWrapperList[1].classList.add('panel__wrapper_hidden');
       $valueWrapperList[2].classList.add('panel__wrapper_hidden');
     }

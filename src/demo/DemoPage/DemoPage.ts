@@ -235,17 +235,19 @@ class DemoPage extends Panel {
       }
 
       const sliderValue: {notRange?: number; min?: number; max?: number} = {};
-      [...inputValueElements].forEach((input: HTMLElement) => {
+      [...inputValueElements].some((input) => {
         if (input.classList.contains('js-panel__field-value_type_min')) {
           const valueMin = checkValue(Number((input as HTMLInputElement).value));
           sliderValue.min = valueMin;
           sliderValue.notRange = valueMin;
         } else if (input.classList.contains('js-panel__field-value_type_max')) {
           sliderValue.max = checkValue(Number((input as HTMLInputElement).value));
-        } else {
+        } else if (!settings.range) {
           sliderValue.notRange = Number((input as HTMLInputElement).value);
           sliderValue.min = Number((input as HTMLInputElement).value);
+          return true;
         }
+        return false;
       });
       return { sliderValue, settings };
     }
