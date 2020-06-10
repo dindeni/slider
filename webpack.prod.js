@@ -25,7 +25,7 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.(woff|woff2|svg|ttf|png)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff|woff2|svg|ttf|png|webmanifest)(\?v=\d+\.\d+\.\d+)?$/,
         use: {
           loader: 'file-loader',
           options: {
