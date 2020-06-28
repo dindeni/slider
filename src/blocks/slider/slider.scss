@@ -6,6 +6,7 @@
     height: 0.38rem;
     background: #e5e5e5;
     position: relative;
+    cursor: pointer;
   }
 
   &__progress{
@@ -58,6 +59,7 @@
     border-radius: 50%;
     position: absolute;
     top: -.6rem;
+    cursor: pointer;
     &_type_min{
       z-index: 100;
     }

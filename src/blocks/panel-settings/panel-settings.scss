@@ -51,6 +51,7 @@
     height: 1.85rem;
     display: inline-block;
     background: url('./images/background-for-checkbox-gray.svg') no-repeat;
+    cursor: pointer;
 
     &::before{
       position: absolute;
