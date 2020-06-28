@@ -2,7 +2,9 @@ include ../slider/slider
 include ../panel/panel
 
 mixin demo
-  form.demo.js-demo
-    +panel(true)
+  div.demo.js-demo
+    form.demo__form-panel.js-demo__form-panel
+      +panel(true)
 
-  +slider
+    div.demo__slider-wrapper.js-demo__slider-wrapper
+      +slider

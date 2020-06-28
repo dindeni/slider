@@ -1,9 +1,8 @@
 .slider{
   position: relative;
-  padding: 1.54rem 0;
+  width: 100%;
 
   &__track{
-    width: 20rem;
     height: 0.38rem;
     background: #e5e5e5;
     position: relative;
@@ -13,6 +12,7 @@
     width: 0;
     height: 0.38rem;
     background: #e75735;
+    position:  absolute;
   }
 
   &__label{
@@ -22,7 +22,7 @@
     text-align: center;
     line-height: 1.92rem;
     position: absolute;
-    top: -1.38rem;
+    top: -/*1.38*/2.8rem;
     left: -0.62rem;
     &::before{
       content: '';
@@ -57,7 +57,7 @@
     background: #e75735;
     border-radius: 50%;
     position: absolute;
-    top: 0.92rem;
+    top: -.6rem;
     &_type_min{
       z-index: 100;
     }

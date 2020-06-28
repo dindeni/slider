@@ -80,8 +80,8 @@ class Panel {
     } = options;
 
     const { value } = element as HTMLInputElement;
-    const isMin = element.classList.contains('js-panel__field-settings_type_min');
-    const isMax = element.classList.contains('js-panel__field-settings_type_max');
+    const isMin = element.classList.contains('js-panel-settings__field_type_min');
+    const isMax = element.classList.contains('js-panel-settings__field_type_max');
     const isCheckbox = (element as HTMLInputElement).type === 'checkbox';
     const isStep = element.classList.contains('js-panel__field-step');
 
@@ -128,11 +128,6 @@ class Panel {
       $valueWrapperList[1].classList.add('panel__wrapper_hidden');
       $valueWrapperList[2].classList.add('panel__wrapper_hidden');
     }
-
-    const $wrapperWithStep = $form.find('.js-panel__wrapper_type_step');
-    settings.step
-      ? $wrapperWithStep.removeClass('panel__wrapper_hidden')
-      : $wrapperWithStep.addClass('panel__wrapper_hidden');
   }
 
   public static setInputValue(options: InputValueOptions): void {
@@ -154,7 +149,7 @@ class Panel {
       input.value = settings.value ? settings.value.toString() : min.toString();
     }
 
-    [...element.querySelectorAll('.js-panel__field-settings')].forEach((input, index) => {
+    [...element.querySelectorAll('.js-panel-settings__field')].forEach((input, index) => {
       const inputElement = (input as HTMLInputElement);
 
       if (inputElement.type === 'checkbox') {

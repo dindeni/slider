@@ -92,8 +92,8 @@ describe('View', () => {
       expect(parseFloat(divThumb.style.left)).toBe(moveDistanceX * 0.077);
     });
 
-    it('should label value to be 177', () => {
-      expect(divLabel.textContent).toBe('177');
+    it('should label value to be 184', () => {
+      expect(divLabel.textContent).toBe('184');
     });
 
     it('after track click should thumb move a distance', () => {

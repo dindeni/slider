@@ -2,7 +2,7 @@
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import Model from '../slider/Model/Model';
 
-describe('Presenter', () => {
+describe('Model', () => {
   let model;
 
   beforeAll(async () => {
@@ -40,9 +40,7 @@ describe('Presenter', () => {
       min: 0,
       max: 100,
       step: 25,
-      vertical: false,
-      trackWidth: 260,
-      trackHeight: 5,
+      trackSize: 260,
     });
     expect(values).toEqual({
       coordinates: [0, 65, 130, 195, 260],

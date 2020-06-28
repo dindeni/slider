@@ -1,0 +1,21 @@
+mixin panel-settings()
+
+  -
+    const modifiers = ['min', 'max'];
+    const settings = ['progress', 'vertical', 'range', 'label', 'scale'];
+    const scaleModifier = 'panel-settings__field_type_scale js-panel-settings__field_type_scale';
+    const settingsModifiers = (isMin) => `panel-settings__field_type_${isMin ? 'min' : 'max'} js-panel-settings__field_type_${isMin ? 'min' : 'max'}`;
+
+  div.panel-settings
+    each value, index in Array(2)
+      div.panel-settings__wrapper
+        label.panel-settings__mark=`${modifiers[index]}`
+          input.panel-settings__field.js-panel-settings__field(type = "number"
+            class = settingsModifiers(index === 0))
+
+    each value in settings
+      div.panel-settings__wrapper=value
+        label.panel-settings__mark
+          input.panel-settings__field.js-panel-settings__field(type = "checkbox"
+            class = value === 'scale' ? scaleModifier : '')
+          span.panel-settings__toggle

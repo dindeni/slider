@@ -2,13 +2,14 @@ import ViewOptional from '../ViewOptional/ViewOptional';
 import { RangeAndVerticalOptions, TrackSizesOptions } from '../../../types/types';
 import View from '../View/View';
 
-interface ThumbUpdatingOptions extends RangeAndVerticalOptions, TrackSizesOptions{
+interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
   step: number | undefined;
   thumbDistance: number;
   thumbElement: HTMLElement;
   shift: number;
   trackElement: HTMLElement;
-  event?: MouseEvent;
+  trackWidth: number;
+  trackHeight: number;
   coordinateStep?: number;
   stepValues?: number[];
   coordinatesStep?: number[];
@@ -53,6 +54,7 @@ interface ThumbExtremumOptions {
   trackWidth: number;
   trackHeight: number;
   vertical: boolean;
+  thumbWidth: number;
 }
 
 class ViewUpdating {
@@ -161,13 +163,16 @@ class ViewUpdating {
       thumbMinLeft, thumbMaxLeft, thumbMinTop, thumbMaxTop, range,
     } = options;
 
+    const thumbWidth = thumbElement.getBoundingClientRect().width;
+
     const isValidMinAndMaxLeft = !vertical
       && ((thumbElement === thumbMin
       && thumbMaxLeft
       && (shift + distance < thumbMaxLeft))
       || (thumbElement === thumbMax
       && (thumbMinLeft || thumbMinLeft === 0)
-      && (shift + distance > thumbMinLeft)));
+      && (shift + distance > thumbMinLeft)
+      && Math.round((shift + distance) / this.rem) <= Math.round(trackWidth - thumbWidth)));
     const isValidMinAndMaxTop = vertical
       && ((thumbElement === thumbMin
       && thumbMaxTop
@@ -192,15 +197,19 @@ class ViewUpdating {
       this.thumbElement.style[this.keyCoordinate] = `${shift + distance}rem`;
       vertical ? this.thumbTop = shift + distance : this.thumbLeft = shift + distance;
     }
-    this.checkThumbExtremum({ vertical, trackWidth, trackHeight });
+    this.checkThumbExtremum({
+      vertical, trackWidth, trackHeight, thumbWidth,
+    });
   }
 
   private checkThumbExtremum(options: ThumbExtremumOptions): void {
-    const { trackWidth, trackHeight, vertical } = options;
+    const {
+      trackWidth, trackHeight, vertical, thumbWidth,
+    } = options;
 
     const thumbCoordinate = vertical ? this.thumbElement.style.top : this.thumbElement.style.left;
     const coordinateKey = vertical ? 'top' : 'left';
-    const trackSize = vertical ? trackHeight : trackWidth;
+    const trackSize = vertical ? trackHeight - thumbWidth : trackWidth;
 
     if (parseFloat(thumbCoordinate) < 0) {
       this.thumbElement.style[coordinateKey] = '0rem';

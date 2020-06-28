@@ -22,8 +22,7 @@ class Controller {
   public init(): void {
     this.subscribe();
     this.view.getSliderOptions(this.sliderOptions);
-
-    this.view.createElements();
+    this.view.createElements(this.sliderOptions);
   }
 
   public getSliderOptions(options: SliderOptionsForInit): void {

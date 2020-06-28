@@ -37,6 +37,8 @@ class ViewHandle {
 
     private trackHeight: number;
 
+    private $element: JQuery;
+
     readonly view: View;
 
     private viewOnTrack: ViewOnTrack;
@@ -50,7 +52,7 @@ class ViewHandle {
 
     public addDragAndDrop(options: SliderElementOptions): void {
       const {
-        step, vertical, range, progress, min, max, $element,
+        step, vertical, range, progress, min, max, $element, label,
       } = options;
 
       this.step = step;
@@ -64,6 +66,8 @@ class ViewHandle {
       this.trackHeight = trackElement.getBoundingClientRect().height;
       const thumbCollection = $element.find('.js-slider__thumb');
       this.thumbElement = (thumbCollection.get(0));
+      const thumbWidth = this.thumbElement.getBoundingClientRect().width;
+      this.$element = $element;
 
       if (step) {
         this.view.notifyAll({
@@ -72,8 +76,9 @@ class ViewHandle {
             max,
             step,
             vertical,
-            trackWidth: this.trackWidth,
-            trackHeight: this.trackHeight,
+            trackSize: vertical
+              ? Math.round(this.trackHeight - thumbWidth)
+              : Math.round(this.trackWidth - thumbWidth),
           },
           type: 'getScaleData',
         });
@@ -114,6 +119,21 @@ class ViewHandle {
 
       this.viewUpdating = new ViewUpdating(this.view);
       this.viewOnTrack = new ViewOnTrack(this.view);
+
+
+      const handleWindowResize = (): void => {
+        const { valueMin, valueMax, value } = ViewHandle.getLabelValue({ $element, range });
+
+        $element.find('.js-slider').remove();
+        this.view.getSliderOptions({
+          $element, min, max, vertical, range, step, progress, label, valueMin, valueMax,
+        });
+        this.view.createElements({
+          $element, min, max, vertical, range, step, progress, label, value, valueMin, valueMax,
+        });
+        $(window).off('resize', handleWindowResize);
+      };
+      $(window).on('resize', handleWindowResize);
     }
 
     private handleDocumentMousemove(event): void {
@@ -140,7 +160,6 @@ class ViewHandle {
         trackHeight: this.trackHeight,
         thumbDistance: this.view.distance,
         thumbElement: this.thumbElement,
-        event,
         shift: this.shift,
         trackElement: this.trackElement,
         coordinateStep: this.coordinateStep ? this.coordinateStep[1] : undefined,
@@ -150,7 +169,7 @@ class ViewHandle {
       const optionsForData = {
         min: this.min,
         max: this.max,
-        trackSize: this.vertical ? this.trackHeight : this.trackWidth,
+        trackElement: this.trackElement,
         distance: this.vertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
         vertical: this.vertical,
@@ -158,6 +177,8 @@ class ViewHandle {
         progress: this.progress,
         progressSize: this.vertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
+        range: this.range,
+        $wrapper: this.$element,
       };
 
       this.view.updateData(optionsForData);
@@ -185,6 +206,18 @@ class ViewHandle {
         document.removeEventListener('mouseup', handleDocumentMouseup);
         document.addEventListener('mouseup', handleDocumentMouseup);
       }
+    }
+
+    private static getLabelValue(options: {$element: JQuery; range: boolean}):
+      { valueMin?: number; valueMax?: number; value?: number } {
+      const { $element, range } = options;
+      if (range) {
+        const valueMin = parseInt($element.find('.js-slider__label_type_min').text(), 10);
+        const valueMax = parseInt($element.find('.js-slider__label_type_max').text(), 10);
+        return { valueMin, valueMax };
+      }
+      const value = parseInt($element.find('.js-slider__label').text(), 10);
+      return { value };
     }
 }
 

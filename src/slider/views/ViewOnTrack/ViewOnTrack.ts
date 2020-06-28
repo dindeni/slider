@@ -43,7 +43,6 @@ class ViewOnTrack {
     if (isTrack) {
       const trackHeight = trackElement.getBoundingClientRect().height;
       const trackWidth = trackElement.getBoundingClientRect().width;
-
       this.thumbList = parentElementOfTrack.querySelectorAll('.js-slider__thumb');
       this.trackSize = this.vertical ? trackHeight : trackWidth;
 
@@ -55,7 +54,7 @@ class ViewOnTrack {
       this.viewUpdating.updateThumbCoordinates({
         vertical,
         range,
-        thumbDistance: distance,
+        thumbDistance: Math.round(distance),
         step,
         thumbElement: this.thumbElement,
         shift: 0,
@@ -71,9 +70,12 @@ class ViewOnTrack {
         progress,
         min,
         max,
-        trackSize: this.trackSize,
-        distance: vertical ? this.viewUpdating.thumbTop : this.viewUpdating.thumbLeft,
+        range,
+        trackElement,
+        distance: this.vertical ? parseFloat(this.thumbElement.style.top)
+          : parseFloat(this.thumbElement.style.left),
         thumbElement: this.thumbElement,
+        $wrapper: $(trackElement).parent(),
       });
     }
   }
@@ -105,7 +107,7 @@ class ViewOnTrack {
       ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top + this.thumbElement
         .getBoundingClientRect().height / 2
       : event.pageX - trackElement.getBoundingClientRect().left
-        - this.thumbElement.getBoundingClientRect().width / 2;
+       - this.thumbElement.getBoundingClientRect().width / 2;
     if (thumbDistance < 0) {
       return 0;
     }

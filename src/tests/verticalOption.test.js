@@ -66,7 +66,7 @@ describe('Vertical option', () => {
   it('should div thumb move a distance', () => {
     expect(parseFloat(divThumb.style.top)).toBe(moveDistanceY * 0.077);
   });
-  it('should label value to be 177', () => {
-    expect(divLabel.textContent).toBe('177');
+  it('should label value to be 184', () => {
+    expect(divLabel.textContent).toBe('184');
   });
 });

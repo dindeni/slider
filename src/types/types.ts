@@ -53,9 +53,7 @@ interface ScaleData {
 
 interface ScaleCoordinatesOptions extends ExtremumOptions{
   step: number | undefined;
-  vertical: boolean;
-  trackWidth: number;
-  trackHeight: number;
+  trackSize: number;
 }
 
 interface SliderValueOptions extends ExtremumOptions{

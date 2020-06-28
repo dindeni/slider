@@ -9,6 +9,9 @@ import Observable from '../../Observable/Observable';
 interface OptionsForStylingElements extends RangeAndVerticalOptions {
   wrapper: JQuery;
   step: number | undefined;
+  value?: number;
+  valueMin?: number;
+  valueMax?: number;
 }
 
 interface LabelCreationOptions extends RangeAndVerticalOptions {
@@ -25,11 +28,13 @@ interface UpdatingLabelOptions {
 }
 
 interface UpdatingDataOptions extends ExtremumOptions {
-  trackSize: number;
+  trackElement: HTMLElement;
   distance: number;
-  vertical;
   thumbElement: HTMLElement;
+  vertical;
+  $wrapper: JQuery;
   progress: boolean;
+  range;
   step?: boolean;
 }
 
@@ -60,6 +65,8 @@ class View extends Observable {
 
   private trackSize: number;
 
+  private thumbSize: number;
+
   private thumbCoordinate: number;
 
   private thumbCoordinateMin: number;
@@ -88,16 +95,21 @@ class View extends Observable {
 
   public $wrapper: JQuery;
 
-  public createElements(): void {
+  public createElements(options: SliderElementOptions): void {
     const {
-      $element, range, vertical, min, max, step, progress, label,
-    } = this.sliderSettings;
+      $element, range, vertical, min, max, step, progress, label, valueMin, valueMax, value,
+    } = options;
 
     this.$wrapper = $element.find('.js-slider');
     if (this.$wrapper.length === 0) {
       this.createBasicNodes($element);
+    } else {
+      const $sliderElements = $('<div class="slider__track js-slider__track">'
+        + '</div><div class="slider__thumb js-slider__thumb"></div>');
+      $sliderElements.appendTo(this.$wrapper);
     }
     this.$trackElement = this.$wrapper.find('.js-slider__track');
+    const trackSize = this.$trackElement.width() || 0;
     this.createThumb({ range, vertical });
 
     this.viewOptional = new ViewOptional(this);
@@ -110,15 +122,15 @@ class View extends Observable {
         min,
         max,
         step,
-        trackWidth: vertical ? this.$trackElement.height() || 0 : this.$trackElement.width() || 0,
-        trackHeight: vertical ? this.$trackElement.width() || 0 : this.$trackElement.height() || 0,
+        trackWidth: Math.round((this.$trackElement.width() || 0) - this.thumbSize),
+        trackHeight: (this.$trackElement.height() || 0) - this.thumbSize,
         wrapper: this.$wrapper,
       };
       this.viewOptional.createScale(optionsForScale);
     }
 
     this.stylingElements({
-      range, vertical, wrapper: this.$wrapper, step,
+      range, vertical, wrapper: this.$wrapper, step, value, valueMin, valueMax,
     });
     if (label) {
       this.createLabel({
@@ -127,9 +139,14 @@ class View extends Observable {
     }
 
     if (progress) {
-      this.initializeProgress({ vertical, range });
+      this.viewOptional.createProgress();
+      this.viewOptional.makeProgress({
+        vertical, range, $wrapper: $element, trackSize,
+      });
     }
-    this.viewHandle.addDragAndDrop(this.sliderSettings);
+    this.viewHandle.addDragAndDrop({
+      min, max, range, label, vertical, progress, $element, step,
+    });
   }
 
   public setLabelValue(value: number): void {
@@ -154,15 +171,20 @@ class View extends Observable {
 
   public updateData(options: UpdatingDataOptions): void {
     const {
-      min, max, trackSize, distance, vertical, thumbElement, progress,
+      min, max, trackElement, distance, vertical, thumbElement, progress, $wrapper, range,
     } = options;
+    const trackSize = vertical
+      ? trackElement.getBoundingClientRect().height
+      : trackElement.getBoundingClientRect().width;
+    const thumbSize = thumbElement.getBoundingClientRect().width;
 
     const valueOptions = {
       min,
       max,
-      trackSize: Math.round(trackSize),
+      trackSize: (trackSize - thumbSize),
       distance: distance / this.REM,
     };
+
     this.notifyAll({ value: valueOptions, type: 'getValue' });
 
     const optionsForLabel = {
@@ -176,12 +198,12 @@ class View extends Observable {
     if (isDistance) {
       this.updateLabelValue(optionsForLabel);
     }
-
     if (progress) {
-      this.viewOptional.stylingProgress({
-        progressSize: distance,
+      this.viewOptional.makeProgress({
         vertical,
-        thumbElement,
+        range,
+        $wrapper,
+        trackSize,
       });
     }
   }
@@ -192,20 +214,21 @@ class View extends Observable {
 
   public stylingElements(options: OptionsForStylingElements): void {
     const {
-      range, vertical, wrapper, step,
+      range, vertical, wrapper, step, value, valueMin, valueMax,
     } = options;
 
     this.trackSize = wrapper.find('.slider__track').width() || 0;
+    this.thumbSize = wrapper.find('.slider__thumb').width() || 0;
     if (range) {
       this.thumbCoordinateMin = this.getThumbCoordinates(
-        this.sliderSettings.valueMin || this.sliderSettings.min,
+        valueMin || this.sliderSettings.min,
       );
       this.thumbCoordinateMax = this.getThumbCoordinates(
-        this.sliderSettings.valueMax || this.sliderSettings.max,
+        valueMax || this.sliderSettings.max,
       );
     } else {
       this.thumbCoordinate = this.getThumbCoordinates(
-        this.sliderSettings.value || this.sliderSettings.min,
+        value || this.sliderSettings.min,
       );
     }
     this.setStepCoordinates({ step, range });
@@ -257,41 +280,15 @@ class View extends Observable {
         value,
         min: this.sliderSettings.min,
         max: this.sliderSettings.max,
-        trackSize: this.trackSize,
+        trackSize: this.trackSize - this.thumbSize,
       },
       type: 'getCoordinates',
     });
     return this.coordinate;
   }
 
-  private initializeProgress(options: RangeAndVerticalOptions): void {
-    const { range, vertical } = options;
-
-    this.viewOptional.createProgress(range);
-    if (range) {
-      this.viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinateMin,
-        vertical,
-        thumbElement: this.$thumbElementMin.get(0),
-      });
-
-      this.viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinateMax,
-        vertical,
-        thumbElement: this.$thumbElementMax.get(0),
-      });
-    } else {
-      this.viewOptional.stylingProgress({
-        progressSize: this.thumbCoordinate,
-        vertical,
-        thumbElement: this.$thumbElement.get(0),
-      });
-    }
-  }
-
   private createThumb(options: RangeAndVerticalOptions): void {
     const { range, vertical } = options;
-
     if (range) {
       this.$thumbElementMin = vertical
         ? this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')

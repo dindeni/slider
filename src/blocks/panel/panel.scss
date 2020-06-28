@@ -1,4 +1,4 @@
-@import "../mixins/hide";
+@import '../mixins/hide';
 
 .panel {
   display: flex;
@@ -24,66 +24,17 @@
     text-align: center;
   }
 
-  &__field-settings, &__field-scale {
+  &__field-settings:not(.panel__field-settings_type_min):not(.panel__field-settings_type_max), &__field-scale {
     @include hide;
-
-    &:checked ~ .panel__toggle {
-      background: url("./background-for-checkbox.svg") no-repeat;
-
-      &::before {
-        right: 0.231rem;
-      }
-
-      &::after {
-        content: 'on';
-        left: 1.16rem;
-      }
-    }
-  }
-
-  &__mark-settings {
-    position: relative;
-    margin-top: 0.1rem;
   }
 
 
-  &__field-value, &__field-settings, &__field-step {
+  &__field-value, &__field-step {
     background: #e5e5e5;
     border-radius: 0.385rem;
     border: none;
     height: 2rem;
     width: 100%;
     padding: 0 0 0 0.77rem;
-  }
-
-  &__toggle {
-    width: 4.62rem;
-    height: 1.85rem;
-    display: inline-block;
-    background: url("./background-for-checkbox-gray.svg") no-repeat;
-
-    &::before{
-      position: absolute;
-      content: '';
-      width: 1.46rem;
-      height: 1.54rem;
-      background: #ffffff;
-      border-radius: 50%;
-      right: 2.85rem;
-      top: 0.154rem;
-    }
-
-    &::after{
-      position: absolute;
-      content: 'off';
-      font-size: .92rem;
-      width: 1.54rem;
-      height: 1.16rem;
-      color: #ffffff;
-      text-transform: uppercase;
-      top: 0.3rem;
-      left: 2.23rem;
-      letter-spacing: .005rem;
-    }
   }
 }

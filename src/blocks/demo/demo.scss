@@ -1,0 +1,11 @@
+.demo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  &__slider-wrapper {
+    width: 70%;
+    display: flex;
+    justify-content: center;
+  }
+}

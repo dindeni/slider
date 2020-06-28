@@ -14,7 +14,7 @@ interface ObservingLabelOptions{
 interface DemoElementsAndEventOptions{
   event: Event;
   element: HTMLElement;
-  demoElement: HTMLElement;
+  formElement: HTMLElement;
 }
 
 interface DemoElementChangeOptions extends ExtremumOptions, DemoElementsAndEventOptions{
@@ -58,7 +58,7 @@ class DemoPage extends Panel {
         },
       ];
 
-      [...document.querySelectorAll('.js-index__wrapper')]
+      [...document.querySelectorAll('.js-demo')]
         .forEach((formWrapper, index) => {
           const scale = this.sliderSettings[index].step !== undefined;
 
@@ -68,7 +68,7 @@ class DemoPage extends Panel {
             scale,
           };
           DemoPage.createElements(optionsForElements);
-          this.slider = $(formWrapper).slider(this.sliderSettings[index]);
+          this.slider = $(formWrapper).find('.js-demo__slider-wrapper').slider(this.sliderSettings[index]);
 
           DemoPage.setInputValue({
             element: formWrapper as HTMLElement,
@@ -91,6 +91,15 @@ class DemoPage extends Panel {
             vertical: this.sliderSettings[index].vertical,
           });
 
+
+          const handleWindowResize = (): void => {
+            this.observeThumb({
+              element: formWrapper as HTMLElement,
+              range: this.sliderSettings[index].range,
+              vertical: this.sliderSettings[index].vertical,
+            });
+          };
+          window.addEventListener('resize', handleWindowResize);
           this.observeInput(optionsForInput);
         });
     }
@@ -100,18 +109,18 @@ class DemoPage extends Panel {
         element, range, min, max, step,
       } = options;
 
-      const demoElement = element.querySelector('.js-demo') as HTMLElement;
+      const formElement = element.querySelector('.js-demo__form-panel') as HTMLElement;
 
-      demoElement.addEventListener('change', (event) => this.handleDemoElementChange(
+      formElement.addEventListener('change', (event) => this.handleFormElementChange(
         {
-          min, max, step, range, event, element, demoElement,
+          min, max, step, range, event, element, formElement,
         },
       ));
     }
 
-    private handleDemoElementChange(options: DemoElementChangeOptions): void {
+    private handleFormElementChange(options: DemoElementChangeOptions): void {
       const {
-        min, max, step, range, event, element, demoElement,
+        min, max, step, range, event, element, formElement,
       } = options;
       const optionForSetting = {
         value: (event.target as HTMLInputElement),
@@ -135,16 +144,15 @@ class DemoPage extends Panel {
       const isValidValueOrSetting = (event.target as HTMLElement).classList.contains('js-panel__field-value')
         ? this.validateValue(optionsForValue)
         : this.validateSettings(optionForSetting);
-
       if (isValidValueOrSetting !== null) {
         const target = event.currentTarget as HTMLElement;
         const form = target.cloneNode(true) as HTMLElement;
         (target.parentNode as HTMLElement).replaceChild(form, target);
-        (form.nextElementSibling as HTMLElement).remove();
+        (element.querySelector('.js-slider') as HTMLElement).remove();
 
         const { sliderValue, settings } = this.getInputValues({ element, min });
         this.updateSlider({
-          event, element, demoElement, sliderValue, settings,
+          event, element, formElement, sliderValue, settings,
         });
       }
     }
@@ -161,7 +169,7 @@ class DemoPage extends Panel {
         && sliderValue.max === settings.min
         && settings.step ? sliderValue.max + settings.step : sliderValue.max;
 
-      const form = element.querySelector('.js-demo') as HTMLElement;
+      const form = element.querySelector('.js-demo__form-panel') as HTMLElement;
       DemoPage.createElements({ settings, form });
       DemoPage.setInputValue({
         element: form,
@@ -169,7 +177,7 @@ class DemoPage extends Panel {
         value: sliderValue,
       });
 
-      $(element).slider(settings);
+      $(element).find('.js-demo__slider-wrapper').slider(settings);
 
       const optionsForInput = {
         element,
@@ -202,10 +210,10 @@ class DemoPage extends Panel {
         step: undefined,
         value: min,
       };
-      const inputSettings = element.querySelectorAll('.js-panel__field-settings');
+      const inputSettings = element.querySelectorAll('.js-panel-settings__field');
       const inputValueElements = element.querySelectorAll('.js-panel__field-value');
       const inputStep = (element.querySelector('.js-panel__field-step') as HTMLInputElement);
-      const inputScale = element.querySelector('.js-panel__field-settings_type_scale') as HTMLInputElement;
+      const inputScale = element.querySelector('.js-panel-settings__field_type_scale') as HTMLInputElement;
       [...inputSettings].map((input, index) => {
         const key = this.settingsKeys[index];
 

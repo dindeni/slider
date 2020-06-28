@@ -31,19 +31,6 @@ class Model extends Observable {
 
     private dataForScale: number[] = [];
 
-    public updateState(options): SliderValues {
-      const {
-        min, max, value, valueMin, valueMax,
-      } = options;
-      this.notifyAll({
-        value: {
-          min, max, value, valueMin, valueMax,
-        },
-        type: 'validateValue',
-      });
-      return { value: this.value, valueMin: this.valueMin, valueMax: this.valueMax };
-    }
-
     public static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
       const {
         value, min, max, trackSize,
@@ -78,7 +65,7 @@ class Model extends Observable {
         min, max, trackSize, distance,
       } = options;
 
-      this.calculateSliderMovePercent({ trackSize, distance });
+      this.calculateSliderMovePercent({ trackSize: Math.round(trackSize), distance });
 
       const isBelow0 = this.sliderValuePercent <= 0 || !this.sliderValuePercent;
       if (isBelow0) {
@@ -87,12 +74,13 @@ class Model extends Observable {
         this.sliderValue = min + ((max - min)
         * (this.sliderValuePercent)) / 100;
       }
+
       return Math.round(this.sliderValue);
     }
 
     public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleData {
       const {
-        min, max, step, vertical, trackWidth, trackHeight,
+        min, max, step, trackSize,
       } = options;
 
       const scaleValue: {value: number[]; coordinates: number[]; shortValue: number[];
@@ -102,16 +90,13 @@ class Model extends Observable {
         shortValue: [],
         shortCoordinates: [],
       };
-      const height = Math.round(trackHeight);
-      const width = Math.round(trackWidth);
+      const width = Math.round(trackSize);
 
       if (step) {
         let stepCount = 0;
         for (let i = min; i <= max; i += step) {
           const fractionOfValue = stepCount / (max - min);
-          const coordinatesItems = vertical
-            ? Number((fractionOfValue * height).toFixed(2))
-            : Number((fractionOfValue * trackWidth).toFixed(2));
+          const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
           scaleValue.value.push(i);
           scaleValue.coordinates.push(coordinatesItems);
           this.dataForScale.push(coordinatesItems);
@@ -123,7 +108,7 @@ class Model extends Observable {
 
         if (isLastCoordinate) {
           scaleValue.coordinates.pop();
-          vertical ? scaleValue.coordinates.push(height) : scaleValue.coordinates.push(width);
+          scaleValue.coordinates.push(width);
           scaleValue.value.pop();
           scaleValue.value.push(max);
         }
