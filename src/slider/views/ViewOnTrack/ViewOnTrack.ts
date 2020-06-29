@@ -29,17 +29,18 @@ class ViewOnTrack {
     this.viewUpdating = new ViewUpdating(this.view);
   }
 
-  public handleTrackElementClick(options: TrackClickOptions): void {
+  public handleSliderElementClick(options: TrackClickOptions): void {
     const {
       event, trackElement, vertical, step, range, progress, min, max, coordinatesStep,
     } = options;
-
     this.vertical = vertical;
     const target = event.target as HTMLElement;
     const wrapper = target.parentElement as HTMLElement;
     const parentElementOfTrack = ((trackElement as HTMLElement).parentElement as HTMLElement);
 
-    const isTrack = target === trackElement || wrapper.querySelector('.js-slider__progress');
+    const isTrack = target === trackElement
+      || wrapper.querySelector('.js-slider__progress')
+      || wrapper.querySelector('.js-slider__scale-item');
     if (isTrack) {
       const trackHeight = trackElement.getBoundingClientRect().height;
       const trackWidth = trackElement.getBoundingClientRect().width;

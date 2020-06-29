@@ -29,6 +29,8 @@ class ViewHandle {
 
     private progress: boolean;
 
+    private label: boolean | undefined;
+
     private thumbElement: HTMLElement;
 
     private thumbElementMax: HTMLElement;
@@ -61,6 +63,7 @@ class ViewHandle {
       this.range = range;
       this.vertical = vertical;
       this.progress = progress;
+      this.label = label;
       const trackElement = $element.find('.js-slider__track').get(0);
       this.trackWidth = trackElement.getBoundingClientRect().width;
       this.trackHeight = trackElement.getBoundingClientRect().height;
@@ -105,7 +108,8 @@ class ViewHandle {
         this.progress = progress;
       });
 
-      trackElement.addEventListener('click', (event) => this.viewOnTrack.handleTrackElementClick({
+      const sliderElement = $element.find('.js-slider')[0];
+      sliderElement.addEventListener('click', (event) => this.viewOnTrack.handleSliderElementClick({
         event,
         trackElement,
         coordinatesStep: this.coordinateStep,
@@ -120,20 +124,8 @@ class ViewHandle {
       this.viewUpdating = new ViewUpdating(this.view);
       this.viewOnTrack = new ViewOnTrack(this.view);
 
-
-      const handleWindowResize = (): void => {
-        const { valueMin, valueMax, value } = ViewHandle.getLabelValue({ $element, range });
-
-        $element.find('.js-slider').remove();
-        this.view.getSliderOptions({
-          $element, min, max, vertical, range, step, progress, label, valueMin, valueMax,
-        });
-        this.view.createElements({
-          $element, min, max, vertical, range, step, progress, label, value, valueMin, valueMax,
-        });
-        $(window).off('resize', handleWindowResize);
-      };
-      $(window).on('resize', handleWindowResize);
+      $(window).off();
+      $(window).on('resize', this.handleWindowResize);
     }
 
     private handleDocumentMousemove(event): void {
@@ -206,6 +198,30 @@ class ViewHandle {
         document.removeEventListener('mouseup', handleDocumentMouseup);
         document.addEventListener('mouseup', handleDocumentMouseup);
       }
+    }
+
+    private handleWindowResize(): void {
+      const { valueMin, valueMax, value } = ViewHandle.getLabelValue(
+        { $element: this.$element, range: this.range },
+      );
+
+      this.$element.find('.js-slider').remove();
+      const sliderOptions = {
+        $element: this.$element,
+        min: this.min,
+        max: this.max,
+        vertical: this.vertical,
+        range: this.range,
+        step: this.step,
+        progress: this.progress,
+        label: this.label,
+        valueMin,
+        valueMax,
+        value,
+      };
+      this.view.getSliderOptions(sliderOptions);
+      this.view.createElements(sliderOptions);
+      $(window).off('resize', this.handleWindowResize);
     }
 
     private static getLabelValue(options: {$element: JQuery; range: boolean}):

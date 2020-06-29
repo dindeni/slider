@@ -93,10 +93,14 @@ class DemoPage extends Panel {
 
 
           const handleWindowResize = (): void => {
+            const { settings } = this.getInputValues({
+              element: formWrapper as HTMLElement,
+              min: this.sliderSettings[index].min,
+            });
             this.observeThumb({
               element: formWrapper as HTMLElement,
-              range: this.sliderSettings[index].range,
-              vertical: this.sliderSettings[index].vertical,
+              range: settings.range,
+              vertical: settings.vertical,
             });
           };
           window.addEventListener('resize', handleWindowResize);
@@ -264,7 +268,6 @@ class DemoPage extends Panel {
       const {
         element, range, vertical,
       } = options;
-
       if (range) {
         const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_type_min') as HTMLElement;
         const inputElementMin: HTMLInputElement = element.querySelector('.js-panel__field-value_type_min') as HTMLInputElement;

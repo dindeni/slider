@@ -69,7 +69,7 @@ class ViewOptional {
       const scaleTopPositionCorrection = 5;
       const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
       this.view.scaleData.shortValue.map((item, index) => {
-        const $itemElement = $(`<li class="slider__scale-item">${item}</li>`).appendTo($ul);
+        const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
         return vertical
           ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index] - scaleTopPositionCorrection) * this.rem}rem` })
