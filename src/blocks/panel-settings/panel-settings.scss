@@ -1,4 +1,4 @@
-@import '../mixins/hide';
+@import '../../style/mixins/hide';
 
 .panel-settings {
   display: flex;
@@ -72,7 +72,7 @@
       height: 1.16rem;
       color: #ffffff;
       text-transform: uppercase;
-      top: 0.3rem;
+      top: 0.2rem;
       left: 2.23rem;
       letter-spacing: .005rem;
     }
