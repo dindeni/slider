@@ -101,13 +101,7 @@ class View extends Observable {
     } = options;
 
     this.$wrapper = $element.find('.js-slider');
-    if (this.$wrapper.length === 0) {
-      this.createBasicNodes($element);
-    } else {
-      const $sliderElements = $('<div class="slider__track js-slider__track">'
-        + '</div><div class="slider__thumb js-slider__thumb"></div>');
-      $sliderElements.appendTo(this.$wrapper);
-    }
+    this.createBasicNodes($element);
     this.$trackElement = this.$wrapper.find('.js-slider__track');
     const trackSize = this.$trackElement.width() || 0;
     this.createThumb({ range, vertical });
@@ -267,11 +261,13 @@ class View extends Observable {
   }
 
   private createBasicNodes($element): void {
-    const $slider = $(`<div class="slider js-slider">
-      <div class="slider__track js-slider__track"></div><div class="slider__thumb js-slider__thumb"></div>
-      </div>`);
-    $slider.appendTo($element);
-    this.$wrapper = $element.find('.js-slider');
+    if (this.$wrapper.length === 0) {
+      this.$wrapper = $('<div class="slider js-slider"></div>');
+      this.$wrapper.appendTo($element);
+    }
+    const $sliderElements = $('<div class="slider__track js-slider__track">'
+      + '</div><div class="slider__thumb js-slider__thumb"></div>');
+    $sliderElements.appendTo(this.$wrapper);
   }
 
   private getThumbCoordinates(value): number {
