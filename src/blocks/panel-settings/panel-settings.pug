@@ -1,3 +1,5 @@
+include ../error/error
+
 mixin panel-settings()
 
   -
@@ -10,8 +12,8 @@ mixin panel-settings()
     each value, index in Array(2)
       div.panel-settings__wrapper
         label.panel-settings__mark=`${modifiers[index]}`
-          input.panel-settings__field.js-panel-settings__field(type = "number"
-            class = settingsModifiers(index === 0))
+          input.panel-settings__field.js-panel-settings__field(type = "number" class = settingsModifiers(index === 0))
+          +error()
 
     each value in settings
       div.panel-settings__wrapper=value

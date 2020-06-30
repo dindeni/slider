@@ -54,7 +54,7 @@ class Panel {
           return valueToNumber;
         }
       } Panel.deleteErrorElement(element);
-      this.createErrorElement({ element, text: 'invalid value' });
+      Panel.createErrorElement({ element, text: 'invalid value' });
       return null;
     };
 
@@ -64,7 +64,7 @@ class Panel {
         Panel.deleteErrorElement(element);
         return checkRangeValue();
       } Panel.deleteErrorElement(element);
-      this.createErrorElement({ element, text: 'value must be a multiple of step' });
+      Panel.createErrorElement({ element, text: 'value must be a multiple of step' });
       return null;
     };
 
@@ -89,11 +89,11 @@ class Panel {
       case isMin:
         Panel.deleteErrorElement(element);
         return Number((element as HTMLInputElement).value) < max ? Panel.convertInputValue(value)
-          : this.createErrorElement({ element, text: 'must be less than max' });
+          : Panel.createErrorElement({ element, text: 'must be less than max' });
       case isMax:
         Panel.deleteErrorElement(element);
         return Number((element as HTMLInputElement).value) > min ? Panel.convertInputValue(value)
-          : this.createErrorElement({ element, text: 'must be greater than min' });
+          : Panel.createErrorElement({ element, text: 'must be greater than min' });
       case isStep: return Panel.convertInputValue(value);
       case isCheckbox: return (element as HTMLInputElement).checked;
       default: return null;
@@ -164,23 +164,19 @@ class Panel {
     }
   }
 
-  private createErrorElement(options: ErrorCreationOptions): null {
+  private static createErrorElement(options: ErrorCreationOptions): null {
     const {
       element, text,
     } = options;
 
-    this.errorElement = document.createElement('span');
-    this.errorElement.textContent = text;
-    this.errorElement.classList.add('error');
-    ((element as HTMLElement).parentElement as HTMLElement)
-      .insertBefore(this.errorElement, null);
+    const errorElement = element.nextElementSibling as HTMLElement;
+    errorElement.classList.remove('error_hidden');
+    errorElement.textContent = text;
     return null;
   }
 
   private static deleteErrorElement(element: HTMLElement): void {
-    if (element.nextElementSibling) {
-      element.nextElementSibling.remove();
-    }
+    (element.nextElementSibling as HTMLElement).classList.add('error_hidden');
   }
 }
 

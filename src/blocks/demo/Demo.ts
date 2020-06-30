@@ -1,5 +1,5 @@
 import { Slider, SliderBasicOptions, ExtremumOptions } from '../../types/types';
-import Panel from '../Panel/Panel';
+import Panel from '../panel/Panel';
 
 interface ObservingInputOptions extends SliderBasicOptions{
   element: HTMLElement;
@@ -38,7 +38,7 @@ interface ForMutationRecord {
   inputElement: HTMLInputElement;
 }
 
-class DemoPage extends Panel {
+class Demo extends Panel {
     private sliderSettings: [Slider, Slider, Slider, Slider];
 
     private settingsKeys = ['min', 'max', 'progress', 'vertical', 'range', 'label', 'step'];
@@ -67,10 +67,10 @@ class DemoPage extends Panel {
             form: ((formWrapper as HTMLElement).children[0]) as HTMLElement,
             scale,
           };
-          DemoPage.createElements(optionsForElements);
+          Demo.createElements(optionsForElements);
           this.slider = $(formWrapper).find('.js-demo__slider-wrapper').slider(this.sliderSettings[index]);
 
-          DemoPage.setInputValue({
+          Demo.setInputValue({
             element: formWrapper as HTMLElement,
             settings: this.sliderSettings[index],
           });
@@ -174,8 +174,8 @@ class DemoPage extends Panel {
         && settings.step ? sliderValue.max + settings.step : sliderValue.max;
 
       const form = element.querySelector('.js-demo__form-panel') as HTMLElement;
-      DemoPage.createElements({ settings, form });
-      DemoPage.setInputValue({
+      Demo.createElements({ settings, form });
+      Demo.setInputValue({
         element: form,
         settings,
         value: sliderValue,
@@ -225,7 +225,7 @@ class DemoPage extends Panel {
           if ((input as HTMLInputElement).type === 'checkbox') {
             return (input as HTMLInputElement).checked;
           }
-          return DemoPage.convertInputValue((input as HTMLInputElement).value);
+          return Demo.convertInputValue((input as HTMLInputElement).value);
         };
         const value = setInputValue();
         settings = { ...settings, ...{ [key]: value } };
@@ -321,4 +321,4 @@ class DemoPage extends Panel {
     }
 }
 
-export default DemoPage;
+export default Demo;

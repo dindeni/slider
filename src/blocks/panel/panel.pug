@@ -1,4 +1,5 @@
 include ../panel-settings/panel-settings
+include ../error/error
 
 mixin panel()
 
@@ -15,6 +16,7 @@ mixin panel()
       div.panel__wrapper.panel__wrapper_type_value.js-panel__wrapper_type_value
         label.panel__mark=`value ${modifiers[index] || ''}`
           input.panel__field-value.js-panel__field-value(type = "number" class = createClasses(index))
+          +error()
 
     +panel-settings()
 
