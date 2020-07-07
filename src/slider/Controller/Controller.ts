@@ -1,36 +1,52 @@
 import autoBind from 'auto-bind';
 import Model from '../Model/Model';
 import View from '../views/View/View';
+import Observable from '../Observable/Observable';
 import {
-  ScaleCoordinatesOptions, FromValueToCoordinate, SliderValueOptions,
-  DistanceOptions, CoordinateOfMiddleOptions, SliderOptionsForInit,
+  ScaleCoordinatesOptions,
+  FromValueToCoordinate,
+  SliderValueOptions,
+  DistanceOptions,
+  CoordinateOfMiddleOptions,
+  SliderElementOptions,
+  SliderOptions,
 } from '../../types/types';
 
-class Controller {
+interface PublicData extends SliderOptions{
+  reload: Function;
+}
+
+class Controller extends Observable {
   private model: Model = new Model();
 
   private view: View = new View();
 
-  private sliderOptions: SliderOptionsForInit;
+  private sliderOptions: SliderElementOptions;
 
   public sliderValue: number;
 
   constructor() {
+    super();
     autoBind(this);
   }
 
   public init(): void {
-    this.subscribe();
+    this.subscribeAll();
     this.view.getSliderOptions(this.sliderOptions);
     this.view.createElements(this.sliderOptions);
   }
 
-  public getSliderOptions(options: SliderOptionsForInit): void {
+  public getSliderOptions(options: SliderElementOptions): void {
     this.sliderOptions = options;
   }
 
-  public getPublicValue(): number {
-    return this.sliderValue;
+  public getPublicData(method: Function): PublicData {
+    method(this.sliderOptions);
+    return { ...this.sliderOptions, reload: this.reloadSlider };
+  }
+
+  private reloadSlider(options: SliderElementOptions): void {
+    this.view.reloadSlider(options);
   }
 
   private getScaleCoordinates(options: ScaleCoordinatesOptions): void {
@@ -58,13 +74,20 @@ class Controller {
     this.view.getCoordinateOfMiddle(coordinateOfMiddle);
   }
 
-  private subscribe(): void {
-    this.model.subscribe({ method: this.model.validateValue, type: 'validateValue' });
+  private updateOptions(options: SliderElementOptions): void {
+    this.sliderOptions = options;
+    if (this.sliderOptions.method) {
+      this.getPublicData(this.sliderOptions.method);
+    }
+  }
+
+  private subscribeAll(): void {
     this.view.subscribe({ method: this.getCoordinates, type: 'getCoordinates' });
     this.view.subscribe({ method: this.getValue, type: 'getValue' });
     this.view.subscribe({ method: this.getDistance, type: 'getDistance' });
     this.view.subscribe({ method: this.getCoordinatesOfMiddle, type: 'getCoordinatesOfMiddle' });
     this.view.subscribe({ method: this.getScaleCoordinates, type: 'getScaleData' });
+    this.view.subscribe({ method: this.updateOptions, type: 'updateOptions' });
   }
 }
 

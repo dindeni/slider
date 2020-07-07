@@ -2,7 +2,7 @@ import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewHandle from '../ViewHandle/ViewHandle';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import {
-  SliderElementOptions, RangeAndVerticalOptions, ExtremumOptions, ScaleData,
+  SliderElementOptions, SliderOptions, RangeAndVerticalOptions, ExtremumOptions, ScaleData,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
@@ -104,6 +104,7 @@ class View extends Observable {
     this.createBasicNodes($element);
     this.$trackElement = this.$wrapper.find('.js-slider__track');
     const trackSize = this.$trackElement.width() || 0;
+    this.thumbSize = $element.find('.slider__thumb').width() || 0;
     this.createThumb({ range, vertical });
 
     this.viewOptional = new ViewOptional(this);
@@ -116,8 +117,8 @@ class View extends Observable {
         min,
         max,
         step,
-        trackWidth: Math.round((this.$trackElement.width() || 0) - this.thumbSize),
-        trackHeight: (this.$trackElement.height() || 0) - this.thumbSize,
+        trackWidth: Math.round(trackSize - this.thumbSize),
+        trackHeight: Math.round(trackSize - this.thumbSize),
         wrapper: this.$wrapper,
       };
       this.viewOptional.createScale(optionsForScale);
@@ -143,6 +144,16 @@ class View extends Observable {
     });
   }
 
+  public reloadSlider(options: SliderOptions): void {
+    this.sliderSettings = { ...this.sliderSettings, ...options };
+    const sliderElement = this.sliderSettings.$element.find('.js-slider');
+    if (sliderElement.length !== 0) {
+      this.viewHandle.removeWindowEvent();
+      sliderElement.remove();
+      this.createElements(this.sliderSettings);
+    }
+  }
+
   public setLabelValue(value: number): void {
     this.valueForLabel = value;
   }
@@ -152,7 +163,11 @@ class View extends Observable {
   }
 
   public getSliderOptions(sliderSettings: SliderElementOptions): void {
-    this.sliderSettings = sliderSettings;
+    this.sliderSettings = {
+      ...sliderSettings,
+      valueMin: sliderSettings.min,
+      valueMax: sliderSettings.max,
+    };
   }
 
   public getDistance(distance: number): void {
@@ -191,6 +206,7 @@ class View extends Observable {
     const isDistance = distance || distance === 0;
     if (isDistance) {
       this.updateLabelValue(optionsForLabel);
+      this.notifyAll({ value: this.sliderSettings, type: 'updateOptions' });
     }
     if (progress) {
       this.viewOptional.makeProgress({
@@ -371,15 +387,18 @@ class View extends Observable {
         labelElementMin.text(value);
         vertical ? labelElementMin.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
           : labelElementMin.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
+        this.sliderSettings.valueMin = this.valueForLabel;
       } else {
         const $labelElementMax: JQuery = $(thumbElement).siblings('.js-slider__label_type_max');
         $labelElementMax.text(value);
         vertical ? $labelElementMax.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
           : $labelElementMax.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });
+        this.sliderSettings.valueMax = value;
       }
     } else {
       const $labelElement = $(thumbElement).parent().find('.slider__label');
       $labelElement.text(value);
+      this.sliderSettings.value = value;
 
       vertical ? $labelElement.css({ top: `${coordinate - this.LABEL_TOP_CORRECTION}rem` })
         : $labelElement.css({ left: `${coordinate - this.LABEL_OFFSET_LEFT}rem` });

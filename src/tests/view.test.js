@@ -15,20 +15,20 @@ describe('View', () => {
   const moveDistanceX = 50;
   const moveDistanceY = 0;
   let divLabel;
+  let controller;
+  const optionsForElements = {
+    $element: $('body'),
+    range: false,
+    vertical: false,
+    min: 100,
+    max: 500,
+    progress: true,
+    label: true,
+    step: undefined,
+  };
 
   const createElements = () => {
-    const optionsForElements = {
-      $element: $('body'),
-      range: false,
-      vertical: false,
-      min: 100,
-      max: 500,
-      progress: true,
-      label: true,
-      step: undefined,
-    };
-
-    const controller = new Controller();
+    controller = new Controller();
     controller.getSliderOptions(optionsForElements);
     controller.init();
   };
@@ -104,6 +104,12 @@ describe('View', () => {
       const divThumbLeftAfterClick = parseInt(divThumb.style.left, 10);
 
       expect(divThumbLeft).not.toEqual(divThumbLeftAfterClick);
+    });
+
+    it('should slider reload', () => {
+      controller.reloadSlider({ ...optionsForElements, range: true });
+      const thumbElements = document.querySelectorAll('.js-slider__thumb');
+      expect(thumbElements.length).toBe(2);
     });
   });
 });

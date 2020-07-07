@@ -81,7 +81,7 @@ module.exports = function (config) {
           'window.$': 'jquery',
         }),
         new HtmlWebpackPlugin({
-          template: './src/blocks/panel/panel.pug',
+          template: './src/blocks/demo/demo.pug',
           filename: `${path.resolve('./')}/index.html`,
           inject: 'body',
         }),

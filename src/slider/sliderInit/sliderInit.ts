@@ -1,22 +1,15 @@
 import Controller from '../Controller/Controller';
-import { SliderOptionsForInit, SliderOptions } from '../../types/types';
-
-const controller = new Controller();
+import { SliderOptions } from '../../types/types';
 
 declare global {
   interface JQuery {
-    slider(options?: SliderOptions): number;
+    slider(options?: SliderOptions): SliderOptions;
     }
 }
 
-const initSlider = (options: SliderOptionsForInit): void => {
-  controller.getSliderOptions(options);
-  controller.init();
-};
-
 /* eslint-disable func-names */
 
-$.fn.slider = function (options?: SliderOptions): number {
+$.fn.slider = function (options?: SliderOptions): SliderOptions {
   const optionsDefault = {
     progress: false,
     min: 0,
@@ -33,7 +26,11 @@ $.fn.slider = function (options?: SliderOptions): number {
 
   const config = $.extend({}, optionsDefault, options);
 
-  initSlider(config);
+  const controller = new Controller();
+  controller.getSliderOptions(config);
 
-  return controller.getPublicValue.bind(controller);
+  controller.init();
+  if (config.method) {
+    return controller.getPublicData(config.method);
+  } return config;
 };

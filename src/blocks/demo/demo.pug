@@ -1,10 +1,30 @@
 include ../slider/slider
-include ../panel/panel
+include ../panel-settings/panel-settings
+include ../error/error
 
 mixin demo
+  -
+    const modifiers = ['', 'min', 'max'];
+    const createClasses = (index) => {
+      if (index !== 0) {
+        return `demo__field-value_type_${modifiers[index]} js-demo__field-value_type_${modifiers[index]}`;
+      }
+    };
+
   div.demo.js-demo
     form.demo__form-panel.js-demo__form-panel
-      +panel(true)
+
+      div.demo__value-wrapper
+        each value, index in Array(3)
+          div.demo__wrapper.demo__wrapper_type_value.js-demo__wrapper_type_value
+            label.demo__mark=`value ${modifiers[index] || ''}`
+            input.demo__field-value.js-demo__field-value(type = "number" class = createClasses(index))
+            +error()
+
+      +panel-settings()
+
+      div.demo__wrapper.demo__wrapper_type_step.js-demo__wrapper_type_step
+          label.demo__mark step
+          input.demo__field-step.js-demo__field-step(type = "number")
 
     div.demo__slider-wrapper.js-demo__slider-wrapper
-      +slider

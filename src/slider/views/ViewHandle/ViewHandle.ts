@@ -41,6 +41,10 @@ class ViewHandle {
 
     private $element: JQuery;
 
+    public sliderValue;
+
+    public sliderSettings: SliderElementOptions;
+
     readonly view: View;
 
     private viewOnTrack: ViewOnTrack;
@@ -124,8 +128,11 @@ class ViewHandle {
       this.viewUpdating = new ViewUpdating(this.view);
       this.viewOnTrack = new ViewOnTrack(this.view);
 
-      $(window).off();
       $(window).on('resize', this.handleWindowResize);
+    }
+
+    public removeWindowEvent(): void {
+      $(window).off('resize', this.handleWindowResize);
     }
 
     private handleDocumentMousemove(event): void {
@@ -204,23 +211,9 @@ class ViewHandle {
       const { valueMin, valueMax, value } = ViewHandle.getLabelValue(
         { $element: this.$element, range: this.range },
       );
-
-      this.$element.find('.js-slider').remove();
-      const sliderOptions = {
-        $element: this.$element,
-        min: this.min,
-        max: this.max,
-        vertical: this.vertical,
-        range: this.range,
-        step: this.step,
-        progress: this.progress,
-        label: this.label,
-        valueMin,
-        valueMax,
-        value,
-      };
-      this.view.getSliderOptions(sliderOptions);
-      this.view.createElements(sliderOptions);
+      this.view.reloadSlider({
+        ...this.view.sliderSettings, valueMin, valueMax, value,
+      });
       $(window).off('resize', this.handleWindowResize);
     }
 

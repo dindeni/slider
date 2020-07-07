@@ -24,14 +24,16 @@ interface Slider extends ExtremumOptions, RangeAndVerticalOptions{
 
 interface SliderElementOptions extends Slider{
   $element: JQuery;
+  method?: Function;
 }
 
 interface SliderOptionsForInit extends SliderElementOptions{
   label?: boolean;
+  method?: Function;
 }
 
 interface SliderOptions extends Slider{
-  label?: boolean;
+  method?: Function;
 }
 
 interface TrackSizesOptions {

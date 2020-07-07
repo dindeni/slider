@@ -1,14 +1,9 @@
+import autoBind from 'auto-bind';
 import { Slider, SliderBasicOptions, ExtremumOptions } from '../../types/types';
-import Panel from '../panel/Panel';
+import '../../slider/sliderInit/sliderInit';
 
 interface ObservingInputOptions extends SliderBasicOptions{
   element: HTMLElement;
-}
-
-interface ObservingLabelOptions{
-  element: HTMLElement;
-  range: boolean;
-  vertical: boolean;
 }
 
 interface DemoElementsAndEventOptions{
@@ -24,301 +19,309 @@ interface DemoElementChangeOptions extends ExtremumOptions, DemoElementsAndEvent
 
 interface OptionsForUpdatingSlider extends DemoElementsAndEventOptions{
   settings: Slider;
-  sliderValue: {notRange?: number; min?: number; max?: number};
+}
+
+interface ElementsCreationOptions {
+  settings: Slider;
+  form: HTMLElement;
+}
+
+interface ErrorCreationOptions {
+  element: HTMLElement;
+  text: string;
 }
 
 interface OptionsForGettingInputValues {
-  element: HTMLElement;
+  event: Event;
   min: number;
 }
 
-interface ForMutationRecord {
-  mutationRecord: MutationRecord[];
-  thumbElement: HTMLElement;
-  inputElement: HTMLInputElement;
-}
+class Demo {
+  private slider;
 
-class Demo extends Panel {
-    private sliderSettings: [Slider, Slider, Slider, Slider];
+  readonly wrapper;
 
-    private settingsKeys = ['min', 'max', 'progress', 'vertical', 'range', 'label', 'step'];
+  private settings;
 
-    private slider;
+  private settingsKeys = ['value', 'valueMin', 'valueMax', 'min', 'max', 'progress', 'vertical', 'range', 'label', 'step'];
 
-    public loadSliders(): void {
-      this.sliderSettings = [
-        {
-          min: 100, max: 500, progress: true, vertical: false, range: true, label: true,
-        }, {
-          min: 0, max: 100, progress: true, vertical: true, range: true, label: true,
-        }, {
-          min: 0, max: 500, progress: true, vertical: false, range: true, label: true, step: 100,
-        }, {
-          min: 0, max: 1000, progress: false, vertical: true, range: false, label: true, step: 250,
-        },
-      ];
+  constructor({ wrapper, settings }) {
+    this.wrapper = wrapper;
+    this.settings = settings;
+    autoBind(this);
+  }
 
-      [...document.querySelectorAll('.js-demo')]
-        .forEach((formWrapper, index) => {
-          const scale = this.sliderSettings[index].step !== undefined;
+  public loadSliders(): void {
+    const optionsForElements = {
+      settings: this.settings,
+      form: (this.wrapper.children[0]) as HTMLElement,
+      scale: this.settings.scale,
+    };
+    Demo.createElements(optionsForElements);
+    this.slider = $(this.wrapper).find('.js-demo__slider-wrapper')
+      .slider({
+        ...this.settings,
+        method: (options) => Demo.updateInputValue({
+          options,
+          wrapper: this.wrapper,
+        }),
+      });
 
-          const optionsForElements = {
-            settings: this.sliderSettings[index],
-            form: ((formWrapper as HTMLElement).children[0]) as HTMLElement,
-            scale,
-          };
-          Demo.createElements(optionsForElements);
-          this.slider = $(formWrapper).find('.js-demo__slider-wrapper').slider(this.sliderSettings[index]);
+    this.setInputValue(this.settings);
 
-          Demo.setInputValue({
-            element: formWrapper as HTMLElement,
-            settings: this.sliderSettings[index],
-          });
+    const optionsForInput = {
+      element: this.wrapper,
+      range: this.settings.range,
+      min: this.settings.min,
+      max: this.settings.max,
+      vertical: this.settings.vertical,
+      step: this.settings.step,
+      progress: this.settings.progress,
+    };
+    this.observeInput(optionsForInput);
+  }
 
-          const optionsForInput = {
-            element: formWrapper as HTMLElement,
-            range: this.sliderSettings[index].range,
-            min: this.sliderSettings[index].min,
-            max: this.sliderSettings[index].max,
-            vertical: this.sliderSettings[index].vertical,
-            step: this.sliderSettings[index].step,
-            progress: this.sliderSettings[index].progress,
-          };
+  private observeInput(options: ObservingInputOptions): void {
+    const {
+      element, range, min, max, step,
+    } = options;
 
-          this.observeThumb({
-            element: formWrapper as HTMLElement,
-            range: this.sliderSettings[index].range,
-            vertical: this.sliderSettings[index].vertical,
-          });
+    const formElement = element.querySelector('.js-demo__form-panel') as HTMLElement;
 
-
-          const handleWindowResize = (): void => {
-            const { settings } = this.getInputValues({
-              element: formWrapper as HTMLElement,
-              min: this.sliderSettings[index].min,
-            });
-            this.observeThumb({
-              element: formWrapper as HTMLElement,
-              range: settings.range,
-              vertical: settings.vertical,
-            });
-          };
-          window.addEventListener('resize', handleWindowResize);
-          this.observeInput(optionsForInput);
-        });
-    }
-
-    private observeInput(options: ObservingInputOptions): void {
-      const {
-        element, range, min, max, step,
-      } = options;
-
-      const formElement = element.querySelector('.js-demo__form-panel') as HTMLElement;
-
-      formElement.addEventListener('change', (event) => this.handleFormElementChange(
-        {
-          min, max, step, range, event, element, formElement,
-        },
-      ));
-    }
-
-    private handleFormElementChange(options: DemoElementChangeOptions): void {
-      const {
+    formElement.addEventListener('change', (event) => this.handleFormElementChange(
+      {
         min, max, step, range, event, element, formElement,
-      } = options;
-      const optionForSetting = {
-        value: (event.target as HTMLInputElement),
-        element: event.target as HTMLElement,
-        min,
-        max,
-      };
+      },
+    ));
+  }
 
-      const optionsForValue = {
-        element: event.target as HTMLInputElement,
-        value: (event.target as HTMLElement).classList.contains('js-panel__field-value')
-          ? (event.target as HTMLInputElement).value
-          : 'null',
-        min,
-        max,
-        step,
-        range,
-        wrapper: event.currentTarget as HTMLElement,
-      };
+  private handleFormElementChange(options: DemoElementChangeOptions): void {
+    const {
+      min, event, element, formElement,
+    } = options;
+    const targetElement = event.target as HTMLInputElement;
+    const targetValue = Number(targetElement.value);
 
-      const isValidValueOrSetting = (event.target as HTMLElement).classList.contains('js-panel__field-value')
-        ? this.validateValue(optionsForValue)
-        : this.validateSettings(optionForSetting);
-      if (isValidValueOrSetting !== null) {
-        const target = event.currentTarget as HTMLElement;
-        const form = target.cloneNode(true) as HTMLElement;
-        (target.parentNode as HTMLElement).replaceChild(form, target);
-        (element.querySelector('.js-slider') as HTMLElement).remove();
+    this.settings = this.getInputValues({ event, min });
 
-        const { sliderValue, settings } = this.getInputValues({ element, min });
-        this.updateSlider({
-          event, element, formElement, sliderValue, settings,
-        });
-      }
-    }
+    const isValidValueOrSetting = targetElement.classList.contains('js-demo__field-value')
+      ? this.validateValue(event.target as HTMLInputElement, targetValue)
+      : this.validateSettings(event.target as HTMLInputElement);
 
-    private updateSlider(options: OptionsForUpdatingSlider): void {
-      const { element, settings, sliderValue } = options;
+    if (isValidValueOrSetting) {
+      const target = event.currentTarget as HTMLElement;
+      const form = target.cloneNode(true) as HTMLElement;
+      (target.parentNode as HTMLElement).replaceChild(form, target);
 
-      settings.value = sliderValue.notRange;
-      settings.valueMin = sliderValue.min === sliderValue.max
-        && sliderValue.min === settings.max
-        && settings.step ? sliderValue.min - settings.step : sliderValue.min;
-
-      settings.valueMax = sliderValue.min === sliderValue.max
-        && sliderValue.max === settings.min
-        && settings.step ? sliderValue.max + settings.step : sliderValue.max;
-
-      const form = element.querySelector('.js-demo__form-panel') as HTMLElement;
-      Demo.createElements({ settings, form });
-      Demo.setInputValue({
-        element: form,
-        settings,
-        value: sliderValue,
-      });
-
-      $(element).find('.js-demo__slider-wrapper').slider(settings);
-
-      const optionsForInput = {
-        element,
-        range: settings.range,
-        min: settings.min,
-        max: settings.max,
-        vertical: settings.vertical,
-        step: settings.step,
-        progress: settings.progress,
-      };
-      this.observeInput(optionsForInput);
-      this.observeThumb({
-        element,
-        range: settings.range,
-        vertical: settings.vertical,
+      this.correctValues();
+      this.updateSlider({
+        event, element, formElement, settings: this.settings,
       });
     }
+  }
 
-    private getInputValues(options: OptionsForGettingInputValues): {settings: Slider;
-      sliderValue: {notRange?: number; min?: number; max?: number};} {
-      const { element, min } = options;
+  private updateSlider(options: OptionsForUpdatingSlider): void {
+    const { element, settings } = options;
 
-      let settings: Slider = {
-        min: 0,
-        max: 100,
-        progress: true,
-        vertical: false,
-        range: false,
-        label: false,
-        step: undefined,
-        value: min,
-      };
-      const inputSettings = element.querySelectorAll('.js-panel-settings__field');
-      const inputValueElements = element.querySelectorAll('.js-panel__field-value');
-      const inputStep = (element.querySelector('.js-panel__field-step') as HTMLInputElement);
-      const inputScale = element.querySelector('.js-panel-settings__field_type_scale') as HTMLInputElement;
-      [...inputSettings].map((input, index) => {
-        const key = this.settingsKeys[index];
+    const form = element.querySelector('.js-demo__form-panel') as HTMLElement;
+    Demo.createElements({ settings, form });
+    this.setInputValue(settings);
+    this.slider.reload(settings);
 
-        const setInputValue = (): boolean | string | number | undefined | null => {
-          if ((input as HTMLInputElement).type === 'checkbox') {
-            return (input as HTMLInputElement).checked;
-          }
-          return Demo.convertInputValue((input as HTMLInputElement).value);
-        };
-        const value = setInputValue();
+    const optionsForInput = {
+      element,
+      range: settings.range,
+      min: settings.min,
+      max: settings.max,
+      vertical: settings.vertical,
+      step: settings.step,
+      progress: settings.progress,
+    };
+    this.observeInput(optionsForInput);
+  }
+
+  private getInputValues(options: OptionsForGettingInputValues): Slider {
+    const { event, min } = options;
+
+    let settings: Slider = {
+      min: 0,
+      max: 100,
+      progress: true,
+      vertical: false,
+      range: false,
+      label: false,
+      step: undefined,
+      value: min,
+    };
+
+    const inputs = [...(event.currentTarget as HTMLFormElement).elements];
+
+    inputs.forEach((input: HTMLInputElement, index: number) => {
+      const key = this.settingsKeys[index];
+
+      if (input.type === 'checkbox') {
+        const value = input.checked;
         settings = { ...settings, ...{ [key]: value } };
-        return settings;
-      });
-
-      const checkValue = (checkedValue: number): number => {
-        if (checkedValue > settings.max) {
-          return settings.max;
-        }
-        if (checkedValue < settings.min) {
-          return settings.min;
-        }
-        return checkedValue;
-      };
-
-      if (inputScale.checked) {
-        settings.step = parseFloat(inputStep.value) || (settings.max - settings.min) / 5;
-      }
-
-      const sliderValue: {notRange?: number; min?: number; max?: number} = {};
-      [...inputValueElements].some((input) => {
-        if (input.classList.contains('js-panel__field-value_type_min')) {
-          const valueMin = checkValue(Number((input as HTMLInputElement).value));
-          sliderValue.min = valueMin;
-          sliderValue.notRange = valueMin;
-        } else if (input.classList.contains('js-panel__field-value_type_max')) {
-          sliderValue.max = checkValue(Number((input as HTMLInputElement).value));
-        } else if (!settings.range) {
-          sliderValue.notRange = Number((input as HTMLInputElement).value);
-          sliderValue.min = Number((input as HTMLInputElement).value);
-          return true;
-        }
-        return false;
-      });
-      return { sliderValue, settings };
-    }
-
-    private observeThumb(options: ObservingLabelOptions): void {
-      const {
-        element, range, vertical,
-      } = options;
-      if (range) {
-        const thumbElementMin: HTMLElement = element.querySelector('.js-slider__thumb_type_min') as HTMLElement;
-        const inputElementMin: HTMLInputElement = element.querySelector('.js-panel__field-value_type_min') as HTMLInputElement;
-        const thumbElementMax: HTMLElement = element.querySelector('.js-slider__thumb_type_max') as HTMLElement;
-        const inputElementMax: HTMLInputElement = element.querySelector('.js-panel__field-value_type_max') as HTMLInputElement;
-
-        const watchThumb = (recordOptions: ForMutationRecord): void => {
-          const { mutationRecord, inputElement, thumbElement } = recordOptions;
-
-          if (mutationRecord[0].oldValue) {
-            const oldValue = vertical
-              ? (mutationRecord[0].oldValue.match(/(top: )\d+(.\d+)?rem/) || [])[0].trim().replace(/top: /, '')
-              : (mutationRecord[0].oldValue.match(/[^left:]*rem/) || [])[0].trim();
-
-            const positionOfThumb = vertical ? thumbElement.style.top : thumbElement.style.left;
-
-            if (parseFloat(positionOfThumb) !== parseFloat(oldValue)) {
-              inputElement.value = this.slider();
-            }
-          }
-        };
-
-        const observerMin = new MutationObserver((mutationRecord) => watchThumb(
-          { mutationRecord, thumbElement: thumbElementMin, inputElement: inputElementMin },
-        ));
-        observerMin.observe(thumbElementMin as HTMLElement, {
-          attributes: true,
-          attributeOldValue: true,
-        });
-        const observerMax = new MutationObserver((mutationRecord) => watchThumb(
-          { mutationRecord, thumbElement: thumbElementMax, inputElement: inputElementMax },
-        ));
-        observerMax.observe(thumbElementMax as HTMLElement, {
-          attributes: true,
-          attributeOldValue: true,
-        });
       } else {
-        const thumbElement: HTMLElement = element.querySelector('.js-slider__thumb') as HTMLElement;
-        const inputElement: HTMLInputElement = element.querySelector('.js-panel__field-value') as HTMLInputElement;
-        const watchThumb = (): void => {
-          inputElement.value = this.slider();
-        };
-
-        const observer = new MutationObserver(watchThumb);
-        observer.observe(thumbElement as HTMLElement, {
-          childList: true,
-          attributes: true,
-          characterData: true,
-        });
+        const value = Number(input.value);
+        settings = { ...settings, ...{ [key]: value } };
       }
+
+      if (index === inputs.length - 1 && settings.step) {
+        const value = Number(input.value || (settings.max - settings.min) / 5);
+        settings = { ...settings, ...{ step: value } };
+      }
+    });
+    return settings;
+  }
+
+  private static updateInputValue({ options, wrapper }): void {
+    const {
+      range, min, max, valueMin, valueMax, value,
+    } = options;
+
+    if (range) {
+      const inputElementMin: HTMLInputElement = wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement;
+      const inputElementMax: HTMLInputElement = wrapper.querySelector('.js-demo__field-value_type_max') as HTMLInputElement;
+      inputElementMin.value = valueMin || min;
+      inputElementMax.value = valueMax || max;
+    } else {
+      const inputElement: HTMLInputElement = wrapper.querySelector('.js-demo__field-value') as HTMLInputElement;
+      inputElement.value = value || min;
     }
+  }
+
+  public setInputValue(settings): void {
+    const {
+      range, min, max, step,
+    } = settings;
+
+    if (range) {
+      const minInput = (this.wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement);
+      minInput.value = settings.valueMin ? settings.valueMin.toString() : min.toString();
+      const maxInput = (this.wrapper.querySelector('.js-demo__field-value_type_max') as HTMLInputElement);
+      maxInput.value = settings.valueMax ? settings.valueMax.toString() : max.toString();
+    } else {
+      const input = (this.wrapper.querySelector('.js-demo__field-value') as HTMLInputElement);
+      input.value = settings.value ? settings.value.toString() : min.toString();
+    }
+    const formElement = this.wrapper.querySelector('.js-demo__form-panel') as HTMLFormElement;
+
+    [...formElement.elements].forEach((input: HTMLInputElement, index: number) => {
+      const key = this.settingsKeys[index];
+      const inputElement = input;
+      if (input.type === 'checkbox') {
+        inputElement.checked = settings[key];
+      } else if (settings[key]) {
+        inputElement.value = settings[key];
+      }
+    });
+
+    if (step) {
+      (this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement).value = step.toString();
+    }
+  }
+
+  public validateValue(element, value): boolean {
+    const {
+      min, max, step,
+    } = this.settings;
+
+    const checkRangeLimits = (number: number): boolean => {
+      Demo.deleteErrorElement(element);
+      if (!number) {
+        return true;
+      }
+      if (number >= min && number <= max) {
+        return true;
+      }
+      return Demo.createErrorElement({ element, text: 'invalid value(min or max)' });
+    };
+
+    const isValidValues = checkRangeLimits(value);
+
+    const checkStepValue = (number: number): boolean => {
+      if (isValidValues) {
+        Demo.deleteErrorElement(element);
+        return (number - min) % step === 0 || Demo.createErrorElement({ element, text: 'value must be a multiple of step' });
+      }
+      return false;
+    };
+
+    if (step) {
+      return checkStepValue(value);
+    }
+    return isValidValues;
+  }
+
+  public validateSettings(element: HTMLInputElement):
+    boolean | number | undefined | null {
+    const { min, max } = this.settings;
+
+    Demo.deleteErrorElement(element);
+    switch (true) {
+      case min > max: Demo.createErrorElement({ element, text: 'must be less than max' });
+        return false;
+      case max < min: Demo.createErrorElement({ element, text: 'must be greater than min' });
+        return false;
+      default: return true;
+    }
+  }
+
+  correctValues(): void {
+    const {
+      min, max, valueMin, valueMax, value,
+    } = this.settings;
+    const checkValue = (number: number): number => {
+      if (number < min) {
+        return min;
+      }
+      if (number > max) {
+        return max;
+      }
+      return number;
+    };
+
+    this.settings.valueMin = checkValue(valueMin);
+    this.settings.valueMax = checkValue(valueMax);
+    this.settings.value = checkValue(value);
+  }
+
+  private static createElements(options: ElementsCreationOptions): void {
+    const { settings, form } = options;
+
+    const $form = $(form);
+    const $valueWrapperList = $form.find('.js-demo__wrapper_type_value');
+    if (settings.range) {
+      $valueWrapperList[0].classList.add('demo__wrapper_hidden');
+      $valueWrapperList[1].classList.remove('demo__wrapper_hidden');
+      $valueWrapperList[2].classList.remove('demo__wrapper_hidden');
+    } else {
+      $valueWrapperList[0].classList.remove('demo__wrapper_hidden');
+      $valueWrapperList[1].classList.add('demo__wrapper_hidden');
+      $valueWrapperList[2].classList.add('demo__wrapper_hidden');
+    }
+  }
+
+  private static createErrorElement(options: ErrorCreationOptions): boolean {
+    const {
+      element, text,
+    } = options;
+
+    if (((element as HTMLInputElement).type !== 'checkbox')) {
+      const errorElement = element.nextElementSibling as HTMLElement;
+      errorElement.classList.remove('error_hidden');
+      errorElement.textContent = text;
+      return false;
+    }
+    return true;
+  }
+
+  private static deleteErrorElement(element: HTMLElement): void {
+    if (((element as HTMLInputElement).type !== 'checkbox')) {
+      (element.nextElementSibling as HTMLElement).classList.add('error_hidden');
+    }
+  }
 }
 
 export default Demo;
