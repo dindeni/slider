@@ -58,14 +58,14 @@ class Demo {
       scale: this.settings.scale,
     };
     Demo.createElements(optionsForElements);
-    this.slider = $(this.wrapper).find('.js-demo__slider-wrapper')
-      .slider({
-        ...this.settings,
-        method: (options) => Demo.updateInputValue({
-          options,
-          wrapper: this.wrapper,
-        }),
-      });
+    const sliderElement = $(this.wrapper).find('.js-slider');
+    this.slider = sliderElement.slider({
+      ...this.settings,
+      method: (options) => Demo.updateInputValue({
+        options,
+        wrapper: this.wrapper,
+      }),
+    });
 
     this.setInputValue(this.settings);
 

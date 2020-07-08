@@ -36,18 +36,17 @@ class ViewOnTrack {
     this.vertical = vertical;
     const target = event.target as HTMLElement;
     const wrapper = target.parentElement as HTMLElement;
-    const parentElementOfTrack = ((trackElement as HTMLElement).parentElement as HTMLElement);
 
     const isTrack = target === trackElement
       || wrapper.querySelector('.js-slider__progress')
       || wrapper.querySelector('.js-slider__scale-item');
     if (isTrack) {
-      const trackHeight = trackElement.getBoundingClientRect().height;
-      const trackWidth = trackElement.getBoundingClientRect().width;
-      this.thumbList = parentElementOfTrack.querySelectorAll('.js-slider__thumb');
+      const trackHeight = this.view.$trackElement[0].getBoundingClientRect().height;
+      const trackWidth = this.view.$trackElement[0].getBoundingClientRect().width;
+      this.thumbList = this.view.$wrapper[0].querySelectorAll('.js-slider__thumb');
       this.trackSize = this.vertical ? trackHeight : trackWidth;
 
-      this.thumbElement = range ? this.getRangeThumbElement({ trackElement, event }) as HTMLElement
+      this.thumbElement = range ? this.getRangeThumbElement(event) as HTMLElement
         : this.thumbList[0] as HTMLElement;
 
       const distance = this.getDistance({ event, trackElement });
@@ -81,14 +80,13 @@ class ViewOnTrack {
     }
   }
 
-  private getRangeThumbElement(options: TrackElementOptions): HTMLElement {
-    const { event, trackElement } = options;
+  private getRangeThumbElement(event: MouseEvent): HTMLElement {
     const thumbMin = this.thumbList[0] as HTMLElement;
     const thumbMax = this.thumbList[1]as HTMLElement;
     const trackPositionKey = this.vertical ? 'top' : 'left';
     this.view.notifyAll({
       value: {
-        start: trackElement.getBoundingClientRect()[trackPositionKey],
+        start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
         itemSize: this.trackSize,
       },
       type: 'getCoordinatesOfMiddle',

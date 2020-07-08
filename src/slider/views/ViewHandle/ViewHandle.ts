@@ -68,9 +68,9 @@ class ViewHandle {
       this.vertical = vertical;
       this.progress = progress;
       this.label = label;
-      const trackElement = $element.find('.js-slider__track').get(0);
-      this.trackWidth = trackElement.getBoundingClientRect().width;
-      this.trackHeight = trackElement.getBoundingClientRect().height;
+      this.trackElement = $element.find('.js-slider__track').get(0);
+      this.trackWidth = this.trackElement.getBoundingClientRect().width;
+      this.trackHeight = this.trackElement.getBoundingClientRect().height;
       const thumbCollection = $element.find('.js-slider__thumb');
       this.thumbElement = (thumbCollection.get(0));
       const thumbWidth = this.thumbElement.getBoundingClientRect().width;
@@ -100,22 +100,10 @@ class ViewHandle {
         this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown);
       }
 
-      [...$element.find('.js-slider__thumb')].forEach((value) => {
-        this.trackElement = (((value as HTMLElement).parentElement as HTMLElement)
-          .querySelector('.js-slider__track') as HTMLElement);
-
-        this.step = step;
-        this.min = min;
-        this.max = max;
-        this.range = range;
-        this.vertical = vertical;
-        this.progress = progress;
-      });
-
-      const sliderElement = $element.find('.js-slider')[0];
+      const sliderElement = $element[0];
       sliderElement.addEventListener('click', (event) => this.viewOnTrack.handleSliderElementClick({
         event,
-        trackElement,
+        trackElement: this.trackElement,
         coordinatesStep: this.coordinateStep,
         progress,
         min,

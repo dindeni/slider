@@ -46,6 +46,11 @@ interface CheckingStepDataOptions {
   data: { coordinates: number[]; value: number[] };
 }
 
+interface SettingStepCoordinatesOptions {
+  step: number | undefined;
+  range: boolean;
+}
+
 class ViewOptional {
     private rem = 0.077;
 
@@ -142,7 +147,7 @@ class ViewOptional {
       + window.scrollY < coordinatesOfMiddle)
       || (!vertical && thumbElement.getBoundingClientRect().left < coordinatesOfMiddle);
       const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
-      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_type_max') as HTMLElement;
+      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_max') as HTMLElement;
       const isLabelsExist = labelElementMin && labelElementMax;
 
       if (isLessMiddle) {
@@ -246,6 +251,42 @@ class ViewOptional {
           : $progressElement.css({
             width: `${progressSize * this.rem}rem`,
           });
+      }
+    }
+
+    public setStepCoordinates(options: SettingStepCoordinatesOptions): void {
+      const { step, range } = options;
+      const isStepNotRange = step && !range;
+      const isStepRange = step && range;
+      if (isStepRange) {
+        const stepData = this.correctStepCoordinate({
+          coordinateMin: this.view.thumbCoordinateMin,
+          coordinateMax: this.view.thumbCoordinateMax,
+        });
+
+        this.view.thumbCoordinateMin = stepData.coordinateMin || stepData.coordinateMin === 0
+          ? stepData.coordinateMin * this.rem
+          : this.view.sliderSettings.min * this.rem;
+
+        this.view.thumbCoordinateMax = stepData.coordinateMax || stepData.coordinateMax === 0
+          ? stepData.coordinateMax * this.rem
+          : this.view.sliderSettings.max * this.rem;
+
+        if (stepData.coordinateMax) {
+          this.view.thumbCoordinateMax = (stepData.coordinateMax
+            || this.view.sliderSettings.max) * this.rem;
+        }
+        this.view.sliderSettings.valueMin = stepData.valueMin;
+        this.view.sliderSettings.valueMax = stepData.valueMax;
+      } else if (isStepNotRange) {
+        const stepData = this.correctStepCoordinate({
+          coordinate: this.view.thumbCoordinate,
+        });
+
+        this.view.thumbCoordinate = stepData.coordinate
+        || stepData.coordinate === 0 ? stepData.coordinate * this.rem : 0;
+
+        this.view.sliderSettings.value = stepData.value;
       }
     }
 }
