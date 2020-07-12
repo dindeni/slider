@@ -36,8 +36,7 @@ class Model extends Observable {
         value, min, max, trackSize,
       } = options;
       const unit = trackSize / (max - min);
-      const rem = 0.077;
-      return Number((((value - min) * unit) * rem).toFixed(2));
+      return (value - min) * unit;
     }
 
     public validateValue(options: OptionsForValidation): void {

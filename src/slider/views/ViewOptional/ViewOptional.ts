@@ -8,24 +8,6 @@ interface ScaleCreationOptions extends ExtremumOptions{
   wrapper: JQuery;
 }
 
-interface CoordinateCorrectionOptions {
-  coordinateMin?: number;
-  coordinateMax?: number;
-  coordinate?: number;
-}
-
-interface ResultOfCoordinateCorrection extends CoordinateCorrectionOptions{
-  valueMin?: number;
-  valueMax?: number;
-  value?: number;
-}
-
-interface VerticalOptions extends ExtremumOptions{
-  range: boolean;
-  wrapper: JQuery;
-  coordinates: {notRange: number; min: number; max: number};
-}
-
 interface ChangingZIndexOptions {
   coordinatesOfMiddle: number;
   vertical: boolean;
@@ -34,261 +16,177 @@ interface ChangingZIndexOptions {
   thumbElement: HTMLElement;
 }
 
-interface MakingProgressOptions {
-  $wrapper: JQuery;
-  vertical: boolean;
-  trackSize: number;
-  range: boolean;
-}
-
 interface CheckingStepDataOptions {
   checkedCoordinate: number;
   data: { coordinates: number[]; value: number[] };
 }
 
-interface SettingStepCoordinatesOptions {
-  step: number | undefined;
-  range: boolean;
-}
-
 class ViewOptional {
-    private rem = 0.077;
+  private view: View;
 
-    private view: View;
+  constructor(view) {
+    this.view = view;
+  }
 
-    constructor(view) {
-      this.view = view;
-    }
+  public createScale(options: ScaleCreationOptions): void {
+    const {
+      vertical, min, max, step, trackWidth, wrapper,
+    } = options;
 
-    public createScale(options: ScaleCreationOptions): void {
-      const {
-        vertical, min, max, step, trackWidth, wrapper,
-      } = options;
+    this.view.notifyAll({
+      value: {
+        min, max, step, vertical, trackSize: trackWidth,
+      },
+      type: 'getScaleData',
+    });
 
-      this.view.notifyAll({
-        value: {
-          min, max, step, vertical, trackSize: trackWidth,
-        },
-        type: 'getScaleData',
-      });
-      const scaleTopPositionCorrection = 5;
-      const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
-      this.view.scaleData.shortValue.map((item, index) => {
-        const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
+    const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
+    this.view.scaleData.shortValue.map((item, index) => {
+      const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
-        return vertical
-          ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index] - scaleTopPositionCorrection) * this.rem}rem` })
-          : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index] * this.rem}rem` });
-      });
-    }
+      const verticalCorrection = 7;
+      return vertical
+        ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index]) - verticalCorrection}px` })
+        : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index]}px` });
+    });
+  }
 
-    public correctStepCoordinate(options:
-     CoordinateCorrectionOptions): ResultOfCoordinateCorrection {
-      const { coordinateMin, coordinateMax, coordinate } = options;
-      const result: {coordinateMin: number; coordinateMax: number; coordinate: number;
-       valueMin: number; valueMax: number; value: number; } = {
-         coordinateMin: this.view.scaleData.coordinates[0],
-         coordinateMax: this.view.scaleData.coordinates[this.view.scaleData.coordinates.length - 1],
-         coordinate: this.view.scaleData.coordinates[0],
-         valueMin: this.view.scaleData.value[0],
-         valueMax: this.view.scaleData.value[this.view.scaleData.value.length - 1],
-         value: this.view.scaleData.value[0],
-       };
+  public static checkStepData(options: CheckingStepDataOptions):
+      { coordinate: number; value: number } {
+    const { checkedCoordinate, data } = options;
 
-      if (coordinateMin) {
-        const data = this.checkStepData({
-          checkedCoordinate: coordinateMin,
-          data: this.view.scaleData,
-        });
-        result.coordinateMin = data.coordinate;
-        result.valueMin = data.value;
-      }
+    const coordinate = data.coordinates.reduce((reducer, current) => (
+      (Math.abs(current - checkedCoordinate)
+          < Math.abs(reducer - checkedCoordinate)) ? current : reducer));
+    const index = data.coordinates.findIndex((value) => value === coordinate);
+    const value = data.value[index];
+    return { coordinate, value };
+  }
 
-      if (coordinateMax) {
-        const data = this.checkStepData({
-          checkedCoordinate: coordinateMax,
-          data: this.view.scaleData,
-        });
-        result.coordinateMax = data.coordinate;
-        result.valueMax = data.value;
-      }
+  public static changeZIndex(options: ChangingZIndexOptions): void {
+    const {
+      coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
+    } = options;
 
-      if (coordinate) {
-        const data = this.checkStepData({
-          checkedCoordinate: coordinate,
-          data: this.view.scaleData,
-        });
-        result.coordinate = data.coordinate;
-        result.value = data.value;
-      }
-      return result;
-    }
-
-    public checkStepData(options: CheckingStepDataOptions): { coordinate: number; value: number } {
-      const { checkedCoordinate, data } = options;
-
-      const coordinate = data.coordinates.reduce((reducer, current) => {
-        const reducerValue = Number((reducer * this.rem).toFixed(2));
-        const currentValue = Number((current * this.rem).toFixed(2));
-        return (Math.abs(currentValue - checkedCoordinate)
-          < Math.abs(reducerValue - checkedCoordinate)) ? current : reducer;
-      });
-      const index = data.coordinates.findIndex((value) => value === coordinate);
-      const value = data.value[index];
-      return { coordinate, value };
-    }
-
-    public static changeZIndex(options: ChangingZIndexOptions): void {
-      const {
-        coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
-      } = options;
-
-      const isLessMiddle = (vertical && thumbElement.getBoundingClientRect().top
+    const isLessMiddle = (vertical && thumbElement.getBoundingClientRect().top
       + window.scrollY < coordinatesOfMiddle)
       || (!vertical && thumbElement.getBoundingClientRect().left < coordinatesOfMiddle);
-      const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
-      const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_max') as HTMLElement;
-      const isLabelsExist = labelElementMin && labelElementMax;
+    const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
+    const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_max') as HTMLElement;
+    const isLabelsExist = labelElementMin && labelElementMax;
 
-      if (isLessMiddle) {
-        thumbMax.style.zIndex = '200';
-        thumbMin.style.zIndex = '100';
-        if (isLabelsExist) {
-          labelElementMax.style.zIndex = '200';
-          labelElementMin.style.zIndex = '100';
-        }
-      } else {
-        thumbMax.style.zIndex = '100';
-        thumbMin.style.zIndex = '200';
-        if (isLabelsExist) {
-          labelElementMax.style.zIndex = '100';
-          labelElementMin.style.zIndex = '200';
-        }
+    if (isLessMiddle) {
+      thumbMax.style.zIndex = '200';
+      thumbMin.style.zIndex = '100';
+      if (isLabelsExist) {
+        labelElementMax.style.zIndex = '200';
+        labelElementMin.style.zIndex = '100';
+      }
+    } else {
+      thumbMax.style.zIndex = '100';
+      thumbMin.style.zIndex = '200';
+      if (isLabelsExist) {
+        labelElementMax.style.zIndex = '100';
+        labelElementMin.style.zIndex = '200';
       }
     }
+  }
 
-    public createProgress(): void {
-      $('<div class="slider__progress js-slider__progress"></div>').appendTo(this.view.$trackElement);
+  public createProgressNode(): void {
+    $('<div class="slider__progress js-slider__progress"></div>').appendTo(this.view.$trackElement);
+  }
+
+  public makeProgress(): void {
+    const { vertical, range } = this.view.sliderSettings;
+
+    const $progressElement = this.view.$wrapper.find('.js-slider__progress');
+    if (range) {
+      const thumbMin = vertical
+        ? parseFloat(this.view.$thumbElementMin.css('top'))
+        : parseFloat(this.view.$thumbElementMin.css('left'));
+      const thumbMax = vertical
+        ? parseFloat(this.view.$thumbElementMax.css('top'))
+        : parseFloat(this.view.$thumbElementMax.css('left'));
+      const progressSize = thumbMax - thumbMin;
+      vertical
+        ? $progressElement.css({
+          height: `${progressSize}px`,
+          top: thumbMin,
+        })
+        : $progressElement.css({
+          width: `${progressSize}px`,
+          left: thumbMin,
+        });
+    } else {
+      const progressSize = vertical
+        ? parseFloat(this.view.$thumbElement.css('top'))
+        : parseFloat(this.view.$thumbElement.css('left'));
+      vertical
+        ? $progressElement.css({
+          height: `${progressSize}px`,
+        })
+        : $progressElement.css({
+          width: `${progressSize}px`,
+        });
     }
+  }
 
-    public makeVertical(options: VerticalOptions): void {
-      const {
-        range, wrapper, coordinates,
-      } = options;
+  public makeVertical(): void {
+    const $trackElement = this.view.$wrapper.find('.js-slider__track');
 
-      const $trackElement = wrapper.find('.js-slider__track');
+    const trackWidth: number | undefined = $trackElement.width() || 0;
+    const trackHeight: number | undefined = $trackElement.height() || 0;
 
-      const trackWidth: number | undefined = $trackElement.width() || 0;
-      const trackHeight: number | undefined = $trackElement.height() || 0;
+    $trackElement.css({
+      width: `${trackHeight}px`,
+      height: `${trackWidth}px`,
+    });
 
-      $trackElement.css({
-        width: `${(trackHeight as number) * this.rem}rem`,
-        height: `${(trackWidth as number) * this.rem}rem`,
+    if (this.view.sliderSettings.range) {
+      this.view.$thumbElementMin.css({
+        top: `${this.view.thumbCoordinateMin}px`,
+        zIndex: (this.view.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
       });
-
-      if (range) {
-        const $thumbElementMin = wrapper.find('.js-slider__thumb_type_min');
-        const $thumbElementMax = wrapper.find('.js-slider__thumb_type_max');
-
-        $thumbElementMin.css({
-          left: '-0.62rem',
-          top: `${coordinates.min}rem`,
-          zIndex: (coordinates.min) < (trackWidth / 2) * this.rem ? 50 : 200,
-        });
-        $thumbElementMax.css({
-          left: '-0.62rem',
-          top: `${coordinates.max}rem`,
-          zIndex: (coordinates.max) < (trackWidth / 2) * this.rem ? 200 : 50,
-        });
-      } else {
-        const $thumbElement = wrapper.find($('.js-slider__thumb'));
-        $thumbElement.css({
-          left: '-0.62rem',
-          top: `${coordinates.notRange || 0}rem`,
-        });
-      }
-
-      wrapper.css({
-        width: '10%',
+      this.view.$thumbElementMax.css({
+        top: `${this.view.thumbCoordinateMax}px`,
+        zIndex: this.view.thumbCoordinateMax < (trackWidth / 2) ? 200 : 50,
+      });
+    } else {
+      this.view.$thumbElement.css({
+        top: `${this.view.thumbCoordinate || 0}px`,
       });
     }
 
-    public makeProgress(options: MakingProgressOptions): void {
-      const { $wrapper, vertical, range } = options;
+    this.view.$wrapper.css({
+      width: '10%',
+    });
+  }
 
-      const $progressElement = $wrapper.find('.js-slider__progress');
-      if (range) {
-        const $thumbElementMin = $wrapper.find('.js-slider__thumb_type_min');
-        const $thumbElementMax = $wrapper.find('.js-slider__thumb_type_max');
-        const thumbMin = vertical
-          ? parseFloat($thumbElementMin.css('top'))
-          : parseFloat($thumbElementMin.css('left'));
-        const thumbMax = vertical
-          ? parseFloat($thumbElementMax.css('top'))
-          : parseFloat($thumbElementMax.css('left'));
-        const progressSize = thumbMax - thumbMin;
+  public setStepCoordinates(): void {
+    const { range } = this.view.sliderSettings;
+    if (range) {
+      const valuesMin = ViewOptional.checkStepData({
+        checkedCoordinate: this.view.thumbCoordinateMin,
+        data: this.view.scaleData,
+      });
+      this.view.thumbCoordinateMin = valuesMin.coordinate;
+      this.view.sliderSettings.valueMin = valuesMin.value;
 
-        vertical
-          ? $progressElement.css({
-            width: '0.38rem',
-            height: `${progressSize * this.rem}rem`,
-            top: thumbMin,
-          })
-          : $progressElement.css({
-            width: `${progressSize * this.rem}rem`,
-            left: thumbMin,
-          });
-      } else {
-        const $thumbElement = $wrapper.find('.js-slider__thumb');
-        const progressSize = vertical
-          ? parseFloat($thumbElement.css('top'))
-          : parseFloat($thumbElement.css('left'));
-        vertical
-          ? $progressElement.css({
-            width: '0.38rem',
-            height: `${progressSize * this.rem}rem`,
-          })
-          : $progressElement.css({
-            width: `${progressSize * this.rem}rem`,
-          });
-      }
+      const valuesMax = ViewOptional.checkStepData({
+        checkedCoordinate: this.view.thumbCoordinateMax,
+        data: this.view.scaleData,
+      });
+      this.view.thumbCoordinateMax = valuesMax.coordinate;
+      this.view.sliderSettings.valueMax = valuesMax.value;
+    } else {
+      const values = ViewOptional.checkStepData({
+        checkedCoordinate: this.view.thumbCoordinate,
+        data: this.view.scaleData,
+      });
+      this.view.thumbCoordinate = values.coordinate;
+      this.view.sliderSettings.value = values.value;
     }
-
-    public setStepCoordinates(options: SettingStepCoordinatesOptions): void {
-      const { step, range } = options;
-      const isStepNotRange = step && !range;
-      const isStepRange = step && range;
-      if (isStepRange) {
-        const stepData = this.correctStepCoordinate({
-          coordinateMin: this.view.thumbCoordinateMin,
-          coordinateMax: this.view.thumbCoordinateMax,
-        });
-
-        this.view.thumbCoordinateMin = stepData.coordinateMin || stepData.coordinateMin === 0
-          ? stepData.coordinateMin * this.rem
-          : this.view.sliderSettings.min * this.rem;
-
-        this.view.thumbCoordinateMax = stepData.coordinateMax || stepData.coordinateMax === 0
-          ? stepData.coordinateMax * this.rem
-          : this.view.sliderSettings.max * this.rem;
-
-        if (stepData.coordinateMax) {
-          this.view.thumbCoordinateMax = (stepData.coordinateMax
-            || this.view.sliderSettings.max) * this.rem;
-        }
-        this.view.sliderSettings.valueMin = stepData.valueMin;
-        this.view.sliderSettings.valueMax = stepData.valueMax;
-      } else if (isStepNotRange) {
-        const stepData = this.correctStepCoordinate({
-          coordinate: this.view.thumbCoordinate,
-        });
-
-        this.view.thumbCoordinate = stepData.coordinate
-        || stepData.coordinate === 0 ? stepData.coordinate * this.rem : 0;
-
-        this.view.sliderSettings.value = stepData.value;
-      }
-    }
+  }
 }
 
 export default ViewOptional;

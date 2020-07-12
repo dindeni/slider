@@ -11,8 +11,12 @@ describe('Controller init', () => {
   let divLabel;
 
   const createElements = () => {
+    const $wrapper = $('<div class="slider js-slider"></div>');
+    const body = $('body');
+    body.css({ width: '300px' });
+    $wrapper.appendTo(body);
     const optionsForElements = {
-      $element: $('body'),
+      $element: $wrapper,
       range: false,
       vertical: false,
       min: 100,

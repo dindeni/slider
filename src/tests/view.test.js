@@ -16,20 +16,25 @@ describe('View', () => {
   const moveDistanceY = 0;
   let divLabel;
   let controller;
-  const optionsForElements = {
-    $element: $('body'),
-    range: false,
-    vertical: false,
-    min: 100,
-    max: 500,
-    progress: true,
-    label: true,
-    step: undefined,
-  };
+  let options;
 
   const createElements = () => {
+    const $wrapper = $('<div class="slider js-slider"></div>');
+    const body = $('body');
+    body.css({ width: '300px' });
+    $wrapper.appendTo(body);
+    options = {
+      $element: $wrapper,
+      range: false,
+      vertical: false,
+      min: 100,
+      max: 500,
+      progress: true,
+      label: true,
+      step: undefined,
+    };
     controller = new Controller();
-    controller.getSliderOptions(optionsForElements);
+    controller.getSliderOptions(options);
     controller.init();
   };
 
@@ -47,9 +52,6 @@ describe('View', () => {
     divTrack = document.querySelector('.js-slider__track');
     divLabel = document.querySelector('.js-slider__label');
     divProgress = document.querySelector('.js-slider__progress');
-
-    divTrack.style.width = '20.02rem';
-    divThumb.style.left = '0rem';
   };
 
   beforeAll(async () => {
@@ -89,11 +91,11 @@ describe('View', () => {
     });
 
     it('should div thumb move a distance', () => {
-      expect(parseFloat(divThumb.style.left)).toBe(moveDistanceX * 0.077);
+      expect(parseInt(divThumb.style.left, 10)).toBe(50);
     });
 
-    it('should label value to be 184', () => {
-      expect(divLabel.textContent).toBe('184');
+    it('should label value to be 172', () => {
+      expect(divLabel.textContent).toBe('172');
     });
 
     it('after track click should thumb move a distance', () => {
@@ -103,11 +105,11 @@ describe('View', () => {
       dispatchClick(divTrack, coordX, coordY);
       const divThumbLeftAfterClick = parseInt(divThumb.style.left, 10);
 
-      expect(divThumbLeft).not.toEqual(divThumbLeftAfterClick);
+      expect(divThumbLeft).not.toBe(divThumbLeftAfterClick);
     });
 
     it('should slider reload', () => {
-      controller.reloadSlider({ ...optionsForElements, range: true });
+      controller.reloadSlider({ ...options, range: true });
       const thumbElements = document.querySelectorAll('.js-slider__thumb');
       expect(thumbElements.length).toBe(2);
     });

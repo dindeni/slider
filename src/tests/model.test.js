@@ -32,7 +32,7 @@ describe('Model', () => {
       max: 500,
       trackSize: 260,
     });
-    expect(coordinates).toBe(15.02);
+    expect(coordinates).toBe(195);
   });
 
   it('should calculate scale value', () => {

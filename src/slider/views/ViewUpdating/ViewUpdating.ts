@@ -10,17 +10,11 @@ interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
   trackElement: HTMLElement;
   trackWidth: number;
   trackHeight: number;
-  coordinateStep?: number;
   stepValues?: number[];
-  coordinatesStep?: number[];
 }
 
 interface OptionsForSettingElementNotStep extends TrackSizesOptions{
-  vertical: boolean;
-  distance: number;
-  shift: number;
   thumbElement: HTMLElement;
-  range: boolean;
   thumbMin?: HTMLElement;
   thumbMax?: HTMLElement;
   thumbMinTop?: number;
@@ -30,10 +24,7 @@ interface OptionsForSettingElementNotStep extends TrackSizesOptions{
 }
 
 interface SettingStepPositionOptions extends RangeAndVerticalOptions {
-  distance: number;
-  shift: number;
   thumbElement: HTMLElement;
-  coordinatesStep: number[];
   stepValues: number[];
   thumbMin?: HTMLElement;
   thumbMax?: HTMLElement;
@@ -58,13 +49,13 @@ interface ThumbExtremumOptions {
 }
 
 class ViewUpdating {
-  private rem = 0.077;
-
   public thumbLeft: number;
 
   public thumbTop: number;
 
   private thumbElement: HTMLElement;
+
+  private distance: number;
 
   private viewOptional: ViewOptional;
 
@@ -79,11 +70,11 @@ class ViewUpdating {
 
   public updateThumbCoordinates(options: ThumbUpdatingOptions): void {
     const {
-      vertical, step, thumbDistance, thumbElement, trackHeight, trackWidth, shift,
-      range, trackElement, stepValues, coordinatesStep,
+      vertical, step, thumbDistance, shift, thumbElement, trackHeight, trackWidth,
+      range, trackElement, stepValues,
     } = options;
 
-    const distance = thumbDistance * this.rem;
+    this.distance = thumbDistance + shift;
     this.thumbElement = thumbElement;
     this.keyCoordinate = vertical ? 'top' : 'left';
 
@@ -125,12 +116,9 @@ class ViewUpdating {
 
     if (step) {
       this.setStepPosition({
-        range,
-        coordinatesStep: coordinatesStep || [],
-        stepValues: stepValues || [],
         vertical,
-        distance,
-        shift,
+        range,
+        stepValues: stepValues || [],
         thumbMin,
         thumbMax,
         thumbElement,
@@ -140,9 +128,6 @@ class ViewUpdating {
         : this.thumbLeft = parseFloat(thumbElement.style.left);
     } else {
       this.setElementsNotStep({
-        vertical,
-        distance,
-        shift,
         thumbElement,
         trackWidth,
         trackHeight,
@@ -152,50 +137,50 @@ class ViewUpdating {
         thumbMaxLeft,
         thumbMinTop,
         thumbMaxTop,
-        range,
       });
     }
   }
 
   private setElementsNotStep(options: OptionsForSettingElementNotStep): void {
     const {
-      vertical, distance, shift, trackWidth, trackHeight, thumbElement, thumbMin, thumbMax,
-      thumbMinLeft, thumbMaxLeft, thumbMinTop, thumbMaxTop, range,
+      trackWidth, trackHeight, thumbElement, thumbMin, thumbMax,
+      thumbMinLeft, thumbMaxLeft, thumbMinTop, thumbMaxTop,
     } = options;
+    const { vertical } = this.view.sliderSettings;
 
     const thumbWidth = thumbElement.getBoundingClientRect().width;
 
     const isValidMinAndMaxLeft = !vertical
       && ((thumbElement === thumbMin
       && thumbMaxLeft
-      && (shift + distance < thumbMaxLeft))
+      && (this.distance < thumbMaxLeft))
       || (thumbElement === thumbMax
       && (thumbMinLeft || thumbMinLeft === 0)
-      && (shift + distance > thumbMinLeft)
-      && Math.round((shift + distance) / this.rem) <= Math.round(trackWidth - thumbWidth)));
+      && (this.distance > thumbMinLeft)
+      && this.distance <= trackWidth - thumbWidth));
     const isValidMinAndMaxTop = vertical
       && ((thumbElement === thumbMin
       && thumbMaxTop
-      && (shift + distance < thumbMaxTop))
+      && (this.distance < thumbMaxTop))
       || (thumbElement === thumbMax
       && (thumbMinTop || thumbMinTop === 0)
-      && (shift + distance > thumbMinTop)));
+      && (this.distance > thumbMinTop)));
 
     const setRangeCoordinate = (): void => {
       if (isValidMinAndMaxLeft) {
-        this.thumbElement.style.left = `${shift + distance}rem`;
-        this.thumbLeft = shift + distance;
+        this.thumbElement.style.left = `${this.distance}px`;
+        this.thumbLeft = this.distance;
       } else if (isValidMinAndMaxTop) {
-        this.thumbElement.style.top = `${shift + distance}rem`;
-        this.thumbTop = shift + distance;
+        this.thumbElement.style.top = `${this.distance}px`;
+        this.thumbTop = this.distance;
       }
     };
 
-    if (range) {
+    if (this.view.sliderSettings.range) {
       setRangeCoordinate();
     } else {
-      this.thumbElement.style[this.keyCoordinate] = `${shift + distance}rem`;
-      vertical ? this.thumbTop = shift + distance : this.thumbLeft = shift + distance;
+      this.thumbElement.style[this.keyCoordinate] = `${this.distance}px`;
+      vertical ? this.thumbTop = this.distance : this.thumbLeft = this.distance;
     }
     this.checkThumbExtremum({
       vertical, trackWidth, trackHeight, thumbWidth,
@@ -212,21 +197,21 @@ class ViewUpdating {
     const trackSize = vertical ? trackHeight - thumbWidth : trackWidth;
 
     if (parseFloat(thumbCoordinate) < 0) {
-      this.thumbElement.style[coordinateKey] = '0rem';
-    } else if (parseFloat(thumbCoordinate) > trackSize * this.rem) {
-      this.thumbElement.style[coordinateKey] = `${trackSize * this.rem}rem`;
+      this.thumbElement.style[coordinateKey] = '0px';
+    } else if (parseFloat(thumbCoordinate) > trackSize) {
+      this.thumbElement.style[coordinateKey] = `${trackSize}px`;
     }
   }
 
   private setStepPosition(options: SettingStepPositionOptions): void {
     const {
-      range, coordinatesStep, stepValues, vertical, distance, shift, thumbMin, thumbMax,
+      range, stepValues, vertical, thumbMin, thumbMax,
       thumbElement,
     } = options;
 
-    const data = this.viewOptional.checkStepData({
-      checkedCoordinate: (distance + shift),
-      data: { coordinates: coordinatesStep, value: stepValues },
+    const data = ViewOptional.checkStepData({
+      checkedCoordinate: (this.distance),
+      data: { coordinates: this.view.scaleData.coordinates, value: stepValues },
     });
     const coordinateKey = vertical ? 'top' : 'left';
     const thumbMinCoordinate = thumbMin ? parseFloat(thumbMin.style[coordinateKey]) : undefined;
@@ -237,12 +222,12 @@ class ViewUpdating {
     const isValidCoordinate = !range
       || (thumbElement === thumbMax
       && (thumbMinCoordinate || thumbMinCoordinate === 0)
-      && (data.coordinate * this.rem) > thumbMinCoordinate)
+      && data.coordinate > thumbMinCoordinate)
       || (thumbElement === thumbMin
-      && thumbMaxCoordinate && (data.coordinate * this.rem) < thumbMaxCoordinate);
+      && thumbMaxCoordinate && data.coordinate < thumbMaxCoordinate);
 
     if (isValidCoordinate) {
-      this.thumbElement.style[coordinateKey] = `${data.coordinate * this.rem}rem`;
+      this.thumbElement.style[coordinateKey] = `${data.coordinate}px`;
     }
   }
 

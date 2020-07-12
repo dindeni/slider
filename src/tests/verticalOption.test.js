@@ -14,14 +14,13 @@ describe('Vertical option', () => {
   const moveDistanceY = 50;
 
   const createElements = () => {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('wrapper');
-    document.body.appendChild(wrapper);
-    const $element = $('.wrapper');
-    $element.css({ width: '20.02rem' });
+    const $wrapper = $('<div class="slider js-slider"></div>');
+    const body = $('body');
+    body.css({ width: '300px' });
+    $wrapper.appendTo(body);
 
     const optionsForElements = {
-      $element,
+      $element: $wrapper,
       range: false,
       vertical: true,
       min: 100,
@@ -59,14 +58,14 @@ describe('Vertical option', () => {
       moveDistanceY);
   });
 
-  it('should track height to be 20rem', () => {
-    expect(parseInt(divTrack.style.height, 10)).toBe(20);
+  it('should track height to be 300', () => {
+    expect(parseInt(divTrack.style.height, 10)).toBe(300);
   });
 
   it('should div thumb move a distance', () => {
-    expect(parseFloat(divThumb.style.top)).toBe(moveDistanceY * 0.077);
+    expect(parseFloat(divThumb.style.top)).toBe(50);
   });
-  it('should label value to be 184', () => {
-    expect(divLabel.textContent).toBe('184');
+  it('should label value to be 172', () => {
+    expect(divLabel.textContent).toBe('172');
   });
 });

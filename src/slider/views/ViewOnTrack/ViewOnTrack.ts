@@ -8,7 +8,6 @@ interface TrackElementOptions {
 }
 
 interface TrackClickOptions extends SliderBasicOptions, TrackElementOptions {
-  coordinatesStep: number[];
 }
 
 class ViewOnTrack {
@@ -31,7 +30,7 @@ class ViewOnTrack {
 
   public handleSliderElementClick(options: TrackClickOptions): void {
     const {
-      event, trackElement, vertical, step, range, progress, min, max, coordinatesStep,
+      event, trackElement, vertical, step, range, progress, min, max,
     } = options;
     this.vertical = vertical;
     const target = event.target as HTMLElement;
@@ -61,7 +60,6 @@ class ViewOnTrack {
         trackWidth,
         trackHeight,
         trackElement,
-        coordinatesStep,
         stepValues: step ? this.view.scaleData.value : undefined,
       });
 
@@ -70,12 +68,10 @@ class ViewOnTrack {
         progress,
         min,
         max,
-        range,
         trackElement,
         distance: this.vertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
         thumbElement: this.thumbElement,
-        $wrapper: $(trackElement).parent(),
       });
     }
   }

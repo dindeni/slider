@@ -6,7 +6,6 @@ import style from '../blocks/slider/slider.scss';
 describe('Range', () => {
   let divThumbMin;
   let divThumbMax;
-  let divTrack;
   let divThumbLeftMin;
   let divThumbTopMin;
   let divThumbLeftMax;
@@ -18,8 +17,12 @@ describe('Range', () => {
   const moveDistanceY = 0;
 
   const createElements = () => {
+    const $wrapper = $('<div class="slider js-slider"></div>');
+    const body = $('body');
+    body.css({ width: '300px' });
+    $wrapper.appendTo(body);
     const optionsForElements = {
-      $element: $('body'),
+      $element: $wrapper,
       range: true,
       vertical: false,
       min: 100,
@@ -41,7 +44,6 @@ describe('Range', () => {
     document.documentElement.style.fontSize = '13px';
   };
 
-
   const findElements = () => {
     divThumbMin = document.querySelector('.js-slider__thumb_type_min');
     divThumbMax = document.querySelector('.js-slider__thumb_type_max');
@@ -49,13 +51,9 @@ describe('Range', () => {
     divThumbTopMin = divThumbMin.getBoundingClientRect().top;
     divThumbLeftMax = divThumbMax.getBoundingClientRect().left;
     divThumbTopMax = divThumbMax.getBoundingClientRect().top;
-    divTrack = document.querySelector('.js-slider__track');
     divLabelMin = document.querySelector('.js-slider__label_type_min');
     divLabelMax = document.querySelector('.js-slider__label_type_max');
     divProgress = document.querySelector('.js-slider__progress');
-
-    divTrack.style.width = '20.02rem';
-    divTrack.style.height = '0.385rem';
   };
 
   beforeAll(async () => {
@@ -77,20 +75,18 @@ describe('Range', () => {
 
   describe('After dispatch max', () => {
     beforeAll(() => {
-      divThumbMax.style.left = '20.02rem';
       dispatchMove(divThumbMax, divThumbLeftMax, divThumbTopMax, -moveDistanceX,
         moveDistanceY);
     });
 
     it('should div thumb max move a distance', () => {
-      expect(parseFloat(divThumbMax.style.left))
-        .toBe((Number((parseFloat(divTrack.style.width) - moveDistanceX * 0.077).toFixed(2))));
+      expect(parseInt(divThumbMax.style.left, 10)).toEqual(228);
     });
-    it('should label max value to be 451', () => {
-      expect(divLabelMax.textContent).toBe('451');
+    it('should label max value to be 428', () => {
+      expect(divLabelMax.textContent).toBe('428');
     });
-    it('should progress width to be equal 16.19rem', () => {
-      expect(parseFloat(divProgress.style.width).toFixed(2)).toBe('16.19');
+    it('should progress width to be equal 228', () => {
+      expect(parseInt(divProgress.style.width, 10)).toBe(228);
     });
   });
 
@@ -101,13 +97,13 @@ describe('Range', () => {
     });
 
     it('should div thumb min move a distance', () => {
-      expect(parseFloat(divThumbMin.style.left)).toBe(moveDistanceX * 0.077);
+      expect(parseInt(divThumbMin.style.left, 10)).toEqual(50);
     });
-    it('should label min value to be 184', () => {
-      expect(divLabelMin.textContent).toBe('184');
+    it('should label min value to be 172', () => {
+      expect(divLabelMin.textContent).toBe('172');
     });
-    it('should progress min width to be 12.33', () => {
-      expect(parseFloat(divProgress.style.width).toFixed(2)).toBe('12.33');
+    it('should progress min width to be 178', () => {
+      expect(parseInt(divProgress.style.width, 10)).toBe(178);
     });
   });
 });

@@ -210,9 +210,10 @@ class Demo {
     [...formElement.elements].forEach((input: HTMLInputElement, index: number) => {
       const key = this.settingsKeys[index];
       const inputElement = input;
+      const isSettingKey = settings[key] || settings[key] === 0;
       if (input.type === 'checkbox') {
         inputElement.checked = settings[key];
-      } else if (settings[key]) {
+      } else if (isSettingKey) {
         inputElement.value = settings[key];
       }
     });
@@ -318,7 +319,9 @@ class Demo {
   }
 
   private static deleteErrorElement(element: HTMLElement): void {
-    if (((element as HTMLInputElement).type !== 'checkbox')) {
+    const siblingElement = element.nextElementSibling as HTMLElement;
+    const hasErrorElement = siblingElement && (element as HTMLInputElement).type !== 'checkbox';
+    if (hasErrorElement) {
       (element.nextElementSibling as HTMLElement).classList.add('error_hidden');
     }
   }

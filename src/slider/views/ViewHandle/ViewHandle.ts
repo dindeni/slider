@@ -11,8 +11,6 @@ class ViewHandle {
 
     private coordinateYStart: number;
 
-    private coordinateStep: number[];
-
     private stepValues: number[];
 
     private trackElement: HTMLElement;
@@ -90,7 +88,6 @@ class ViewHandle {
           type: 'getScaleData',
         });
 
-        this.coordinateStep = this.view.scaleData.coordinates;
         this.stepValues = this.view.scaleData.value;
       }
 
@@ -104,7 +101,6 @@ class ViewHandle {
       sliderElement.addEventListener('click', (event) => this.viewOnTrack.handleSliderElementClick({
         event,
         trackElement: this.trackElement,
-        coordinatesStep: this.coordinateStep,
         progress,
         min,
         max,
@@ -149,8 +145,6 @@ class ViewHandle {
         thumbElement: this.thumbElement,
         shift: this.shift,
         trackElement: this.trackElement,
-        coordinateStep: this.coordinateStep ? this.coordinateStep[1] : undefined,
-        coordinatesStep: this.coordinateStep,
       });
 
       const optionsForData = {
@@ -175,8 +169,7 @@ class ViewHandle {
       if (event.target.classList.contains('js-slider__thumb')) {
         this.thumbElement = event.target;
 
-        const isVertical = (event.target as HTMLElement).classList.contains('js-slider__thumb_type_vertical');
-        if (isVertical) {
+        if (this.view.sliderSettings.vertical) {
           this.coordinateYStart = event.screenY;
           this.shift = parseFloat((event.target as HTMLElement).style.top);
         } else {

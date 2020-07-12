@@ -2,6 +2,30 @@
   position: relative;
   width: 100%;
 
+  &_type_vertical {
+    .slider {
+      &__label {
+        left: -46px;
+        top: -2px;
+
+        &::before{
+          width: 3.5rem;
+          height: 2.15rem;
+          background: url("icon-label-vertical.svg") no-repeat;
+          top: -.14rem;
+        }
+      }
+
+      &__thumb {
+        left: -8px;
+      }
+
+      &__progress {
+        width: 5px;
+      }
+    }
+  }
+
   &__track{
     height: 0.38rem;
     background: #e5e5e5;
@@ -23,8 +47,8 @@
     text-align: center;
     line-height: 1.92rem;
     position: absolute;
-    top: -2.8rem;
-    left: -0.62rem;
+    top: -30px;
+    left: -7px;
     &::before{
       content: '';
       position: absolute;
@@ -33,12 +57,6 @@
       background: url("icon-label.svg") no-repeat;
       left: 0;
       z-index: -1;
-    }
-    &_type_vertical::before{
-      width: 3.5rem;
-      height: 2.15rem;
-      background: url("icon-label-vertical.svg") no-repeat;
-      top: -.14rem;
     }
   }
 
@@ -61,6 +79,7 @@
     position: absolute;
     top: -.6rem;
     cursor: pointer;
+
     &_type_min{
       z-index: 100;
     }
