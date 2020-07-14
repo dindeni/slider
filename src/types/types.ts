@@ -27,11 +27,6 @@ interface SliderElementOptions extends Slider{
   method?: Function;
 }
 
-interface SliderOptionsForInit extends SliderElementOptions{
-  label?: boolean;
-  method?: Function;
-}
-
 interface SliderOptions extends Slider{
   method?: Function;
 }
@@ -41,9 +36,8 @@ interface TrackSizesOptions {
   trackHeight: number;
 }
 
-interface FromValueToCoordinate extends ExtremumOptions{
+interface CurrentCoordinate extends ExtremumOptions{
   value: number;
-  trackSize: number;
 }
 
 interface ScaleData {
@@ -53,14 +47,8 @@ interface ScaleData {
   shortCoordinates: number[];
 }
 
-interface ScaleCoordinatesOptions extends ExtremumOptions{
-  step: number | undefined;
-  trackSize: number;
-}
-
 interface SliderValueOptions extends ExtremumOptions{
-  trackSize: number;
-  distance: number;
+  fraction: number;
 }
 
 interface DistanceOptions {
@@ -75,8 +63,7 @@ interface CoordinateOfMiddleOptions {
 
 /* eslint-disable no-undef */
 export {
-  SliderOptionsForInit, SliderOptions, SliderElementOptions, Slider,
-  ExtremumOptions, RangeAndVerticalOptions, SliderBasicOptions, TrackSizesOptions,
-  FromValueToCoordinate, ScaleData, ScaleCoordinatesOptions, SliderValueOptions, DistanceOptions,
-  CoordinateOfMiddleOptions,
+  SliderOptions, SliderElementOptions, Slider, ExtremumOptions, RangeAndVerticalOptions,
+  SliderBasicOptions, TrackSizesOptions, CurrentCoordinate, ScaleData, SliderValueOptions,
+  DistanceOptions, CoordinateOfMiddleOptions,
 };

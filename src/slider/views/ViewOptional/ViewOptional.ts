@@ -1,9 +1,6 @@
-import { ExtremumOptions } from '../../../types/types';
 import View from '../View/View';
 
-interface ScaleCreationOptions extends ExtremumOptions{
-  vertical: boolean;
-  step: number;
+interface ScaleCreationOptions {
   trackWidth: number;
   wrapper: JQuery;
 }
@@ -29,23 +26,16 @@ class ViewOptional {
   }
 
   public createScale(options: ScaleCreationOptions): void {
-    const {
-      vertical, min, max, step, trackWidth, wrapper,
-    } = options;
+    const { trackWidth, wrapper } = options;
 
-    this.view.notifyAll({
-      value: {
-        min, max, step, vertical, trackSize: trackWidth,
-      },
-      type: 'getScaleData',
-    });
+    this.generateStepCoordinate(trackWidth);
 
     const $ul = $('<ul class="slider__scale"></ul>').appendTo(wrapper);
     this.view.scaleData.shortValue.map((item, index) => {
       const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
       const verticalCorrection = 7;
-      return vertical
+      return this.view.sliderSettings.vertical
         ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index]) - verticalCorrection}px` })
         : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index]}px` });
     });
@@ -186,6 +176,39 @@ class ViewOptional {
       this.view.thumbCoordinate = values.coordinate;
       this.view.sliderSettings.value = values.value;
     }
+  }
+
+  private generateStepCoordinate(trackSize: number): void {
+    const { max, min, step } = this.view.sliderSettings;
+
+    this.view.scaleData.coordinates = [];
+    this.view.scaleData.value = [];
+    if (step) {
+      let stepCount = 0;
+      const arrayLength = Math.round((max - min) / step) + 1;
+      [...Array(arrayLength)].map(() => {
+        const fractionOfValue = stepCount / (max - min);
+        const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
+        this.view.scaleData.value.push(stepCount);
+        this.view.scaleData.coordinates.push(coordinatesItems);
+        stepCount += step;
+        return stepCount;
+      });
+
+      const isLastCoordinate = this.view.scaleData.coordinates[
+        this.view.scaleData.coordinates.length - 1] !== trackSize;
+      if (isLastCoordinate) {
+        this.view.scaleData.coordinates.pop();
+        this.view.scaleData.coordinates.push(trackSize);
+        this.view.scaleData.value.pop();
+        this.view.scaleData.value.push(max);
+      }
+    }
+
+    this.view.notifyAll({
+      value: this.view.scaleData,
+      type: 'getScaleData',
+    });
   }
 }
 

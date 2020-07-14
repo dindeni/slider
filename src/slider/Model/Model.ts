@@ -1,13 +1,7 @@
 import {
-  FromValueToCoordinate, ScaleData, ScaleCoordinatesOptions,
-  SliderValueOptions, DistanceOptions, CoordinateOfMiddleOptions, ExtremumOptions,
+  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, ExtremumOptions,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
-
-interface MovingPercentOptions {
-  trackSize: number;
-  distance: number;
-}
 
 interface SliderValues{
   value: number | undefined;
@@ -31,12 +25,10 @@ class Model extends Observable {
 
     private dataForScale: number[] = [];
 
-    public static calculateFromValueToCoordinates(options: FromValueToCoordinate): number {
-      const {
-        value, min, max, trackSize,
-      } = options;
-      const unit = trackSize / (max - min);
-      return (value - min) * unit;
+    public static calculateCurrentCoordinate(options: CurrentCoordinate): number {
+      const { value, min, max } = options;
+
+      return (value - min) / (max - min);
     }
 
     public validateValue(options: OptionsForValidation): void {
@@ -61,103 +53,48 @@ class Model extends Observable {
 
     public calculateSliderValue(options: SliderValueOptions): number {
       const {
-        min, max, trackSize, distance,
+        min, max, fraction,
       } = options;
 
-      this.calculateSliderMovePercent({ trackSize: Math.round(trackSize), distance });
-
-      const isBelow0 = this.sliderValuePercent <= 0 || !this.sliderValuePercent;
+      const isBelow0 = fraction <= 0;
       if (isBelow0) {
         this.sliderValue = min;
       } else {
-        this.sliderValue = min + ((max - min)
-        * (this.sliderValuePercent)) / 100;
+        this.sliderValue = min + ((max - min) * fraction);
       }
 
       return Math.round(this.sliderValue);
     }
 
-    public calculateLeftScaleCoordinates(options: ScaleCoordinatesOptions): ScaleData {
-      const {
-        min, max, step, trackSize,
-      } = options;
+    public static validateStepValues(options: { data: ScaleData; max: number }): ScaleData {
+      const { data, max } = options;
+      const { coordinates, value } = data;
+      const result: ScaleData = { ...data, shortCoordinates: coordinates, shortValue: value };
 
-      const scaleValue: {value: number[]; coordinates: number[]; shortValue: number[];
-      shortCoordinates: number[];} = {
-        coordinates: [],
-        value: [],
-        shortValue: [],
-        shortCoordinates: [],
-      };
-      const width = Math.round(trackSize);
+      while (result.shortValue.length > 10) {
+        result.shortValue = result.shortValue.filter(
+          (currentValue, index) => index === 0 || index % 2 === 0,
+        );
+      }
 
-      if (step) {
-        let stepCount = 0;
-        for (let i = min; i <= max; i += step) {
-          const fractionOfValue = stepCount / (max - min);
-          const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
-          scaleValue.value.push(i);
-          scaleValue.coordinates.push(coordinatesItems);
-          this.dataForScale.push(coordinatesItems);
-          stepCount += step;
-        }
+      while (result.shortCoordinates.length > 10) {
+        result.shortCoordinates = result.shortCoordinates.filter(
+          (currentValue, index) => index === 0 || index % 2 === 0,
+        );
+      }
 
-        const isLastCoordinate = scaleValue.coordinates[
-          scaleValue.coordinates.length - 1] !== width;
-
-        if (isLastCoordinate) {
-          scaleValue.coordinates.pop();
-          scaleValue.coordinates.push(width);
-          scaleValue.value.pop();
-          scaleValue.value.push(max);
-        }
-
-        scaleValue.shortValue = scaleValue.value;
-        scaleValue.shortCoordinates = scaleValue.coordinates;
-
-        while (scaleValue.shortValue.length > 10) {
-          scaleValue.shortValue = scaleValue.shortValue.filter(
-            (value, index) => index === 0 || index % 2 === 0,
-          );
-        }
-
-        while (scaleValue.shortCoordinates.length > 10) {
-          scaleValue.shortCoordinates = scaleValue.shortCoordinates.filter(
-            (value, index) => index === 0 || index % 2 === 0,
-          );
-        }
-        return scaleValue;
-      } return {
-        coordinates: [],
-        value: [],
-        shortCoordinates: [],
-        shortValue: [],
-      };
+      if (result.shortValue[result.shortValue.length - 1] !== max) {
+        result.shortValue.pop();
+        result.shortValue.push(max);
+        result.shortCoordinates.pop();
+        result.shortCoordinates.push(result.coordinates[result.coordinates.length - 1]);
+      }
+      return result;
     }
 
     public static calculateThumbDistance(options: DistanceOptions): number {
       const { coordinateStart, coordinateMove } = options;
       return coordinateMove - coordinateStart;
-    }
-
-    public static calculateCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
-      const { start, itemSize } = options;
-      return start + itemSize / 2;
-    }
-
-    private calculateSliderMovePercent(options: MovingPercentOptions): number {
-      const { trackSize, distance } = options;
-      this.sliderValuePercent = (distance / trackSize) * 100;
-      switch (true) {
-        case this.sliderValuePercent < 0:
-          this.sliderValuePercent = 0;
-          break;
-        case this.sliderValuePercent > 100:
-          this.sliderValuePercent = 100;
-          break;
-        default: return this.sliderValuePercent;
-      }
-      return this.sliderValuePercent;
     }
 }
 

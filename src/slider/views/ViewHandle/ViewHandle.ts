@@ -11,8 +11,6 @@ class ViewHandle {
 
     private coordinateYStart: number;
 
-    private stepValues: number[];
-
     private trackElement: HTMLElement;
 
     private step: number | undefined;
@@ -71,25 +69,7 @@ class ViewHandle {
       this.trackHeight = this.trackElement.getBoundingClientRect().height;
       const thumbCollection = $element.find('.js-slider__thumb');
       this.thumbElement = (thumbCollection.get(0));
-      const thumbWidth = this.thumbElement.getBoundingClientRect().width;
       this.$element = $element;
-
-      if (step) {
-        this.view.notifyAll({
-          value: {
-            min,
-            max,
-            step,
-            vertical,
-            trackSize: vertical
-              ? Math.round(this.trackHeight - thumbWidth)
-              : Math.round(this.trackWidth - thumbWidth),
-          },
-          type: 'getScaleData',
-        });
-
-        this.stepValues = this.view.scaleData.value;
-      }
 
       this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown);
       if (range) {

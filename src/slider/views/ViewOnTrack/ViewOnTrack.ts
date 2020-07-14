@@ -30,15 +30,14 @@ class ViewOnTrack {
 
   public handleSliderElementClick(options: TrackClickOptions): void {
     const {
-      event, trackElement, vertical, step, range, progress, min, max,
+      event, trackElement, vertical, step, range, progress,
     } = options;
     this.vertical = vertical;
     const target = event.target as HTMLElement;
-    const wrapper = target.parentElement as HTMLElement;
 
     const isTrack = target === trackElement
-      || wrapper.querySelector('.js-slider__progress')
-      || wrapper.querySelector('.js-slider__scale-item');
+      || target.classList.contains('js-slider__progress')
+      || target.classList.contains('js-slider__scale-item');
     if (isTrack) {
       const trackHeight = this.view.$trackElement[0].getBoundingClientRect().height;
       const trackWidth = this.view.$trackElement[0].getBoundingClientRect().width;
@@ -66,8 +65,6 @@ class ViewOnTrack {
       this.view.updateData({
         vertical,
         progress,
-        min,
-        max,
         trackElement,
         distance: this.vertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
@@ -80,16 +77,14 @@ class ViewOnTrack {
     const thumbMin = this.thumbList[0] as HTMLElement;
     const thumbMax = this.thumbList[1]as HTMLElement;
     const trackPositionKey = this.vertical ? 'top' : 'left';
-    this.view.notifyAll({
-      value: {
-        start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
-        itemSize: this.trackSize,
-      },
-      type: 'getCoordinatesOfMiddle',
+
+    const coordinateOfMiddle = ViewUpdating.getCoordinatesOfMiddle({
+      start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
+      itemSize: this.trackSize,
     });
     const position = this.vertical ? event.pageY - window.scrollY : event.pageX;
 
-    if (position < this.view.coordinateOfMiddle) {
+    if (position < coordinateOfMiddle) {
       return thumbMin;
     }
     return thumbMax;

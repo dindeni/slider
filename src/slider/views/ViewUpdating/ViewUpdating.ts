@@ -1,5 +1,5 @@
 import ViewOptional from '../ViewOptional/ViewOptional';
-import { RangeAndVerticalOptions, TrackSizesOptions } from '../../../types/types';
+import { RangeAndVerticalOptions, TrackSizesOptions, CoordinateOfMiddleOptions } from '../../../types/types';
 import View from '../View/View';
 
 interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
@@ -141,6 +141,11 @@ class ViewUpdating {
     }
   }
 
+  public static getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
+    const { start, itemSize } = options;
+    return start + itemSize / 2;
+  }
+
   private setElementsNotStep(options: OptionsForSettingElementNotStep): void {
     const {
       trackWidth, trackHeight, thumbElement, thumbMin, thumbMax,
@@ -156,8 +161,7 @@ class ViewUpdating {
       && (this.distance < thumbMaxLeft))
       || (thumbElement === thumbMax
       && (thumbMinLeft || thumbMinLeft === 0)
-      && (this.distance > thumbMinLeft)
-      && this.distance <= trackWidth - thumbWidth));
+      && (this.distance > thumbMinLeft)));
     const isValidMinAndMaxTop = vertical
       && ((thumbElement === thumbMin
       && thumbMaxTop
@@ -194,7 +198,7 @@ class ViewUpdating {
 
     const thumbCoordinate = vertical ? this.thumbElement.style.top : this.thumbElement.style.left;
     const coordinateKey = vertical ? 'top' : 'left';
-    const trackSize = vertical ? trackHeight - thumbWidth : trackWidth;
+    const trackSize = vertical ? trackHeight - thumbWidth : trackWidth - thumbWidth;
 
     if (parseFloat(thumbCoordinate) < 0) {
       this.thumbElement.style[coordinateKey] = '0px';
@@ -239,13 +243,11 @@ class ViewUpdating {
       const start = vertical ? trackElement.getBoundingClientRect().top + window.scrollY
         : trackElement.getBoundingClientRect().left;
 
-      this.view.notifyAll({
-        value:
-        { start, itemSize: vertical ? trackHeight : trackWidth },
-        type: 'getCoordinatesOfMiddle',
+      const coordinateOfMiddle = ViewUpdating.getCoordinatesOfMiddle({
+        start, itemSize: vertical ? trackHeight : trackWidth,
       });
       ViewOptional.changeZIndex({
-        coordinatesOfMiddle: this.view.coordinateOfMiddle,
+        coordinatesOfMiddle: coordinateOfMiddle,
         vertical,
         thumbMax,
         thumbMin,

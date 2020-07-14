@@ -3,11 +3,8 @@ import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
 import {
-  ScaleCoordinatesOptions,
-  FromValueToCoordinate,
-  SliderValueOptions,
+  ScaleData,
   DistanceOptions,
-  CoordinateOfMiddleOptions,
   SliderElementOptions,
   SliderOptions,
 } from '../../types/types';
@@ -49,29 +46,26 @@ class Controller extends Observable {
     this.view.reloadSlider(options);
   }
 
-  private getScaleCoordinates(options: ScaleCoordinatesOptions): void {
-    const scaleData = this.model.calculateLeftScaleCoordinates(options);
+  private getScaleData(options: ScaleData): void {
+    const scaleData = Model.validateStepValues({ data: options, max: this.sliderOptions.max });
     this.view.setScaleData(scaleData);
   }
 
-  private getCoordinates(options: FromValueToCoordinate): void {
-    const coordinate = Model.calculateFromValueToCoordinates(options);
+  private getCoordinates(value: number): void {
+    const { min, max } = this.sliderOptions;
+    const coordinate = Model.calculateCurrentCoordinate({ value, min, max });
     this.view.setCoordinate(coordinate);
   }
 
-  private getValue(options: SliderValueOptions): void {
-    this.sliderValue = this.model.calculateSliderValue(options);
+  private getValue(fraction: number): void {
+    const { min, max } = this.sliderOptions;
+    this.sliderValue = this.model.calculateSliderValue({ fraction, min, max });
     this.view.setLabelValue(this.sliderValue);
   }
 
   private getDistance(options: DistanceOptions): void {
     const distance = Model.calculateThumbDistance(options);
     this.view.getDistance(distance);
-  }
-
-  private getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): void {
-    const coordinateOfMiddle = Model.calculateCoordinatesOfMiddle(options);
-    this.view.getCoordinateOfMiddle(coordinateOfMiddle);
   }
 
   private updateOptions(options: SliderElementOptions): void {
@@ -85,8 +79,7 @@ class Controller extends Observable {
     this.view.subscribe({ method: this.getCoordinates, type: 'getCoordinates' });
     this.view.subscribe({ method: this.getValue, type: 'getValue' });
     this.view.subscribe({ method: this.getDistance, type: 'getDistance' });
-    this.view.subscribe({ method: this.getCoordinatesOfMiddle, type: 'getCoordinatesOfMiddle' });
-    this.view.subscribe({ method: this.getScaleCoordinates, type: 'getScaleData' });
+    this.view.subscribe({ method: this.getScaleData, type: 'getScaleData' });
     this.view.subscribe({ method: this.updateOptions, type: 'updateOptions' });
   }
 }

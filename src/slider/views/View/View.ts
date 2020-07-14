@@ -2,7 +2,7 @@ import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewHandle from '../ViewHandle/ViewHandle';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import {
-  SliderElementOptions, SliderOptions, RangeAndVerticalOptions, ExtremumOptions, ScaleData,
+  SliderElementOptions, SliderOptions, RangeAndVerticalOptions, ScaleData,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
@@ -23,7 +23,7 @@ interface UpdatingLabelOptions {
   thumbElement: HTMLElement;
 }
 
-interface UpdatingDataOptions extends ExtremumOptions {
+interface UpdatingDataOptions {
   trackElement: HTMLElement;
   distance: number;
   thumbElement: HTMLElement;
@@ -49,13 +49,13 @@ class View extends Observable {
 
   public coordinate: number;
 
-  public scaleData: ScaleData;
+  public scaleData: ScaleData = {
+    value: [], coordinates: [], shortValue: [], shortCoordinates: [],
+  };
 
   public sliderSettings: SliderElementOptions;
 
   public distance: number;
-
-  public coordinateOfMiddle: number;
 
   public $wrapper: JQuery;
 
@@ -152,13 +152,9 @@ class View extends Observable {
     this.distance = distance;
   }
 
-  public getCoordinateOfMiddle(coordinateOfMiddle: number): void {
-    this.coordinateOfMiddle = coordinateOfMiddle;
-  }
-
   public updateData(options: UpdatingDataOptions): void {
     const {
-      min, max, trackElement, distance, vertical, thumbElement, progress,
+      trackElement, distance, vertical, thumbElement, progress,
     } = options;
 
     const trackSize = vertical
@@ -166,14 +162,8 @@ class View extends Observable {
       : trackElement.getBoundingClientRect().width;
     const thumbSize = thumbElement.getBoundingClientRect().width;
 
-    const valueOptions = {
-      min,
-      max,
-      trackSize: (trackSize - thumbSize),
-      distance,
-    };
-
-    this.notifyAll({ value: valueOptions, type: 'getValue' });
+    const fraction = distance / (trackSize - thumbSize);
+    this.notifyAll({ value: fraction, type: 'getValue' });
 
     const optionsForLabel = {
       value: this.valueForLabel,
@@ -194,7 +184,7 @@ class View extends Observable {
   }
 
   public setCoordinate(value: number): void {
-    this.coordinate = value;
+    this.coordinate = value * (this.trackSize - this.thumbSize);
   }
 
   public stylingElements(options: OptionsForStylingElements): void {
@@ -262,12 +252,7 @@ class View extends Observable {
 
   private getThumbCoordinates(value): number {
     this.notifyAll({
-      value: {
-        value,
-        min: this.sliderSettings.min,
-        max: this.sliderSettings.max,
-        trackSize: this.trackSize - this.thumbSize,
-      },
+      value,
       type: 'getCoordinates',
     });
     return this.coordinate;
