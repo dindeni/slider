@@ -57,9 +57,9 @@ class ViewUpdating {
 
   private distance: number;
 
-  private viewOptional: ViewOptional;
-
   private keyCoordinate: string;
+
+  private viewOptional: ViewOptional;
 
   readonly view: View;
 

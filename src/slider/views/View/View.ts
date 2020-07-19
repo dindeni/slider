@@ -65,13 +65,13 @@ class View extends Observable {
 
   private valueForLabel: number;
 
+  private parentElement: HTMLElement;
+
   private viewOptional: ViewOptional;
 
   private viewHandle: ViewHandle;
 
   private viewUpdating: ViewUpdating;
-
-  private parentElement: HTMLElement;
 
   public createElements(options: SliderElementOptions): void {
     const {
@@ -305,7 +305,7 @@ class View extends Observable {
     $labelElementMax.text(this.sliderSettings.valueMax || this.sliderSettings.max);
   }
 
-  public updateLabelValue(options: UpdatingLabelOptions): void {
+  private updateLabelValue(options: UpdatingLabelOptions): void {
     const { value, thumbElement } = options;
 
     const labelElement: JQuery = $(thumbElement).children();

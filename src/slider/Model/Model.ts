@@ -23,8 +23,6 @@ class Model extends Observable {
 
     public valueMax: number | undefined;
 
-    private dataForScale: number[] = [];
-
     public static calculateCurrentCoordinate(options: CurrentCoordinate): number {
       const { value, min, max } = options;
 
