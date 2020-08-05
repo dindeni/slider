@@ -30,19 +30,17 @@ describe('Model', () => {
 
   it('should validate scale values', () => {
     const values = Model.validateStepValues({
-      data: {
-        coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        shortCoordinates: [],
-        shortValue: [],
-      },
-      max: 10,
+
+      coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      shortCoordinates: [],
+      shortValue: [],
     });
     expect(values).toEqual({
-      coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      shortValue: [0, 2, 4, 6, 8, 10],
-      shortCoordinates: [0, 2, 4, 6, 8, 10],
+      coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      shortValue: [0, 2, 4, 6, 8, 10, 12],
+      shortCoordinates: [0, 2, 4, 6, 8, 10, 12],
     });
   });
 });

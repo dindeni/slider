@@ -30,6 +30,7 @@ interface UpdatingDataOptions {
   vertical;
   progress: boolean;
   step?: boolean;
+  labelValue?: number;
 }
 
 class View extends Observable {
@@ -154,7 +155,7 @@ class View extends Observable {
 
   public updateData(options: UpdatingDataOptions): void {
     const {
-      trackElement, distance, vertical, thumbElement, progress,
+      trackElement, distance, vertical, thumbElement, progress, labelValue,
     } = options;
 
     const trackSize = vertical
@@ -162,11 +163,11 @@ class View extends Observable {
       : trackElement.getBoundingClientRect().width;
     const thumbSize = thumbElement.getBoundingClientRect().width;
 
-    const fraction = distance / (trackSize - thumbSize);
+    const fraction = (distance / Math.round(trackSize - thumbSize));
     this.notifyAll({ value: fraction, type: 'getValue' });
 
     const optionsForLabel = {
-      value: this.valueForLabel,
+      value: labelValue || this.valueForLabel,
       coordinate: distance,
       vertical,
       thumbElement,

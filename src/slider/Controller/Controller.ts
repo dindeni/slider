@@ -47,7 +47,7 @@ class Controller extends Observable {
   }
 
   private getScaleData(options: ScaleData): void {
-    const scaleData = Model.validateStepValues({ data: options, max: this.sliderOptions.max });
+    const scaleData = Model.validateStepValues(options);
     this.view.setScaleData(scaleData);
   }
 
@@ -64,7 +64,7 @@ class Controller extends Observable {
   }
 
   private getDistance(options: DistanceOptions): void {
-    const distance = Model.calculateThumbDistance(options);
+    const distance = Model.calculateDistance(options);
     this.view.getDistance(distance);
   }
 

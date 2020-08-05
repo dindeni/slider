@@ -35,10 +35,10 @@ class ViewOnTrack {
     this.vertical = vertical;
     const target = event.target as HTMLElement;
 
-    const isTrack = target === trackElement
-      || target.classList.contains('js-slider__progress')
-      || target.classList.contains('js-slider__scale-item');
-    if (isTrack) {
+    const isItemElement = target.classList.contains('js-slider__scale-item');
+    const isTrackElement = target === trackElement || target.classList.contains('js-slider__progress');
+    const isClickedElement = isItemElement || isTrackElement;
+    if (isClickedElement) {
       const trackHeight = this.view.$trackElement[0].getBoundingClientRect().height;
       const trackWidth = this.view.$trackElement[0].getBoundingClientRect().width;
       this.thumbList = this.view.$wrapper[0].querySelectorAll('.js-slider__thumb');
@@ -47,12 +47,21 @@ class ViewOnTrack {
       this.thumbElement = range ? this.getRangeThumbElement(event) as HTMLElement
         : this.thumbList[0] as HTMLElement;
 
-      const distance = this.getDistance({ event, trackElement });
+      if (isItemElement) {
+        this.view.notifyAll({
+          value: Number(target.textContent),
+          type: 'getCoordinates',
+        });
+      }
+      const distance = isItemElement
+        ? this.view.coordinate
+        : this.getDistance({ event, trackElement });
+
 
       this.viewUpdating.updateThumbCoordinates({
         vertical,
         range,
-        thumbDistance: Math.round(distance),
+        thumbDistance: distance,
         step,
         thumbElement: this.thumbElement,
         shift: 0,
@@ -62,6 +71,7 @@ class ViewOnTrack {
         stepValues: step ? this.view.scaleData.value : undefined,
       });
 
+
       this.view.updateData({
         vertical,
         progress,
@@ -69,6 +79,7 @@ class ViewOnTrack {
         distance: this.vertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
         thumbElement: this.thumbElement,
+        labelValue: isItemElement ? Number(target.textContent) : undefined,
       });
     }
   }
@@ -94,7 +105,7 @@ class ViewOnTrack {
     const { event, trackElement } = options;
 
     const thumbDistance = this.vertical
-      ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top + this.thumbElement
+      ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top - this.thumbElement
         .getBoundingClientRect().height / 2
       : event.pageX - trackElement.getBoundingClientRect().left
        - this.thumbElement.getBoundingClientRect().width / 2;
