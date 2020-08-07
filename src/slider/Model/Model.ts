@@ -7,7 +7,6 @@ interface SliderValues{
   valueMin: number | undefined;
   valueMax: number | undefined;
 }
-
 interface OptionsForValidation extends ExtremumOptions, SliderValues{
 }
 

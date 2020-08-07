@@ -1,4 +1,5 @@
 import autoBind from 'auto-bind';
+
 import { Slider, SliderBasicOptions, ExtremumOptions } from '../../types/types';
 import '../../slider/sliderInit/sliderInit';
 

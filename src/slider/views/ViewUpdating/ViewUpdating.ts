@@ -1,5 +1,5 @@
-import ViewOptional from '../ViewOptional/ViewOptional';
 import { RangeAndVerticalOptions, TrackSizesOptions, CoordinateOfMiddleOptions } from '../../../types/types';
+import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 
 interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
@@ -12,7 +12,6 @@ interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
   trackHeight: number;
   stepValues?: number[];
 }
-
 interface OptionsForSettingElementNotStep extends TrackSizesOptions{
   thumbElement: HTMLElement;
   thumbMin?: HTMLElement;
@@ -22,7 +21,6 @@ interface OptionsForSettingElementNotStep extends TrackSizesOptions{
   thumbMinLeft?: number;
   thumbMaxLeft?: number;
 }
-
 interface SettingStepPositionOptions extends RangeAndVerticalOptions {
   thumbElement: HTMLElement;
   stepValues: number[];
@@ -40,7 +38,6 @@ interface SettingZIndexOptions extends TrackSizesOptions{
   thumbMin?: HTMLElement;
   thumbMax?: HTMLElement;
 }
-
 interface ThumbExtremumOptions {
   trackWidth: number;
   trackHeight: number;

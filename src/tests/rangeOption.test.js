@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 import Controller from '../slider/Controller/Controller';
-import { dispatchMove } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
+import { dispatchMove } from './_serviceFunctions';
 
 describe('Range', () => {
   let divThumbMin;

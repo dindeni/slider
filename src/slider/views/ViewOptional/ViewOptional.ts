@@ -4,7 +4,6 @@ interface ScaleCreationOptions {
   trackWidth: number;
   wrapper: JQuery;
 }
-
 interface ChangingZIndexOptions {
   coordinatesOfMiddle: number;
   vertical: boolean;
@@ -12,7 +11,6 @@ interface ChangingZIndexOptions {
   thumbMin: HTMLElement;
   thumbElement: HTMLElement;
 }
-
 interface CheckingStepDataOptions {
   checkedCoordinate: number;
   data: { coordinates: number[]; value: number[] };

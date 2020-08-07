@@ -1,13 +1,11 @@
 import autoBind from 'auto-bind';
+
+import {
+  ScaleData, DistanceOptions, SliderElementOptions, SliderOptions,
+} from '../../types/types';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
-import {
-  ScaleData,
-  DistanceOptions,
-  SliderElementOptions,
-  SliderOptions,
-} from '../../types/types';
 
 interface PublicData extends SliderOptions{
   reload: Function;

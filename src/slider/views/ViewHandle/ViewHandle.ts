@@ -1,6 +1,7 @@
 import autoBind from 'auto-bind';
-import View from '../View/View';
+
 import { SliderElementOptions } from '../../../types/types';
+import View from '../View/View';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import ViewOnTrack from '../ViewOnTrack/ViewOnTrack';
 

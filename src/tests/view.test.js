@@ -1,8 +1,8 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import Controller from '../slider/Controller/Controller';
-import { dispatchMove, dispatchClick } from './_serviceFunctions';
 import style from '../blocks/slider/slider.scss';
+import { dispatchMove, dispatchClick } from './_serviceFunctions';
 
 const $ = require('jquery');
 

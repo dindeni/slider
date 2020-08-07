@@ -1,10 +1,10 @@
-import ViewOptional from '../ViewOptional/ViewOptional';
-import ViewHandle from '../ViewHandle/ViewHandle';
-import ViewUpdating from '../ViewUpdating/ViewUpdating';
 import {
   SliderElementOptions, SliderOptions, RangeAndVerticalOptions, ScaleData,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import ViewOptional from '../ViewOptional/ViewOptional';
+import ViewHandle from '../ViewHandle/ViewHandle';
+import ViewUpdating from '../ViewUpdating/ViewUpdating';
 
 interface OptionsForStylingElements extends RangeAndVerticalOptions {
   step: number | undefined;
@@ -12,17 +12,14 @@ interface OptionsForStylingElements extends RangeAndVerticalOptions {
   valueMin?: number;
   valueMax?: number;
 }
-
 interface LabelCreationOptions extends RangeAndVerticalOptions {
   initialValue: number;
   max: number;
 }
-
 interface UpdatingLabelOptions {
   value: number;
   thumbElement: HTMLElement;
 }
-
 interface UpdatingDataOptions {
   trackElement: HTMLElement;
   distance: number;

@@ -1,12 +1,11 @@
+import { SliderBasicOptions } from '../../../types/types';
 import View from '../View/View';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
-import { SliderBasicOptions } from '../../../types/types';
 
 interface TrackElementOptions {
   event: MouseEvent;
   trackElement: HTMLElement;
 }
-
 interface TrackClickOptions extends SliderBasicOptions, TrackElementOptions {
 }
 

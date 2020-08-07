@@ -1,5 +1,5 @@
-import Controller from '../Controller/Controller';
 import { SliderOptions } from '../../types/types';
+import Controller from '../Controller/Controller';
 
 declare global {
   interface JQuery {
