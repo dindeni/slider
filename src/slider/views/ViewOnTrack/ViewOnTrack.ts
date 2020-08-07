@@ -57,7 +57,6 @@ class ViewOnTrack {
         ? this.view.coordinate
         : this.getDistance({ event, trackElement });
 
-
       this.viewUpdating.updateThumbCoordinates({
         vertical,
         range,

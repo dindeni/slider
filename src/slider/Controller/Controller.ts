@@ -42,8 +42,9 @@ class Controller extends Observable {
     return { ...this.sliderOptions, reload: this.reloadSlider };
   }
 
-  private reloadSlider(options: SliderElementOptions): void {
-    this.view.reloadSlider(options);
+  private async reloadSlider(options: SliderElementOptions): Promise<void> {
+    this.sliderOptions = { ...options };
+    await this.view.reloadSlider(options);
   }
 
   private getScaleData(options: ScaleData): void {

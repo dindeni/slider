@@ -191,7 +191,7 @@ class Demo {
     }
   }
 
-  public setInputValue(settings): void {
+  private setInputValue(settings): void {
     const {
       range, min, max, step,
     } = settings;
@@ -223,23 +223,37 @@ class Demo {
     }
   }
 
-  public validateValue(element, value): boolean {
+  private validateValue(element, value): boolean {
     const {
-      min, max, step,
+      min, max, step, range, valueMin, valueMax,
     } = this.settings;
+    Demo.deleteErrorElement(element);
+
+    const checkRangeValue = (): boolean => {
+      if (range) {
+        const isMin = element.classList.contains('js-demo__field-value_type_min');
+        switch (true) {
+          case isMin && value > valueMax:
+            return Demo.createErrorElement({ element, text: 'invalid value min' });
+          case !isMin && value < valueMin:
+            return Demo.createErrorElement({ element, text: 'invalid value max' });
+          default: return true;
+        }
+      } return true;
+    };
 
     const checkRangeLimits = (number: number): boolean => {
-      Demo.deleteErrorElement(element);
       if (!number) {
         return true;
       }
-      if (number >= min && number <= max) {
+      const isValidValue = number >= min && number <= max;
+      if (isValidValue) {
         return true;
       }
-      return Demo.createErrorElement({ element, text: 'invalid value(min or max)' });
+      return Demo.createErrorElement({ element, text: 'invalid value' });
     };
 
-    const isValidValues = checkRangeLimits(value);
+    const isValidValues = checkRangeLimits(value) && checkRangeValue();
 
     const checkStepValue = (number: number): boolean => {
       if (isValidValues) {
@@ -255,7 +269,7 @@ class Demo {
     return isValidValues;
   }
 
-  public validateSettings(element: HTMLInputElement):
+  private validateSettings(element: HTMLInputElement):
     boolean | number | undefined | null {
     const { min, max } = this.settings;
 
@@ -273,6 +287,7 @@ class Demo {
     const {
       min, max, valueMin, valueMax, value,
     } = this.settings;
+
     const checkValue = (number: number): number => {
       if (number < min) {
         return min;
