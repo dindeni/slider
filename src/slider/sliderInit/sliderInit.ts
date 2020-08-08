@@ -3,13 +3,13 @@ import Controller from '../Controller/Controller';
 
 declare global {
   interface JQuery {
-    slider(options?: SliderOptions): SliderOptions;
+    slider(options?: SliderOptions): {reload: Function} | JQuery;
     }
 }
 
 /* eslint-disable func-names */
 
-$.fn.slider = function (options?: SliderOptions): SliderOptions {
+$.fn.slider = function (options?: SliderOptions): {reload: Function} | JQuery {
   const optionsDefault = {
     progress: false,
     min: 0,
@@ -28,5 +28,6 @@ $.fn.slider = function (options?: SliderOptions): SliderOptions {
   controller.init();
   if (config.method) {
     return controller.getPublicData(config.method);
-  } return config;
+  }
+  return this;
 };

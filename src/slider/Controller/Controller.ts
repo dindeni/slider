@@ -1,15 +1,9 @@
 import autoBind from 'auto-bind';
 
-import {
-  ScaleData, DistanceOptions, SliderElementOptions, SliderOptions,
-} from '../../types/types';
+import { ScaleData, DistanceOptions, SliderElementOptions } from '../../types/types';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
-
-interface PublicData extends SliderOptions{
-  reload: Function;
-}
 
 class Controller extends Observable {
   private model: Model = new Model();
@@ -35,9 +29,9 @@ class Controller extends Observable {
     this.sliderOptions = options;
   }
 
-  public getPublicData(method: Function): PublicData {
+  public getPublicData(method: Function): { reload: Function } {
     method(this.sliderOptions);
-    return { ...this.sliderOptions, reload: this.reloadSlider };
+    return { reload: this.reloadSlider };
   }
 
   private async reloadSlider(options: SliderElementOptions): Promise<void> {
