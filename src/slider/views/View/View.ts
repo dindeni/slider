@@ -1,20 +1,15 @@
 import {
-  SliderElementOptions, SliderOptions, RangeAndVerticalOptions, ScaleData,
+  SliderElementOptions, SliderOptions, Slider, ScaleData,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewHandle from '../ViewHandle/ViewHandle';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 
-interface OptionsForStylingElements extends RangeAndVerticalOptions {
-  step: number | undefined;
-  value?: number;
-  valueMin?: number;
-  valueMax?: number;
-}
-interface LabelCreationOptions extends RangeAndVerticalOptions {
+type OptionsForStylingElements = Pick<Slider, 'vertical' | 'range' | 'step' | 'value'
+  | 'valueMin' | 'valueMax'>
+interface LabelCreationOptions extends Pick<Slider, 'vertical' | 'range' | 'step' | 'max'> {
   initialValue: number;
-  max: number;
 }
 interface UpdatingLabelOptions {
   value: number;
@@ -256,7 +251,7 @@ class View extends Observable {
     return this.coordinate;
   }
 
-  private createThumb(options: RangeAndVerticalOptions): void {
+  private createThumb(options: Pick<Slider, 'vertical' | 'range'>): void {
     const { range, vertical } = options;
     if (range) {
       this.$thumbElementMin = vertical

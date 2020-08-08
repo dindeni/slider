@@ -1,14 +1,8 @@
 import {
-  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, ExtremumOptions,
+  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, Slider,
 } from '../../types/types';
 
-interface SliderValues{
-  value: number | undefined;
-  valueMin: number | undefined;
-  valueMax: number | undefined;
-}
-interface OptionsForValidation extends ExtremumOptions, SliderValues{
-}
+type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 'valueMax'>;
 
 class Model {
   public sliderValue: number;

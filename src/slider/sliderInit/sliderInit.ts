@@ -15,13 +15,9 @@ $.fn.slider = function (options?: SliderOptions): SliderOptions {
     min: 0,
     max: 100,
     label: false,
-    step: undefined,
     vertical: false,
     range: false,
     $element: this,
-    valueMin: undefined,
-    valueMax: undefined,
-    value: undefined,
   };
 
   const config = $.extend({}, optionsDefault, options);

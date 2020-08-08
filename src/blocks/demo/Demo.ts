@@ -1,24 +1,23 @@
 import autoBind from 'auto-bind';
 
-import { Slider, SliderBasicOptions, ExtremumOptions } from '../../types/types';
+import { Slider } from '../../types/types';
 import '../../slider/sliderInit/sliderInit';
 
-interface ObservingInputOptions extends SliderBasicOptions{
+interface ObservingInputOptions extends Slider {
   element: HTMLElement;
 }
 
-interface DemoElementsAndEventOptions{
+interface DemoElementsAndEventOptions {
   event: Event;
   element: HTMLElement;
   formElement: HTMLElement;
 }
 
-interface DemoElementChangeOptions extends ExtremumOptions, DemoElementsAndEventOptions{
+interface DemoElementChangeOptions extends Pick<Slider, 'min' | 'max' | 'range'>, DemoElementsAndEventOptions {
   step: number | undefined;
-  range: boolean;
 }
 
-interface OptionsForUpdatingSlider extends DemoElementsAndEventOptions{
+interface OptionsForUpdatingSlider extends DemoElementsAndEventOptions {
   settings: Slider;
 }
 

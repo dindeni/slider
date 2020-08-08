@@ -1,9 +1,8 @@
-import { RangeAndVerticalOptions, TrackSizesOptions, CoordinateOfMiddleOptions } from '../../../types/types';
+import { Slider, TrackSizesOptions, CoordinateOfMiddleOptions } from '../../../types/types';
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 
-interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
-  step: number | undefined;
+interface ThumbUpdatingOptions extends Pick<Slider, 'vertical' | 'range' | 'step'> {
   thumbDistance: number;
   thumbElement: HTMLElement;
   shift: number;
@@ -12,7 +11,7 @@ interface ThumbUpdatingOptions extends RangeAndVerticalOptions{
   trackHeight: number;
   stepValues?: number[];
 }
-interface OptionsForSettingElementNotStep extends TrackSizesOptions{
+interface OptionsForSettingElementNotStep extends TrackSizesOptions {
   thumbElement: HTMLElement;
   thumbMin?: HTMLElement;
   thumbMax?: HTMLElement;
@@ -21,7 +20,7 @@ interface OptionsForSettingElementNotStep extends TrackSizesOptions{
   thumbMinLeft?: number;
   thumbMaxLeft?: number;
 }
-interface SettingStepPositionOptions extends RangeAndVerticalOptions {
+interface SettingStepPositionOptions extends Pick<Slider, 'vertical' | 'range'> {
   thumbElement: HTMLElement;
   stepValues: number[];
   thumbMin?: HTMLElement;
@@ -32,7 +31,7 @@ interface SettingStepPositionOptions extends RangeAndVerticalOptions {
   thumbMaxLeft?: number;
 }
 
-interface SettingZIndexOptions extends TrackSizesOptions{
+interface SettingZIndexOptions extends TrackSizesOptions {
   vertical: boolean;
   trackElement: HTMLElement;
   thumbMin?: HTMLElement;

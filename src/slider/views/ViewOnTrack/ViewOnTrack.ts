@@ -1,4 +1,4 @@
-import { SliderBasicOptions } from '../../../types/types';
+import { Slider } from '../../../types/types';
 import View from '../View/View';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 
@@ -6,7 +6,7 @@ interface TrackElementOptions {
   event: MouseEvent;
   trackElement: HTMLElement;
 }
-interface TrackClickOptions extends SliderBasicOptions, TrackElementOptions {
+interface TrackClickOptions extends Slider, TrackElementOptions {
 }
 
 class ViewOnTrack {

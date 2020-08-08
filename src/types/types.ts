@@ -1,19 +1,8 @@
-interface ExtremumOptions {
+interface Slider {
   min: number;
   max: number;
-}
-
-interface RangeAndVerticalOptions {
   vertical: boolean;
   range: boolean;
-}
-
-interface SliderBasicOptions extends ExtremumOptions, RangeAndVerticalOptions{
-  progress: boolean;
-  step?: number;
-}
-
-interface Slider extends ExtremumOptions, RangeAndVerticalOptions{
   progress: boolean;
   step?: number;
   valueMin?: number;
@@ -22,21 +11,19 @@ interface Slider extends ExtremumOptions, RangeAndVerticalOptions{
   label?: boolean;
 }
 
-interface SliderElementOptions extends Slider{
+interface SliderElementOptions extends Slider {
   $element: JQuery;
   method?: Function;
 }
 
-interface SliderOptions extends Slider{
-  method?: Function;
-}
+type SliderOptions = Omit<SliderElementOptions, '$element'>;
 
 interface TrackSizesOptions {
   trackWidth: number;
   trackHeight: number;
 }
 
-interface CurrentCoordinate extends ExtremumOptions{
+interface CurrentCoordinate extends Pick<Slider, 'min' | 'max'> {
   value: number;
 }
 
@@ -47,9 +34,10 @@ interface ScaleData {
   shortCoordinates: number[];
 }
 
-interface SliderValueOptions extends ExtremumOptions{
+interface SliderValueOptions extends Pick<Slider, 'min' | 'max'> {
   fraction: number;
 }
+
 
 interface DistanceOptions {
   coordinateStart: number;
@@ -63,7 +51,6 @@ interface CoordinateOfMiddleOptions {
 
 /* eslint-disable no-undef */
 export {
-  SliderOptions, SliderElementOptions, Slider, ExtremumOptions, RangeAndVerticalOptions,
-  SliderBasicOptions, TrackSizesOptions, CurrentCoordinate, ScaleData, SliderValueOptions,
-  DistanceOptions, CoordinateOfMiddleOptions,
+  SliderOptions, SliderElementOptions, Slider, TrackSizesOptions, CurrentCoordinate, ScaleData,
+  SliderValueOptions, DistanceOptions, CoordinateOfMiddleOptions,
 };
