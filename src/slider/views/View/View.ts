@@ -6,9 +6,9 @@ import ViewOptional from '../ViewOptional/ViewOptional';
 import ViewHandle from '../ViewHandle/ViewHandle';
 import ViewUpdating from '../ViewUpdating/ViewUpdating';
 
-type OptionsForStylingElements = Pick<Slider, 'vertical' | 'range' | 'step' | 'value'
+type OptionsForStylingElements = Pick<Slider, 'isVertical' | 'isRange' | 'step' | 'value'
   | 'valueMin' | 'valueMax'>
-interface LabelCreationOptions extends Pick<Slider, 'vertical' | 'range' | 'step' | 'max'> {
+interface LabelCreationOptions extends Pick<Slider, 'isVertical' | 'isRange' | 'step' | 'max'> {
   initialValue: number;
 }
 interface UpdatingLabelOptions {
@@ -19,8 +19,8 @@ interface UpdatingDataOptions {
   trackElement: HTMLElement;
   distance: number;
   thumbElement: HTMLElement;
-  vertical;
-  progress: boolean;
+  isVertical;
+  withProgress: boolean;
   step?: boolean;
   labelValue?: number;
 }
@@ -68,7 +68,8 @@ class View extends Observable {
 
   public createElements(options: SliderElementOptions): void {
     const {
-      $element, range, vertical, min, max, step, progress, label, valueMin, valueMax, value,
+      $element, isRange, isVertical, min, max, step, withProgress, withLabel, valueMin, valueMax,
+      value,
     } = options;
 
     this.$wrapper = $element;
@@ -76,7 +77,7 @@ class View extends Observable {
     this.$trackElement = this.$wrapper.find('.js-slider__track');
     const trackSize = this.$trackElement.width() || 0;
     this.thumbSize = this.$wrapper.find('.slider__thumb').width() || 0;
-    this.createThumb({ range, vertical });
+    this.createThumb({ isRange, isVertical });
 
     this.viewOptional = new ViewOptional(this);
     this.viewHandle = new ViewHandle(this);
@@ -84,7 +85,7 @@ class View extends Observable {
 
     if (step) {
       const optionsForScale = {
-        vertical,
+        isVertical,
         min,
         max,
         step,
@@ -96,21 +97,21 @@ class View extends Observable {
     }
 
     this.stylingElements({
-      range, vertical, step, value, valueMin, valueMax,
+      isRange, isVertical, step, value, valueMin, valueMax,
     });
-    if (label) {
+    if (withLabel) {
       this.createLabel({
-        initialValue: min, vertical, range, max,
+        initialValue: min, isVertical, isRange, max,
       });
     }
 
-    if (progress) {
+    if (withProgress) {
       this.viewOptional.createProgressNode();
       this.viewOptional.makeProgress();
     }
 
     this.viewHandle.addDragAndDrop({
-      min, max, range, label, vertical, progress, $element: this.$wrapper, step,
+      min, max, isRange, withLabel, isVertical, withProgress, $element: this.$wrapper, step,
     });
   }
 
@@ -147,10 +148,10 @@ class View extends Observable {
 
   public updateData(options: UpdatingDataOptions): void {
     const {
-      trackElement, distance, vertical, thumbElement, progress, labelValue,
+      trackElement, distance, isVertical, thumbElement, withProgress, labelValue,
     } = options;
 
-    const trackSize = vertical
+    const trackSize = isVertical
       ? trackElement.getBoundingClientRect().height
       : trackElement.getBoundingClientRect().width;
     const thumbSize = thumbElement.getBoundingClientRect().width;
@@ -161,7 +162,7 @@ class View extends Observable {
     const optionsForLabel = {
       value: labelValue || this.valueForLabel,
       coordinate: distance,
-      vertical,
+      isVertical,
       thumbElement,
     };
 
@@ -171,7 +172,7 @@ class View extends Observable {
       this.notifyAll({ value: this.sliderSettings, type: 'updateOptions' });
     }
 
-    if (progress) {
+    if (withProgress) {
       this.viewOptional.makeProgress();
     }
   }
@@ -182,13 +183,13 @@ class View extends Observable {
 
   public stylingElements(options: OptionsForStylingElements): void {
     const {
-      range, vertical, step, value, valueMin, valueMax,
+      isRange, isVertical, step, value, valueMin, valueMax,
     } = options;
 
     this.$wrapper.css({ width: '100%' });
     this.trackSize = this.$wrapper.find('.slider__track').width() || 0;
     this.thumbSize = this.$wrapper.find('.slider__thumb').width() || 0;
-    if (range) {
+    if (isRange) {
       this.thumbCoordinateMin = this.getThumbCoordinates(
         valueMin || this.sliderSettings.min,
       );
@@ -205,9 +206,9 @@ class View extends Observable {
       this.viewOptional.setStepCoordinates();
     }
 
-    if (vertical) {
+    if (isVertical) {
       this.viewOptional.makeVertical();
-    } else if (range) {
+    } else if (isRange) {
       this.$thumbElementMin = this.$wrapper.find('.js-slider__thumb_type_min');
       this.$thumbElementMax = this.$wrapper.find('.js-slider__thumb_type_max');
 
@@ -238,7 +239,7 @@ class View extends Observable {
       + '</div><div class="slider__thumb js-slider__thumb"></div>');
     $sliderElements.appendTo(this.$wrapper);
 
-    if (this.sliderSettings.vertical) {
+    if (this.sliderSettings.isVertical) {
       this.$wrapper.addClass('slider_type_vertical');
     }
   }
@@ -251,10 +252,10 @@ class View extends Observable {
     return this.coordinate;
   }
 
-  private createThumb(options: Pick<Slider, 'vertical' | 'range'>): void {
-    const { range, vertical } = options;
-    if (range) {
-      this.$thumbElementMin = vertical
+  private createThumb(options: Pick<Slider, 'isVertical' | 'isRange'>): void {
+    const { isRange, isVertical } = options;
+    if (isRange) {
+      this.$thumbElementMin = isVertical
         ? this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')
         : this.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min');
       this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>')
@@ -265,27 +266,27 @@ class View extends Observable {
   }
 
   private createLabel(options: LabelCreationOptions): void {
-    const { vertical, range } = options;
+    const { isVertical, isRange } = options;
 
-    if (range) {
+    if (isRange) {
       this.createRangeLabel();
     } else {
       const $labelElement = $('<div class="slider__label js-slider__label"></div>').appendTo(this.$thumbElement);
       $labelElement.text(this.sliderSettings.value || this.sliderSettings.min);
-      if (vertical) {
+      if (isVertical) {
         $labelElement.addClass('slider__label_type_vertical');
       }
     }
   }
 
   private createRangeLabel(): void {
-    const { vertical } = this.sliderSettings;
+    const { isVertical } = this.sliderSettings;
     const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_type_min js-slider__label_type_min"></div>')
       .appendTo(this.$thumbElementMin);
     $labelElementMin.css({
       zIndex: this.thumbCoordinateMin > (this.trackSize / 2) ? 100 : 50,
     });
-    if (vertical) {
+    if (isVertical) {
       $labelElementMin.addClass('slider__label_type_vertical');
     }
     $labelElementMin.text(this.sliderSettings.valueMin || this.sliderSettings.min);

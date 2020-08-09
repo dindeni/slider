@@ -21,12 +21,12 @@ describe('Vertical option', () => {
 
     const optionsForElements = {
       $element: $wrapper,
-      range: false,
-      vertical: true,
+      isRange: false,
+      isVertical: true,
       min: 100,
       max: 500,
-      progress: true,
-      label: true,
+      withProgress: true,
+      withLabel: true,
       step: undefined,
     };
     const controller = new Controller();

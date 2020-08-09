@@ -6,7 +6,7 @@ interface ScaleCreationOptions {
 }
 interface ChangingZIndexOptions {
   coordinatesOfMiddle: number;
-  vertical: boolean;
+  isVertical: boolean;
   thumbMax: HTMLElement;
   thumbMin: HTMLElement;
   thumbElement: HTMLElement;
@@ -33,7 +33,7 @@ class ViewOptional {
       const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
       const verticalCorrection = 7;
-      return this.view.sliderSettings.vertical
+      return this.view.sliderSettings.isVertical
         ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index]) - verticalCorrection}px` })
         : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index]}px` });
     });
@@ -53,12 +53,12 @@ class ViewOptional {
 
   public static changeZIndex(options: ChangingZIndexOptions): void {
     const {
-      coordinatesOfMiddle, vertical, thumbMin, thumbMax, thumbElement,
+      coordinatesOfMiddle, isVertical, thumbMin, thumbMax, thumbElement,
     } = options;
 
-    const isLessMiddle = (vertical && thumbElement.getBoundingClientRect().top
+    const isLessMiddle = (isVertical && thumbElement.getBoundingClientRect().top
       + window.scrollY < coordinatesOfMiddle)
-      || (!vertical && thumbElement.getBoundingClientRect().left < coordinatesOfMiddle);
+      || (!isVertical && thumbElement.getBoundingClientRect().left < coordinatesOfMiddle);
     const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
     const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_max') as HTMLElement;
     const isLabelsExist = labelElementMin && labelElementMax;
@@ -85,18 +85,18 @@ class ViewOptional {
   }
 
   public makeProgress(): void {
-    const { vertical, range } = this.view.sliderSettings;
+    const { isVertical, isRange } = this.view.sliderSettings;
 
     const $progressElement = this.view.$wrapper.find('.js-slider__progress');
-    if (range) {
-      const thumbMin = vertical
+    if (isRange) {
+      const thumbMin = isVertical
         ? parseFloat(this.view.$thumbElementMin.css('top'))
         : parseFloat(this.view.$thumbElementMin.css('left'));
-      const thumbMax = vertical
+      const thumbMax = isVertical
         ? parseFloat(this.view.$thumbElementMax.css('top'))
         : parseFloat(this.view.$thumbElementMax.css('left'));
       const progressSize = thumbMax - thumbMin;
-      vertical
+      isVertical
         ? $progressElement.css({
           height: `${progressSize}px`,
           top: thumbMin,
@@ -106,10 +106,10 @@ class ViewOptional {
           left: thumbMin,
         });
     } else {
-      const progressSize = vertical
+      const progressSize = isVertical
         ? parseFloat(this.view.$thumbElement.css('top'))
         : parseFloat(this.view.$thumbElement.css('left'));
-      vertical
+      isVertical
         ? $progressElement.css({
           height: `${progressSize}px`,
         })
@@ -130,7 +130,7 @@ class ViewOptional {
       height: `${trackWidth}px`,
     });
 
-    if (this.view.sliderSettings.range) {
+    if (this.view.sliderSettings.isRange) {
       this.view.$thumbElementMin.css({
         top: `${this.view.thumbCoordinateMin}px`,
         zIndex: (this.view.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
@@ -151,8 +151,8 @@ class ViewOptional {
   }
 
   public setStepCoordinates(): void {
-    const { range } = this.view.sliderSettings;
-    if (range) {
+    const { isRange } = this.view.sliderSettings;
+    if (isRange) {
       const valuesMin = ViewOptional.checkStepData({
         checkedCoordinate: this.view.thumbCoordinateMin,
         data: this.view.scaleData,

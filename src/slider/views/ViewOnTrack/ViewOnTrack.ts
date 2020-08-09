@@ -16,7 +16,7 @@ class ViewOnTrack {
 
   private thumbElement: HTMLElement;
 
-  private vertical: boolean;
+  private isVertical: boolean;
 
   private thumbList: NodeList;
 
@@ -29,9 +29,9 @@ class ViewOnTrack {
 
   public handleSliderElementClick(options: TrackClickOptions): void {
     const {
-      event, trackElement, vertical, step, range, progress,
+      event, trackElement, isVertical, step, isRange, withProgress,
     } = options;
-    this.vertical = vertical;
+    this.isVertical = isVertical;
     const target = event.target as HTMLElement;
 
     const isItemElement = target.classList.contains('js-slider__scale-item');
@@ -41,9 +41,9 @@ class ViewOnTrack {
       const trackHeight = this.view.$trackElement[0].getBoundingClientRect().height;
       const trackWidth = this.view.$trackElement[0].getBoundingClientRect().width;
       this.thumbList = this.view.$wrapper[0].querySelectorAll('.js-slider__thumb');
-      this.trackSize = this.vertical ? trackHeight : trackWidth;
+      this.trackSize = this.isVertical ? trackHeight : trackWidth;
 
-      this.thumbElement = range ? this.getRangeThumbElement(event) as HTMLElement
+      this.thumbElement = isRange ? this.getRangeThumbElement(event) as HTMLElement
         : this.thumbList[0] as HTMLElement;
 
       if (isItemElement) {
@@ -57,8 +57,8 @@ class ViewOnTrack {
         : this.getDistance({ event, trackElement });
 
       this.viewUpdating.updateThumbCoordinates({
-        vertical,
-        range,
+        isVertical,
+        isRange,
         thumbDistance: distance,
         step,
         thumbElement: this.thumbElement,
@@ -71,10 +71,10 @@ class ViewOnTrack {
 
 
       this.view.updateData({
-        vertical,
-        progress,
+        isVertical,
+        withProgress,
         trackElement,
-        distance: this.vertical ? parseFloat(this.thumbElement.style.top)
+        distance: this.isVertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
         thumbElement: this.thumbElement,
         labelValue: isItemElement ? Number(target.textContent) : undefined,
@@ -85,13 +85,13 @@ class ViewOnTrack {
   private getRangeThumbElement(event: MouseEvent): HTMLElement {
     const thumbMin = this.thumbList[0] as HTMLElement;
     const thumbMax = this.thumbList[1]as HTMLElement;
-    const trackPositionKey = this.vertical ? 'top' : 'left';
+    const trackPositionKey = this.isVertical ? 'top' : 'left';
 
     const coordinateOfMiddle = ViewUpdating.getCoordinatesOfMiddle({
       start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
       itemSize: this.trackSize,
     });
-    const position = this.vertical ? event.pageY - window.scrollY : event.pageX;
+    const position = this.isVertical ? event.pageY - window.scrollY : event.pageX;
 
     if (position < coordinateOfMiddle) {
       return thumbMin;
@@ -102,7 +102,7 @@ class ViewOnTrack {
   private getDistance(options: TrackElementOptions): number {
     const { event, trackElement } = options;
 
-    const thumbDistance = this.vertical
+    const thumbDistance = this.isVertical
       ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top - this.thumbElement
         .getBoundingClientRect().height / 2
       : event.pageX - trackElement.getBoundingClientRect().left

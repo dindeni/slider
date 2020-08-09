@@ -13,7 +13,7 @@ interface DemoElementsAndEventOptions {
   formElement: HTMLElement;
 }
 
-interface DemoElementChangeOptions extends Pick<Slider, 'min' | 'max' | 'range'>, DemoElementsAndEventOptions {
+interface DemoElementChangeOptions extends Pick<Slider, 'min' | 'max' | 'isRange'>, DemoElementsAndEventOptions {
   step: number | undefined;
 }
 
@@ -43,7 +43,7 @@ class Demo {
 
   private settings;
 
-  private settingsKeys = ['value', 'valueMin', 'valueMax', 'min', 'max', 'progress', 'vertical', 'range', 'label', 'step'];
+  private settingsKeys = ['value', 'valueMin', 'valueMax', 'min', 'max', 'withProgress', 'isVertical', 'isRange', 'withLabel', 'step'];
 
   constructor({ wrapper, settings }) {
     this.wrapper = wrapper;
@@ -71,26 +71,26 @@ class Demo {
 
     const optionsForInput = {
       element: this.wrapper,
-      range: this.settings.range,
+      isRange: this.settings.isRange,
       min: this.settings.min,
       max: this.settings.max,
-      vertical: this.settings.vertical,
+      isVertical: this.settings.isVertical,
       step: this.settings.step,
-      progress: this.settings.progress,
+      withProgress: this.settings.withProgress,
     };
     this.observeInput(optionsForInput);
   }
 
   private observeInput(options: ObservingInputOptions): void {
     const {
-      element, range, min, max, step,
+      element, isRange, min, max, step,
     } = options;
 
     const formElement = element.querySelector('.js-demo__form-panel') as HTMLElement;
 
     formElement.addEventListener('change', (event) => this.handleFormElementChange(
       {
-        min, max, step, range, event, element, formElement,
+        min, max, step, isRange, event, element, formElement,
       },
     ));
   }
@@ -130,12 +130,12 @@ class Demo {
 
     const optionsForInput = {
       element,
-      range: settings.range,
+      isRange: settings.isRange,
       min: settings.min,
       max: settings.max,
-      vertical: settings.vertical,
+      isVertical: settings.isVertical,
       step: settings.step,
-      progress: settings.progress,
+      withProgress: settings.withProgress,
     };
     this.observeInput(optionsForInput);
   }
@@ -146,10 +146,10 @@ class Demo {
     let settings: Slider = {
       min: 0,
       max: 100,
-      progress: true,
-      vertical: false,
-      range: false,
-      label: false,
+      withProgress: true,
+      isVertical: false,
+      isRange: false,
+      withLabel: false,
       step: undefined,
       value: min,
     };
@@ -177,10 +177,10 @@ class Demo {
 
   private static updateInputValue({ options, wrapper }): void {
     const {
-      range, min, max, valueMin, valueMax, value,
+      isRange, min, max, valueMin, valueMax, value,
     } = options;
 
-    if (range) {
+    if (isRange) {
       const inputElementMin: HTMLInputElement = wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement;
       const inputElementMax: HTMLInputElement = wrapper.querySelector('.js-demo__field-value_type_max') as HTMLInputElement;
       inputElementMin.value = valueMin || min;
@@ -193,10 +193,10 @@ class Demo {
 
   private setInputValue(settings): void {
     const {
-      range, min, max, step,
+      isRange, min, max, step,
     } = settings;
 
-    if (range) {
+    if (isRange) {
       const minInput = (this.wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement);
       minInput.value = settings.valueMin ? settings.valueMin.toString() : min.toString();
       const maxInput = (this.wrapper.querySelector('.js-demo__field-value_type_max') as HTMLInputElement);
@@ -225,12 +225,12 @@ class Demo {
 
   private validateValue(element, value): boolean {
     const {
-      min, max, step, range, valueMin, valueMax,
+      min, max, step, isRange, valueMin, valueMax,
     } = this.settings;
     Demo.deleteErrorElement(element);
 
     const checkRangeValue = (): boolean => {
-      if (range) {
+      if (isRange) {
         const isMin = element.classList.contains('js-demo__field-value_type_min');
         switch (true) {
           case isMin && value > valueMax:
@@ -308,7 +308,7 @@ class Demo {
 
     const $form = $(form);
     const $valueWrapperList = $form.find('.js-demo__wrapper_type_value');
-    if (settings.range) {
+    if (settings.isRange) {
       $valueWrapperList[0].classList.add('demo__wrapper_hidden');
       $valueWrapperList[1].classList.remove('demo__wrapper_hidden');
       $valueWrapperList[2].classList.remove('demo__wrapper_hidden');

@@ -2,7 +2,7 @@ import { Slider, TrackSizesOptions, CoordinateOfMiddleOptions } from '../../../t
 import ViewOptional from '../ViewOptional/ViewOptional';
 import View from '../View/View';
 
-interface ThumbUpdatingOptions extends Pick<Slider, 'vertical' | 'range' | 'step'> {
+interface ThumbUpdatingOptions extends Pick<Slider, 'isVertical' | 'isRange' | 'step'> {
   thumbDistance: number;
   thumbElement: HTMLElement;
   shift: number;
@@ -20,7 +20,7 @@ interface OptionsForSettingElementNotStep extends TrackSizesOptions {
   thumbMinLeft?: number;
   thumbMaxLeft?: number;
 }
-interface SettingStepPositionOptions extends Pick<Slider, 'vertical' | 'range'> {
+interface SettingStepPositionOptions extends Pick<Slider, 'isVertical' | 'isRange'> {
   thumbElement: HTMLElement;
   stepValues: number[];
   thumbMin?: HTMLElement;
@@ -32,7 +32,7 @@ interface SettingStepPositionOptions extends Pick<Slider, 'vertical' | 'range'> 
 }
 
 interface SettingZIndexOptions extends TrackSizesOptions {
-  vertical: boolean;
+  isVertical: boolean;
   trackElement: HTMLElement;
   thumbMin?: HTMLElement;
   thumbMax?: HTMLElement;
@@ -40,7 +40,7 @@ interface SettingZIndexOptions extends TrackSizesOptions {
 interface ThumbExtremumOptions {
   trackWidth: number;
   trackHeight: number;
-  vertical: boolean;
+  isVertical: boolean;
   thumbWidth: number;
 }
 
@@ -66,13 +66,13 @@ class ViewUpdating {
 
   public updateThumbCoordinates(options: ThumbUpdatingOptions): void {
     const {
-      vertical, step, thumbDistance, shift, thumbElement, trackHeight, trackWidth,
-      range, trackElement, stepValues,
+      isVertical, step, thumbDistance, shift, thumbElement, trackHeight, trackWidth,
+      isRange, trackElement, stepValues,
     } = options;
 
     this.distance = thumbDistance + shift;
     this.thumbElement = thumbElement;
-    this.keyCoordinate = vertical ? 'top' : 'left';
+    this.keyCoordinate = isVertical ? 'top' : 'left';
 
     const getRangeValues = (): {
       thumbMin: HTMLElement | undefined;
@@ -80,7 +80,7 @@ class ViewUpdating {
       thumbMinLeft: number | undefined; thumbMaxLeft: number | undefined;
       thumbMinTop: number | undefined; thumbMaxTop: number | undefined;
     } => {
-      if (range) {
+      if (isRange) {
         const thumbMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_type_min') as HTMLElement;
         const thumbMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__thumb_type_max') as HTMLElement;
         const thumbMinLeft = parseFloat((thumbMin as HTMLElement).style.left);
@@ -107,20 +107,20 @@ class ViewUpdating {
       thumbMaxTop,
     } = getRangeValues();
     this.setRangeZIndex({
-      vertical, trackWidth, trackHeight, thumbMax, thumbMin, trackElement,
+      isVertical, trackWidth, trackHeight, thumbMax, thumbMin, trackElement,
     });
 
     if (step) {
       this.setStepPosition({
-        vertical,
-        range,
+        isVertical,
+        isRange,
         stepValues: stepValues || [],
         thumbMin,
         thumbMax,
         thumbElement,
       });
 
-      vertical ? this.thumbTop = parseFloat(thumbElement.style.top)
+      isVertical ? this.thumbTop = parseFloat(thumbElement.style.top)
         : this.thumbLeft = parseFloat(thumbElement.style.left);
     } else {
       this.setElementsNotStep({
@@ -147,18 +147,18 @@ class ViewUpdating {
       trackWidth, trackHeight, thumbElement, thumbMin, thumbMax,
       thumbMinLeft, thumbMaxLeft, thumbMinTop, thumbMaxTop,
     } = options;
-    const { vertical } = this.view.sliderSettings;
+    const { isVertical } = this.view.sliderSettings;
 
     const thumbWidth = thumbElement.getBoundingClientRect().width;
 
-    const isValidMinAndMaxLeft = !vertical
+    const isValidMinAndMaxLeft = !isVertical
       && ((thumbElement === thumbMin
       && thumbMaxLeft
       && (this.distance < thumbMaxLeft))
       || (thumbElement === thumbMax
       && (thumbMinLeft || thumbMinLeft === 0)
       && (this.distance > thumbMinLeft)));
-    const isValidMinAndMaxTop = vertical
+    const isValidMinAndMaxTop = isVertical
       && ((thumbElement === thumbMin
       && thumbMaxTop
       && (this.distance < thumbMaxTop))
@@ -176,25 +176,25 @@ class ViewUpdating {
       }
     };
 
-    if (this.view.sliderSettings.range) {
+    if (this.view.sliderSettings.isRange) {
       setRangeCoordinate();
     } else {
       this.thumbElement.style[this.keyCoordinate] = `${this.distance}px`;
-      vertical ? this.thumbTop = this.distance : this.thumbLeft = this.distance;
+      isVertical ? this.thumbTop = this.distance : this.thumbLeft = this.distance;
     }
     this.checkThumbExtremum({
-      vertical, trackWidth, trackHeight, thumbWidth,
+      isVertical, trackWidth, trackHeight, thumbWidth,
     });
   }
 
   private checkThumbExtremum(options: ThumbExtremumOptions): void {
     const {
-      trackWidth, trackHeight, vertical, thumbWidth,
+      trackWidth, trackHeight, isVertical, thumbWidth,
     } = options;
 
-    const thumbCoordinate = vertical ? this.thumbElement.style.top : this.thumbElement.style.left;
-    const coordinateKey = vertical ? 'top' : 'left';
-    const trackSize = vertical ? trackHeight - thumbWidth : trackWidth - thumbWidth;
+    const thumbCoordinate = isVertical ? this.thumbElement.style.top : this.thumbElement.style.left;
+    const coordinateKey = isVertical ? 'top' : 'left';
+    const trackSize = isVertical ? trackHeight - thumbWidth : trackWidth - thumbWidth;
 
     if (parseFloat(thumbCoordinate) < 0) {
       this.thumbElement.style[coordinateKey] = '0px';
@@ -205,7 +205,7 @@ class ViewUpdating {
 
   private setStepPosition(options: SettingStepPositionOptions): void {
     const {
-      range, stepValues, vertical, thumbMin, thumbMax,
+      isRange, stepValues, isVertical, thumbMin, thumbMax,
       thumbElement,
     } = options;
 
@@ -213,13 +213,13 @@ class ViewUpdating {
       checkedCoordinate: (this.distance),
       data: { coordinates: this.view.scaleData.coordinates, value: stepValues },
     });
-    const coordinateKey = vertical ? 'top' : 'left';
+    const coordinateKey = isVertical ? 'top' : 'left';
     const thumbMinCoordinate = thumbMin ? parseFloat(thumbMin.style[coordinateKey]) : undefined;
     const thumbMaxCoordinate = thumbMax
       ? parseFloat((thumbMax as HTMLElement).style[coordinateKey])
       : undefined;
 
-    const isValidCoordinate = !range
+    const isValidCoordinate = !isRange
       || (thumbElement === thumbMax
       && (thumbMinCoordinate || thumbMinCoordinate === 0)
       && data.coordinate > thumbMinCoordinate)
@@ -233,18 +233,18 @@ class ViewUpdating {
 
   private setRangeZIndex(options: SettingZIndexOptions): void {
     const {
-      vertical, thumbMin, trackElement, trackHeight, trackWidth, thumbMax,
+      isVertical, thumbMin, trackElement, trackHeight, trackWidth, thumbMax,
     } = options;
     if (thumbMin && thumbMax) {
-      const start = vertical ? trackElement.getBoundingClientRect().top + window.scrollY
+      const start = isVertical ? trackElement.getBoundingClientRect().top + window.scrollY
         : trackElement.getBoundingClientRect().left;
 
       const coordinateOfMiddle = ViewUpdating.getCoordinatesOfMiddle({
-        start, itemSize: vertical ? trackHeight : trackWidth,
+        start, itemSize: isVertical ? trackHeight : trackWidth,
       });
       ViewOptional.changeZIndex({
         coordinatesOfMiddle: coordinateOfMiddle,
-        vertical,
+        isVertical,
         thumbMax,
         thumbMin,
         thumbElement: this.thumbElement,

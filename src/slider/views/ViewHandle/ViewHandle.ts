@@ -20,13 +20,11 @@ class ViewHandle {
 
   private max: number;
 
-  private range: boolean;
+  private isRange: boolean;
 
-  private vertical: boolean;
+  private isVertical: boolean;
 
-  private progress: boolean;
-
-  private label: boolean | undefined;
+  private withProgress: boolean;
 
   private thumbElement: HTMLElement;
 
@@ -55,16 +53,15 @@ class ViewHandle {
 
   public addDragAndDrop(options: SliderElementOptions): void {
     const {
-      step, vertical, range, progress, min, max, $element, label,
+      step, isVertical, isRange, withProgress, min, max, $element,
     } = options;
 
     this.step = step;
     this.min = min;
     this.max = max;
-    this.range = range;
-    this.vertical = vertical;
-    this.progress = progress;
-    this.label = label;
+    this.isRange = isRange;
+    this.isVertical = isVertical;
+    this.withProgress = withProgress;
     this.trackElement = $element.find('.js-slider__track').get(0);
     this.trackWidth = this.trackElement.getBoundingClientRect().width;
     this.trackHeight = this.trackElement.getBoundingClientRect().height;
@@ -73,7 +70,7 @@ class ViewHandle {
     this.$element = $element;
 
     this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown);
-    if (range) {
+    if (isRange) {
       this.thumbElementMax = thumbCollection.get(1);
       this.thumbElementMax.addEventListener('mousedown', this.handleDocumentMousedown);
     }
@@ -82,11 +79,11 @@ class ViewHandle {
     sliderElement.addEventListener('click', (event) => this.viewOnTrack.handleSliderElementClick({
       event,
       trackElement: this.trackElement,
-      progress,
+      withProgress,
       min,
       max,
-      vertical,
-      range,
+      isVertical,
+      isRange,
       step,
     }));
 
@@ -103,7 +100,7 @@ class ViewHandle {
   private handleDocumentMousemove(event): void {
     event.preventDefault();
 
-    this.vertical
+    this.isVertical
       ? this.view.notifyAll({
         value: {
           coordinateStart: this.coordinateYStart,
@@ -118,8 +115,8 @@ class ViewHandle {
 
     this.viewUpdating.updateThumbCoordinates({
       step: this.step,
-      vertical: this.vertical,
-      range: this.range,
+      isVertical: this.isVertical,
+      isRange: this.isRange,
       trackWidth: this.trackWidth,
       trackHeight: this.trackHeight,
       thumbDistance: this.view.distance,
@@ -132,14 +129,14 @@ class ViewHandle {
       min: this.min,
       max: this.max,
       trackElement: this.trackElement,
-      distance: this.vertical ? parseFloat(this.thumbElement.style.top)
+      distance: this.isVertical ? parseFloat(this.thumbElement.style.top)
         : parseFloat(this.thumbElement.style.left),
-      vertical: this.vertical,
+      isVertical: this.isVertical,
       thumbElement: this.thumbElement,
-      progress: this.progress,
-      progressSize: this.vertical ? parseFloat(this.thumbElement.style.top)
+      withProgress: this.withProgress,
+      progressSize: this.isVertical ? parseFloat(this.thumbElement.style.top)
         : parseFloat(this.thumbElement.style.left),
-      range: this.range,
+      isRange: this.isRange,
       $wrapper: this.$element,
     };
 
@@ -150,7 +147,7 @@ class ViewHandle {
     if (event.target.classList.contains('js-slider__thumb')) {
       this.thumbElement = event.target;
 
-      if (this.view.sliderSettings.vertical) {
+      if (this.view.sliderSettings.isVertical) {
         this.coordinateYStart = event.screenY;
         this.shift = parseFloat((event.target as HTMLElement).style.top);
       } else {
@@ -171,7 +168,7 @@ class ViewHandle {
 
   private handleWindowResize(): void {
     const { valueMin, valueMax, value } = ViewHandle.getLabelValue(
-      { $element: this.$element, range: this.range },
+      { $element: this.$element, isRange: this.isRange },
     );
     this.view.reloadSlider({
       ...this.view.sliderSettings, valueMin, valueMax, value,
@@ -179,10 +176,10 @@ class ViewHandle {
     $(window).off('resize', this.handleWindowResize);
   }
 
-  private static getLabelValue(options: {$element: JQuery; range: boolean}):
+  private static getLabelValue(options: {$element: JQuery; isRange: boolean}):
       { valueMin?: number; valueMax?: number; value?: number } {
-    const { $element, range } = options;
-    if (range) {
+    const { $element, isRange } = options;
+    if (isRange) {
       const valueMin = parseInt($element.find('.js-slider__label_type_min').text(), 10);
       const valueMax = parseInt($element.find('.js-slider__label_type_max').text(), 10);
       return { valueMin, valueMax };

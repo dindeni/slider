@@ -25,12 +25,12 @@ describe('View', () => {
     $wrapper.appendTo(body);
     options = {
       $element: $wrapper,
-      range: false,
-      vertical: false,
+      isRange: false,
+      isVertical: false,
       min: 100,
       max: 500,
-      progress: true,
-      label: true,
+      withProgress: true,
+      withLabel: true,
       step: undefined,
     };
     controller = new Controller();
@@ -109,7 +109,7 @@ describe('View', () => {
     });
 
     it('should slider reload', () => {
-      controller.reloadSlider({ ...options, range: true });
+      controller.reloadSlider({ ...options, isRange: true });
       const thumbElements = document.querySelectorAll('.js-slider__thumb');
       expect(thumbElements.length).toBe(2);
     });

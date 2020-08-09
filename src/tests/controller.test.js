@@ -17,12 +17,12 @@ describe('Controller init', () => {
     $wrapper.appendTo(body);
     const optionsForElements = {
       $element: $wrapper,
-      range: false,
-      vertical: false,
+      isRange: false,
+      isVertical: false,
       min: 100,
       max: 500,
-      progress: true,
-      label: true,
+      withProgress: true,
+      withLabel: true,
       step: undefined,
     };
 

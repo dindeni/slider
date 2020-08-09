@@ -1,14 +1,14 @@
 interface Slider {
   min: number;
   max: number;
-  vertical: boolean;
-  range: boolean;
-  progress: boolean;
+  isVertical: boolean;
+  isRange: boolean;
+  withProgress: boolean;
   step?: number;
   valueMin?: number;
   valueMax?: number;
   value?: number;
-  label?: boolean;
+  withLabel?: boolean;
 }
 
 interface SliderElementOptions extends Slider {

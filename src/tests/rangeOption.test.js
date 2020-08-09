@@ -23,12 +23,12 @@ describe('Range', () => {
     $wrapper.appendTo(body);
     const optionsForElements = {
       $element: $wrapper,
-      range: true,
-      vertical: false,
+      isRange: true,
+      isVertical: false,
       min: 100,
       max: 500,
-      progress: true,
-      label: true,
+      withProgress: true,
+      withLabel: true,
       step: undefined,
     };
     const controller = new Controller();

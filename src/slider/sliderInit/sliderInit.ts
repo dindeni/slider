@@ -15,8 +15,8 @@ $.fn.slider = function (options?: SliderOptions): {reload: Function} | JQuery {
     min: 0,
     max: 100,
     label: false,
-    vertical: false,
-    range: false,
+    isVertical: false,
+    isRange: false,
     $element: this,
   };
 
