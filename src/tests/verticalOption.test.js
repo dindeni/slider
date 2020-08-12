@@ -2,6 +2,7 @@
 import Controller from '../slider/Controller/Controller';
 import style from '../blocks/slider/slider.scss';
 import { dispatchMove } from './_serviceFunctions';
+import Model from '../slider/Model/Model';
 
 
 describe('Vertical option', () => {
@@ -29,8 +30,9 @@ describe('Vertical option', () => {
       withLabel: true,
       step: undefined,
     };
-    const controller = new Controller();
-    controller.getSliderOptions(optionsForElements);
+    const model = new Model();
+    const controller = new Controller(model);
+    model.getSliderOptions(optionsForElements);
     controller.init();
   };
 

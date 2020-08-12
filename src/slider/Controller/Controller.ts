@@ -6,37 +6,30 @@ import View from '../views/View/View';
 import Observable from '../Observable/Observable';
 
 class Controller extends Observable {
-  private model: Model = new Model();
+  private model: Model;
 
   private view: View = new View();
 
-  private sliderOptions: SliderElementOptions;
-
   public sliderValue: number;
 
-  constructor() {
+  constructor(model) {
     super();
+    this.model = model;
     autoBind(this);
   }
 
   public init(): void {
     this.subscribeAll();
-    this.view.getSliderOptions(this.sliderOptions);
-    this.view.createElements(this.sliderOptions);
+    this.view.getSliderOptions(this.model.sliderOptions);
+    this.view.createElements(this.model.sliderOptions);
   }
 
-  public getSliderOptions(options: SliderElementOptions): void {
-    this.sliderOptions = options;
+  public passMethod(method: Function): void {
+    method(this.model.sliderOptions);
   }
 
-  public getPublicData(method: Function): { reload: Function } {
-    method(this.sliderOptions);
-    return { reload: this.reloadSlider };
-  }
-
-  private async reloadSlider(options: SliderElementOptions): Promise<void> {
-    this.sliderOptions = { ...options };
-    await this.view.reloadSlider(options);
+  public reloadSlider(options: SliderElementOptions): void {
+    this.view.reloadSlider(options);
   }
 
   private getScaleData(options: ScaleData): void {
@@ -45,13 +38,13 @@ class Controller extends Observable {
   }
 
   private getCoordinates(value: number): void {
-    const { min, max } = this.sliderOptions;
+    const { min, max } = this.model.sliderOptions;
     const coordinate = Model.calculateCurrentCoordinate({ value, min, max });
     this.view.setCoordinate(coordinate);
   }
 
   private getValue(fraction: number): void {
-    const { min, max } = this.sliderOptions;
+    const { min, max } = this.model.sliderOptions;
     this.sliderValue = this.model.calculateSliderValue({ fraction, min, max });
     this.view.setLabelValue(this.sliderValue);
   }
@@ -62,9 +55,9 @@ class Controller extends Observable {
   }
 
   private updateOptions(options: SliderElementOptions): void {
-    this.sliderOptions = options;
-    if (this.sliderOptions.method) {
-      this.getPublicData(this.sliderOptions.method);
+    this.model.updateOptions(options);
+    if (this.model.sliderOptions.method) {
+      this.passMethod(this.model.sliderOptions.method);
     }
   }
 

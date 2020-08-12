@@ -1,10 +1,12 @@
 import {
-  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, Slider,
+  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, Slider, SliderElementOptions,
 } from '../../types/types';
 
 type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 'valueMax'>;
 
 class Model {
+  public sliderOptions: SliderElementOptions;
+
   public sliderValue: number;
 
   public value: number | undefined;
@@ -12,6 +14,14 @@ class Model {
   public valueMin: number | undefined;
 
   public valueMax: number | undefined;
+
+  public getSliderOptions(options: SliderElementOptions): void {
+    this.sliderOptions = options;
+  }
+
+  public updateOptions(options: SliderElementOptions): void {
+    this.sliderOptions = options;
+  }
 
   public static calculateCurrentCoordinate(options: CurrentCoordinate): number {
     const { value, min, max } = options;

@@ -1,5 +1,6 @@
 import { SliderOptions } from '../../types/types';
 import Controller from '../Controller/Controller';
+import Model from '../Model/Model';
 
 declare global {
   interface JQuery {
@@ -9,7 +10,7 @@ declare global {
 
 /* eslint-disable func-names */
 
-$.fn.slider = function (options?: SliderOptions): {reload: Function} | JQuery {
+$.fn.slider = function (options?: SliderOptions): { reload: Function; method: Function } | JQuery {
   const optionsDefault = {
     progress: false,
     min: 0,
@@ -22,12 +23,21 @@ $.fn.slider = function (options?: SliderOptions): {reload: Function} | JQuery {
 
   const config = $.extend({}, optionsDefault, options);
 
-  const controller = new Controller();
-  controller.getSliderOptions(config);
+  const model = new Model();
+  const controller = new Controller(model);
+  model.getSliderOptions(config);
 
   controller.init();
-  if (config.method) {
-    return controller.getPublicData(config.method);
+  this.data = {};
+  const isNotOptions = options && Object.values(options).length === 0;
+  if (isNotOptions) {
+    return this;
   }
-  return this;
+
+  if (config.method) {
+    this.data = { method: controller.passMethod(config.method) };
+  }
+
+  this.data = { ...this.data, reload: controller.reloadSlider };
+  return this.data;
 };

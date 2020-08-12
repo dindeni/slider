@@ -3,6 +3,7 @@
 import Controller from '../slider/Controller/Controller';
 import style from '../blocks/slider/slider.scss';
 import { dispatchMove, dispatchClick } from './_serviceFunctions';
+import Model from '../slider/Model/Model';
 
 const $ = require('jquery');
 
@@ -33,8 +34,9 @@ describe('View', () => {
       withLabel: true,
       step: undefined,
     };
-    controller = new Controller();
-    controller.getSliderOptions(options);
+    const model = new Model();
+    controller = new Controller(model);
+    model.getSliderOptions(options);
     controller.init();
   };
 
