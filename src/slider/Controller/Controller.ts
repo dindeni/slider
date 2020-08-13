@@ -10,8 +10,6 @@ class Controller extends Observable {
 
   private view: View = new View();
 
-  public sliderValue: number;
-
   constructor(model) {
     super();
     this.model = model;
@@ -32,9 +30,12 @@ class Controller extends Observable {
     this.view.reloadSlider(options);
   }
 
+  private validateStepValues(values: ScaleData): void {
+    this.view.setScaleData(values);
+  }
+
   private getScaleData(options: ScaleData): void {
-    const scaleData = Model.validateStepValues(options);
-    this.view.setScaleData(scaleData);
+    this.model.validateStepValues(options);
   }
 
   private getCoordinates(value: number): void {
@@ -45,23 +46,32 @@ class Controller extends Observable {
 
   private getValue(fraction: number): void {
     const { min, max } = this.model.sliderOptions;
-    this.sliderValue = this.model.calculateSliderValue({ fraction, min, max });
-    this.view.setLabelValue(this.sliderValue);
+    this.model.calculateSliderValue({ fraction, min, max });
   }
 
-  private getDistance(options: DistanceOptions): void {
-    const distance = Model.calculateDistance(options);
+  private setValue(value: number): void {
+    this.view.setLabelValue(value);
+  }
+
+  private setDistance(distance: number): void {
     this.view.getDistance(distance);
   }
 
+  private getDistance(options: DistanceOptions): void {
+    this.model.calculateDistance(options);
+  }
+
   private updateOptions(options: SliderElementOptions): void {
-    this.model.updateOptions(options);
+    this.model.getSliderOptions(options);
     if (this.model.sliderOptions.method) {
       this.passMethod(this.model.sliderOptions.method);
     }
   }
 
   private subscribeAll(): void {
+    this.model.subscribe({ method: this.setValue, type: 'setValue' });
+    this.model.subscribe({ method: this.validateStepValues, type: 'validateStepValues' });
+    this.model.subscribe({ method: this.setDistance, type: 'setDistance' });
     this.view.subscribe({ method: this.getCoordinates, type: 'getCoordinates' });
     this.view.subscribe({ method: this.getValue, type: 'getValue' });
     this.view.subscribe({ method: this.getDistance, type: 'getDistance' });

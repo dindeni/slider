@@ -1,21 +1,41 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type  */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import Model from '../slider/Model/Model';
+import Controller from '../slider/Controller/Controller';
 
 describe('Model', () => {
   let model;
+  let controller;
 
   beforeAll(async () => {
     document.body.innerHTML = '';
+    const $wrapper = $('<div class="slider js-slider"></div>');
+    const body = $('body');
+    body.css({ width: '300px' });
+    $wrapper.appendTo(body);
+    const options = {
+      $element: $wrapper,
+      isRange: false,
+      isVertical: false,
+      min: 100,
+      max: 500,
+      withProgress: true,
+      withLabel: true,
+      step: undefined,
+    };
     model = new Model();
+    model.getSliderOptions(options);
+    controller = new Controller(model);
+    controller.init();
   });
 
   it('should calculate sliderInit value', () => {
-    expect(model.calculateSliderValue({
+    model.calculateSliderValue({
       min: 100,
       max: 500,
       fraction: 0.5,
-    }))
+    });
+    expect(controller.view.valueForLabel)
       .toBe(300);
   });
 
@@ -29,14 +49,19 @@ describe('Model', () => {
   });
 
   it('should validate scale values', () => {
-    const values = Model.validateStepValues({
-
+    model.validateStepValues({
       coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       shortCoordinates: [],
       shortValue: [],
     });
-    expect(values).toEqual({
+    const {
+      coordinates, value, shortValue, shortCoordinates,
+    } = controller.view.scaleData;
+
+    expect({
+      coordinates, value, shortValue, shortCoordinates,
+    }).toEqual({
       coordinates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       shortValue: [0, 2, 4, 6, 8, 10, 12],

@@ -1,6 +1,7 @@
 /* eslint-disable  @typescript-eslint/explicit-function-return-type */
 /* eslint-disable  @typescript-eslint/no-var-requires  */
 import Controller from '../slider/Controller/Controller';
+import Model from '../slider/Model/Model';
 import style from '../blocks/slider/slider.scss';
 
 const $ = require('jquery');
@@ -26,8 +27,9 @@ describe('Controller init', () => {
       step: undefined,
     };
 
-    const controller = new Controller();
-    controller.getSliderOptions(optionsForElements);
+    const model = new Model();
+    const controller = new Controller(model);
+    model.getSliderOptions(optionsForElements);
     controller.init();
   };
 
