@@ -156,18 +156,20 @@ class Demo {
 
     const inputs = [...(event.currentTarget as HTMLFormElement).elements];
 
+    let isStep = false;
     inputs.forEach((input: HTMLInputElement, index: number) => {
       const key = this.settingsKeys[index];
 
       if (input.type === 'checkbox') {
         const value = input.checked;
         settings = { ...settings, ...{ [key]: value } };
+        isStep = key === 'step' ? value : false;
       } else {
         const value = Number(input.value);
         settings = { ...settings, ...{ [key]: value } };
       }
 
-      if (index === inputs.length - 1 && settings.step) {
+      if (index === inputs.length - 1 && isStep) {
         const value = Number(input.value || (settings.max - settings.min) / 5);
         settings = { ...settings, ...{ step: value } };
       }
@@ -211,6 +213,7 @@ class Demo {
       const key = this.settingsKeys[index];
       const inputElement = input;
       const isSettingKey = settings[key] || settings[key] === 0;
+
       if (input.type === 'checkbox') {
         inputElement.checked = settings[key];
       } else if (isSettingKey) {

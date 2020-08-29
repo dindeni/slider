@@ -1,6 +1,6 @@
 import { Slider } from '../../../types/types';
 import View from '../View/View';
-import ViewUpdating from '../ViewUpdating/ViewUpdating';
+import ThumbView from '../ThumbView/ThumbView';
 
 interface TrackElementOptions {
   event: MouseEvent;
@@ -9,10 +9,8 @@ interface TrackElementOptions {
 interface TrackClickOptions extends Slider, TrackElementOptions {
 }
 
-class ViewOnTrack {
+class TrackView {
   readonly view: View;
-
-  private viewUpdating: ViewUpdating;
 
   private thumbElement: HTMLElement;
 
@@ -22,14 +20,21 @@ class ViewOnTrack {
 
   private trackSize: number;
 
+  private thumbSize: number;
+
+  private $wrapper: JQuery;
+
+  private thumbView: ThumbView;
+
   constructor(view) {
     this.view = view;
-    this.viewUpdating = new ViewUpdating(this.view);
+    this.$wrapper = this.view.sliderSettings.$element;
+    this.thumbView = new ThumbView(view);
   }
 
   public handleSliderElementClick(options: TrackClickOptions): void {
     const {
-      event, trackElement, isVertical, step, isRange, withProgress,
+      event, trackElement, isVertical, isRange,
     } = options;
     this.isVertical = isVertical;
     const target = event.target as HTMLElement;
@@ -56,30 +61,18 @@ class ViewOnTrack {
         ? this.view.coordinate
         : this.getDistance({ event, trackElement });
 
-      this.viewUpdating.updateThumbCoordinates({
-        isVertical,
-        isRange,
-        thumbDistance: distance,
-        step,
-        thumbElement: this.thumbElement,
-        shift: 0,
-        trackWidth,
-        trackHeight,
-        trackElement,
-        stepValues: step ? this.view.scaleData.value : undefined,
-      });
-
-
-      this.view.updateData({
-        isVertical,
-        withProgress,
-        trackElement,
-        distance: this.isVertical ? parseFloat(this.thumbElement.style.top)
-          : parseFloat(this.thumbElement.style.left),
-        thumbElement: this.thumbElement,
-        labelValue: isItemElement ? Number(target.textContent) : undefined,
-      });
+      this.view.thumbView.setThumbPosition({ thumbElement: this.thumbElement, distance });
+      this.view.handleView.updateData({ distance, trackElement, thumbElement: this.thumbElement });
     }
+  }
+
+  public getTrackSize(): number {
+    this.view.$trackElement = this.view.$wrapper.find('.js-slider__track');
+    this.thumbSize = this.view.thumbSize;
+
+    const trackSize = this.view.$trackElement.width();
+
+    return Math.round((trackSize || 0) - this.view.thumbSize);
   }
 
   private getRangeThumbElement(event: MouseEvent): HTMLElement {
@@ -87,7 +80,7 @@ class ViewOnTrack {
     const thumbMax = this.thumbList[1]as HTMLElement;
     const trackPositionKey = this.isVertical ? 'top' : 'left';
 
-    const coordinateOfMiddle = ViewUpdating.getCoordinatesOfMiddle({
+    const coordinateOfMiddle = ThumbView.getCoordinatesOfMiddle({
       start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
       itemSize: this.trackSize,
     });
@@ -114,4 +107,4 @@ class ViewOnTrack {
   }
 }
 
-export default ViewOnTrack;
+export default TrackView;

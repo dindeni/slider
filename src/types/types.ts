@@ -18,26 +18,12 @@ interface SliderElementOptions extends Slider {
 
 type SliderOptions = Omit<SliderElementOptions, '$element'>;
 
-interface TrackSizesOptions {
-  trackWidth: number;
-  trackHeight: number;
-}
-
-interface CurrentCoordinate extends Pick<Slider, 'min' | 'max'> {
-  value: number;
-}
-
 interface ScaleData {
   value: number[];
   coordinates: number[];
   shortValue: number[];
   shortCoordinates: number[];
 }
-
-interface SliderValueOptions extends Pick<Slider, 'min' | 'max'> {
-  fraction: number;
-}
-
 
 interface DistanceOptions {
   coordinateStart: number;
@@ -49,8 +35,13 @@ interface CoordinateOfMiddleOptions {
   itemSize: number;
 }
 
+interface ValidationOptions {
+  type?: 'min' | 'max';
+  value: number;
+}
+
 /* eslint-disable no-undef */
 export {
-  SliderOptions, SliderElementOptions, Slider, TrackSizesOptions, CurrentCoordinate, ScaleData,
-  SliderValueOptions, DistanceOptions, CoordinateOfMiddleOptions,
+  SliderOptions, SliderElementOptions, Slider, ScaleData, DistanceOptions,
+  CoordinateOfMiddleOptions, ValidationOptions,
 };

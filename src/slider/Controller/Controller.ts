@@ -1,9 +1,14 @@
 import autoBind from 'auto-bind';
 
-import { ScaleData, DistanceOptions, SliderElementOptions } from '../../types/types';
+import { SliderElementOptions, ValidationOptions } from '../../types/types';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
+
+interface UpdateStateOptions {
+  data: any;
+  actionType: 'validateValue' | 'validateStepValue' | 'getFractionOfValue';
+}
 
 class Controller extends Observable {
   private model: Model;
@@ -27,38 +32,33 @@ class Controller extends Observable {
   }
 
   public reloadSlider(options: SliderElementOptions): void {
-    this.view.reloadSlider(options);
+    this.model.getSliderOptions(options);
+    this.view.handleView.reloadSlider(options);
   }
 
-  private validateStepValues(values: ScaleData): void {
-    this.view.setScaleData(values);
+  private setValidStepValue(value: number): void {
+    this.model.validateStepValue(value);
   }
 
-  private getScaleData(options: ScaleData): void {
-    this.model.validateStepValues(options);
+  private setValueState(options: ValidationOptions): void {
+    this.model.validateValue(options);
   }
 
-  private getCoordinates(value: number): void {
-    const { min, max } = this.model.sliderOptions;
-    const coordinate = Model.calculateCurrentCoordinate({ value, min, max });
-    this.view.setCoordinate(coordinate);
+  private getFractionOfValue(value: number): void {
+    this.model.calculateFractionOfValue(value);
   }
 
-  private getValue(fraction: number): void {
-    const { min, max } = this.model.sliderOptions;
-    this.model.calculateSliderValue({ fraction, min, max });
-  }
-
-  private setValue(value: number): void {
-    this.view.setLabelValue(value);
-  }
-
-  private setDistance(distance: number): void {
-    this.view.getDistance(distance);
-  }
-
-  private getDistance(options: DistanceOptions): void {
-    this.model.calculateDistance(options);
+  private updateState(value: UpdateStateOptions): undefined {
+    switch (value.actionType) {
+      case 'validateValue': this.view.setValueState(value.data);
+        break;
+      case 'validateStepValue': this.view.getValidStepValue(value.data);
+        break;
+      case 'getFractionOfValue': this.view.getFractionOfValue(value.data);
+        break;
+      default: return undefined;
+    }
+    return undefined;
   }
 
   private updateOptions(options: SliderElementOptions): void {
@@ -69,14 +69,11 @@ class Controller extends Observable {
   }
 
   private subscribeAll(): void {
-    this.model.subscribe({ method: this.setValue, type: 'setValue' });
-    this.model.subscribe({ method: this.validateStepValues, type: 'validateStepValues' });
-    this.model.subscribe({ method: this.setDistance, type: 'setDistance' });
-    this.view.subscribe({ method: this.getCoordinates, type: 'getCoordinates' });
-    this.view.subscribe({ method: this.getValue, type: 'getValue' });
-    this.view.subscribe({ method: this.getDistance, type: 'getDistance' });
-    this.view.subscribe({ method: this.getScaleData, type: 'getScaleData' });
     this.view.subscribe({ method: this.updateOptions, type: 'updateOptions' });
+    this.view.subscribe({ method: this.setValueState, type: 'validateValue' });
+    this.view.subscribe({ method: this.setValidStepValue, type: 'validateStepValue' });
+    this.view.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.model.subscribe({ method: this.updateState, type: 'updateState' });
   }
 }
 

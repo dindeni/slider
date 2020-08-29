@@ -82,13 +82,13 @@ describe('Range', () => {
     });
 
     it('should div thumb max move a distance', () => {
-      expect(parseInt(divThumbMax.style.left, 10)).toEqual(228);
+      expect(parseInt(divThumbMax.style.left, 10)).toEqual(229);
     });
     it('should label max value to be 428', () => {
       expect(divLabelMax.textContent).toBe('428');
     });
-    it('should progress width to be equal 228', () => {
-      expect(parseInt(divProgress.style.width, 10)).toBe(228);
+    it('should progress width to be equal 229', () => {
+      expect(parseInt(divProgress.style.width, 10)).toBe(229);
     });
   });
 
@@ -104,8 +104,8 @@ describe('Range', () => {
     it('should label min value to be 172', () => {
       expect(divLabelMin.textContent).toBe('172');
     });
-    it('should progress min width to be 178', () => {
-      expect(parseInt(divProgress.style.width, 10)).toBe(178);
+    it('should progress min width to be 179', () => {
+      expect(parseInt(divProgress.style.width, 10)).toBe(179);
     });
   });
 });

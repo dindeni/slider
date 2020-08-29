@@ -1,5 +1,5 @@
 import {
-  CurrentCoordinate, ScaleData, SliderValueOptions, DistanceOptions, Slider, SliderElementOptions,
+  ValidationOptions, Slider, SliderElementOptions,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
 
@@ -20,60 +20,60 @@ class Model extends Observable {
     const {
       min, max, value, valueMin, valueMax,
     } = options;
-    this.validateValue({
+    this.sliderOptions = options;
+    this.validateExtremumValue({
       min, max, value, valueMin, valueMax,
     });
-    this.sliderOptions = {
-      ...options, valueMin: this.valueMin, valueMax: this.valueMax, value: this.value,
-    };
+
+    this.sliderOptions.valueMin = this.validateStepValue(this.sliderOptions.valueMin || min);
+    this.sliderOptions.valueMax = this.validateStepValue(this.sliderOptions.valueMax || max);
+    this.sliderOptions.value = this.validateStepValue(this.sliderOptions.value || min);
   }
 
-  public static calculateCurrentCoordinate(options: CurrentCoordinate): number {
-    const { value, min, max } = options;
+  public calculateFractionOfValue(value: number): void {
+    const { min, max } = this.sliderOptions;
 
-    return (value - min) / (max - min);
+    const fraction = (value - min) / (max - min);
+    this.notifyAll({ value: { data: fraction, actionType: 'getFractionOfValue' }, type: 'updateState' });
   }
 
-  public calculateSliderValue(options: SliderValueOptions): void {
+  public validateValue(options: ValidationOptions): void {
+    const { type, value } = options;
+
     const {
-      min, max, fraction,
-    } = options;
+      min, max, valueMin, valueMax,
+    } = this.sliderOptions;
 
-    const isBelow0 = fraction <= 0;
-    if (isBelow0) {
-      this.sliderValue = min;
-    } else {
-      this.sliderValue = min + ((max - min) * fraction);
-    }
+    const getState = (): boolean => {
+      switch (true) {
+        case value > max || value < min:
+          return false;
+        case !type:
+          return true;
+        case type === 'min':
+          return valueMax ? value <= valueMax : false;
+        case type === 'max':
+          return valueMin || valueMin === 0 ? value >= valueMin : false;
+        default: return false;
+      }
+    };
 
-    this.notifyAll({ value: Math.round(this.sliderValue), type: 'setValue' });
+    this.notifyAll({ value: { data: getState(), actionType: 'validateValue' }, type: 'updateState' });
   }
 
-  public validateStepValues(data: ScaleData): void {
-    const { coordinates, value } = data;
-    const result: ScaleData = { ...data, shortCoordinates: coordinates, shortValue: value };
+  public validateStepValue(value: number): number {
+    const { step, min } = this.sliderOptions;
 
-    while (result.shortValue.length > 10) {
-      result.shortValue = result.shortValue.filter(
-        (currentValue, index) => index === 0 || index % 2 === 0,
-      );
+    if (step) {
+      const state = min + Math.round((value - min) / step) * step;
+      this.notifyAll({ value: { state, actionType: 'validateStepValue' }, type: 'updateState' });
+      return state;
     }
-
-    while (result.shortCoordinates.length > 10) {
-      result.shortCoordinates = result.shortCoordinates.filter(
-        (currentValue, index) => index === 0 || index % 2 === 0,
-      );
-    }
-    this.notifyAll({ value: result, type: 'validateStepValues' });
+    this.notifyAll({ value: { data: value, actionType: 'validateStepValue' }, type: 'updateState' });
+    return value;
   }
 
-  public calculateDistance(options: DistanceOptions): void {
-    const { coordinateStart, coordinateMove } = options;
-    const value = coordinateMove - coordinateStart;
-    this.notifyAll({ value, type: 'setDistance' });
-  }
-
-  private validateValue(options: OptionsForValidation): void {
+  private validateExtremumValue(options: OptionsForValidation): void {
     const {
       min, max, value, valueMin, valueMax,
     } = options;
@@ -88,9 +88,9 @@ class Model extends Observable {
         return checkedValue;
       } return undefined;
     };
-    this.value = validate(value);
-    this.valueMin = validate(valueMin);
-    this.valueMax = validate(valueMax);
+    this.sliderOptions.value = validate(value);
+    this.sliderOptions.valueMin = validate(valueMin);
+    this.sliderOptions.valueMax = validate(valueMax);
   }
 }
 
