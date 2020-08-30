@@ -10,8 +10,6 @@ interface TrackClickOptions extends Slider, TrackElementOptions {
 }
 
 class TrackView {
-  readonly view: View;
-
   private thumbElement: HTMLElement;
 
   private isVertical: boolean;
@@ -23,6 +21,8 @@ class TrackView {
   private thumbSize: number;
 
   private $wrapper: JQuery;
+
+  readonly view: View;
 
   private thumbView: ThumbView;
 

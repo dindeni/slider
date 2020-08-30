@@ -1,11 +1,11 @@
 import View from '../View/View';
 
 class ScaleView {
-  view: View;
-
   trackSize: number;
 
   $wrapper: JQuery;
+
+  view: View;
 
   constructor(view) {
     this.view = view;

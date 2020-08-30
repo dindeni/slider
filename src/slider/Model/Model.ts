@@ -8,14 +8,6 @@ type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 
 class Model extends Observable {
   public sliderOptions: SliderElementOptions;
 
-  public sliderValue: number;
-
-  public value: number | undefined;
-
-  public valueMin: number | undefined;
-
-  public valueMax: number | undefined;
-
   public getSliderOptions(options: SliderElementOptions): void {
     const {
       min, max, value, valueMin, valueMax,

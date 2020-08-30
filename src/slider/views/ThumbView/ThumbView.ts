@@ -8,17 +8,17 @@ interface ThumbPositionsOptions {
 }
 
 class ThumbView {
-  public thumbCoordinateMin: number;
+  private thumbCoordinateMin: number;
 
-  public thumbCoordinateMax: number;
+  private thumbCoordinateMax: number;
 
   private thumbCoordinate: number;
 
   private $wrapper: JQuery;
 
-  view: View;
+  private scaleView: ScaleView;
 
-  scaleView: ScaleView;
+  private readonly view: View;
 
   constructor(view) {
     this.view = view;
@@ -96,37 +96,6 @@ class ThumbView {
     }
   }
 
-  private makeVertical(): void {
-    const { $thumbElementMin, $thumbElementMax, $thumbElement } = this.view;
-    const $trackElement = this.view.$wrapper.find('.js-slider__track');
-    const trackWidth: number | undefined = $trackElement.width() || 0;
-    const trackHeight: number | undefined = $trackElement.height() || 0;
-
-    $trackElement.css({
-      width: `${trackHeight}px`,
-      height: `${trackWidth}px`,
-    });
-
-    if (this.view.sliderSettings.isRange) {
-      $thumbElementMin.css({
-        top: `${this.thumbCoordinateMin}px`,
-        zIndex: (this.view.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
-      });
-      $thumbElementMax.css({
-        top: `${this.thumbCoordinateMax}px`,
-        zIndex: this.thumbCoordinateMax < (trackWidth / 2) ? 200 : 50,
-      });
-    } else {
-      $thumbElement.css({
-        top: `${this.thumbCoordinate || 0}px`,
-      });
-    }
-
-    this.view.$wrapper.css({
-      width: '10%',
-    });
-  }
-
   public getThumbSize(): number {
     const $thumb = this.view.$wrapper.find('.slider__thumb');
     this.view.thumbSize = $thumb.width() || 0;
@@ -176,6 +145,37 @@ class ThumbView {
   public static getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
     const { start, itemSize } = options;
     return start + itemSize / 2;
+  }
+
+  private makeVertical(): void {
+    const { $thumbElementMin, $thumbElementMax, $thumbElement } = this.view;
+    const $trackElement = this.view.$wrapper.find('.js-slider__track');
+    const trackWidth: number | undefined = $trackElement.width() || 0;
+    const trackHeight: number | undefined = $trackElement.height() || 0;
+
+    $trackElement.css({
+      width: `${trackHeight}px`,
+      height: `${trackWidth}px`,
+    });
+
+    if (this.view.sliderSettings.isRange) {
+      $thumbElementMin.css({
+        top: `${this.thumbCoordinateMin}px`,
+        zIndex: (this.view.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
+      });
+      $thumbElementMax.css({
+        top: `${this.thumbCoordinateMax}px`,
+        zIndex: this.thumbCoordinateMax < (trackWidth / 2) ? 200 : 50,
+      });
+    } else {
+      $thumbElement.css({
+        top: `${this.thumbCoordinate || 0}px`,
+      });
+    }
+
+    this.view.$wrapper.css({
+      width: '10%',
+    });
   }
 
   private getThumbCoordinate(value): number {

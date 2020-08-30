@@ -48,7 +48,7 @@ class View extends Observable {
 
   private scaleView: ScaleView;
 
-  private viewOnTrack: TrackView;
+  private trackView: TrackView;
 
   public handleView: HandleView;
 
@@ -66,14 +66,14 @@ class View extends Observable {
     this.$wrapper = $element;
     this.handleView = new HandleView(this);
     this.scaleView = new ScaleView(this);
-    this.viewOnTrack = new TrackView(this);
+    this.trackView = new TrackView(this);
     this.thumbView = new ThumbView(this);
     this.labelView = new LabelView(this);
     this.progressView = new ProgressView(this);
 
     this.handleView.createBasicNodes();
     this.thumbSize = this.thumbView.getThumbSize();
-    this.trackSize = this.viewOnTrack.getTrackSize();
+    this.trackSize = this.trackView.getTrackSize();
 
     if (step) {
       this.scaleView.createScale();
@@ -115,7 +115,7 @@ class View extends Observable {
   }
 
   public setCoordinate(value: number): void {
-    this.coordinate = value * (this.trackSize/* - this.thumbSize */);
+    this.coordinate = value * this.trackSize;
   }
 }
 

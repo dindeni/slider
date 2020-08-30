@@ -43,11 +43,7 @@ class HandleView {
 
   private $element: JQuery;
 
-  public sliderValue;
-
-  public sliderSettings: SliderElementOptions;
-
-  readonly view: View;
+  private readonly view: View;
 
   private trackView: TrackView;
 
@@ -107,6 +103,66 @@ class HandleView {
     $(window).off('resize', this.handleWindowResize);
   }
 
+  public createBasicNodes(): void {
+    if (this.view.$wrapper.parent().find('.js-slider').length === 0) {
+      const sliderElement = $('<div class="slider js-slider"></div>');
+      this.view.$wrapper = sliderElement.appendTo(this.view.parentElement);
+      this.view.sliderSettings.$element = this.view.$wrapper;
+    }
+    const $sliderElements = $('<div class="slider__track js-slider__track">'
+      + '</div><div class="slider__thumb js-slider__thumb"></div>');
+    $sliderElements.appendTo(this.view.$wrapper);
+
+    if (this.view.sliderSettings.isVertical) {
+      this.view.$wrapper.addClass('slider_type_vertical');
+    }
+  }
+
+  public reloadSlider(options: SliderOptions): void {
+    this.view.sliderSettings = { ...this.view.sliderSettings, ...options };
+    const { handleView } = this.view;
+
+    const sliderElement = this.view.sliderSettings.$element;
+    if (sliderElement.length !== 0) {
+      handleView.removeWindowEvent();
+      this.view.parentElement = sliderElement[0].parentElement as HTMLElement;
+      $(this.view.parentElement).empty();
+      this.view.createElements(this.view.sliderSettings);
+    }
+  }
+
+  public updateData(options: UpdatingDataOptions): void {
+    const {
+      trackElement, distance, thumbElement,
+    } = options;
+    const { isVertical, withProgress } = this.view.sliderSettings;
+
+    const trackSize = isVertical
+      ? trackElement.getBoundingClientRect().height
+      : trackElement.getBoundingClientRect().width;
+    const thumbSize = thumbElement.getBoundingClientRect().width;
+
+    const fraction = (distance / Math.round(trackSize - thumbSize));
+    this.view.labelView.calculateSliderValue(fraction);
+
+    const optionsForLabel = {
+      value: this.labelView.labelValue,
+      coordinate: distance,
+      isVertical,
+      thumbElement,
+    };
+
+    const isDistance = distance || distance === 0;
+    if (isDistance) {
+      this.labelView.updateLabelValue(optionsForLabel);
+      this.view.notifyAll({ value: this.view.sliderSettings, type: 'updateOptions' });
+    }
+
+    if (withProgress) {
+      this.view.progressView.makeProgress();
+    }
+  }
+
   private handleDocumentMousemove(event): void {
     event.preventDefault();
     const coordinateStart = this.isVertical ? this.coordinateYStart : this.coordinateXStart;
@@ -164,66 +220,6 @@ class HandleView {
       ...this.view.sliderSettings, valueMin, valueMax, value,
     });
     $(window).off('resize', this.handleWindowResize);
-  }
-
-  public updateData(options: UpdatingDataOptions): void {
-    const {
-      trackElement, distance, thumbElement,
-    } = options;
-    const { isVertical, withProgress } = this.view.sliderSettings;
-
-    const trackSize = isVertical
-      ? trackElement.getBoundingClientRect().height
-      : trackElement.getBoundingClientRect().width;
-    const thumbSize = thumbElement.getBoundingClientRect().width;
-
-    const fraction = (distance / Math.round(trackSize - thumbSize));
-    this.view.labelView.calculateSliderValue(fraction);
-
-    const optionsForLabel = {
-      value: this.labelView.labelValue,
-      coordinate: distance,
-      isVertical,
-      thumbElement,
-    };
-
-    const isDistance = distance || distance === 0;
-    if (isDistance) {
-      this.labelView.updateLabelValue(optionsForLabel);
-      this.view.notifyAll({ value: this.view.sliderSettings, type: 'updateOptions' });
-    }
-
-    if (withProgress) {
-      this.view.progressView.makeProgress();
-    }
-  }
-
-  public createBasicNodes(): void {
-    if (this.view.$wrapper.parent().find('.js-slider').length === 0) {
-      const sliderElement = $('<div class="slider js-slider"></div>');
-      this.view.$wrapper = sliderElement.appendTo(this.view.parentElement);
-      this.view.sliderSettings.$element = this.view.$wrapper;
-    }
-    const $sliderElements = $('<div class="slider__track js-slider__track">'
-      + '</div><div class="slider__thumb js-slider__thumb"></div>');
-    $sliderElements.appendTo(this.view.$wrapper);
-
-    if (this.view.sliderSettings.isVertical) {
-      this.view.$wrapper.addClass('slider_type_vertical');
-    }
-  }
-
-  public reloadSlider(options: SliderOptions): void {
-    this.view.sliderSettings = { ...this.view.sliderSettings, ...options };
-    const { handleView } = this.view;
-
-    const sliderElement = this.view.sliderSettings.$element;
-    if (sliderElement.length !== 0) {
-      handleView.removeWindowEvent();
-      this.view.parentElement = sliderElement[0].parentElement as HTMLElement;
-      $(this.view.parentElement).empty();
-      this.view.createElements(this.view.sliderSettings);
-    }
   }
 
   private static getLabelValue(options: {$element: JQuery; isRange: boolean}):

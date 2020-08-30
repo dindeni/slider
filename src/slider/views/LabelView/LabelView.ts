@@ -30,6 +30,32 @@ class LabelView {
     }
   }
 
+  public updateLabelValue(options: UpdatingLabelOptions): void {
+    const { value, thumbElement } = options;
+
+    const labelElement: JQuery = $(thumbElement).children();
+    labelElement.text(value);
+
+    if (labelElement.hasClass('js-slider__label_type_min')) {
+      this.view.sliderSettings.valueMin = value;
+    } else if (labelElement.hasClass('js-slider__label_type_max')) {
+      this.view.sliderSettings.valueMax = value;
+    } else {
+      this.view.sliderSettings.value = value;
+    }
+  }
+
+  public calculateSliderValue(fraction: number): void {
+    const { min, max } = this.view.sliderSettings;
+
+    const isBelow0 = fraction <= 0;
+    if (isBelow0) {
+      this.labelValue = min;
+    } else {
+      this.labelValue = Math.round(min + ((max - min) * fraction));
+    }
+  }
+
   private createRangeLabel(): void {
     const {
       isVertical, min, max, valueMin, valueMax,
@@ -56,32 +82,6 @@ class LabelView {
       zIndex: thumbCoordinateMax > (trackSize / 2) ? 50 : 100,
     });
     $labelElementMax.text(valueMax || max);
-  }
-
-  public updateLabelValue(options: UpdatingLabelOptions): void {
-    const { value, thumbElement } = options;
-
-    const labelElement: JQuery = $(thumbElement).children();
-    labelElement.text(value);
-
-    if (labelElement.hasClass('js-slider__label_type_min')) {
-      this.view.sliderSettings.valueMin = value;
-    } else if (labelElement.hasClass('js-slider__label_type_max')) {
-      this.view.sliderSettings.valueMax = value;
-    } else {
-      this.view.sliderSettings.value = value;
-    }
-  }
-
-  public calculateSliderValue(fraction: number): void {
-    const { min, max } = this.view.sliderSettings;
-
-    const isBelow0 = fraction <= 0;
-    if (isBelow0) {
-      this.labelValue = min;
-    } else {
-      this.labelValue = Math.round(min + ((max - min) * fraction));
-    }
   }
 }
 
