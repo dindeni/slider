@@ -147,6 +147,11 @@ class ThumbView {
     return start + itemSize / 2;
   }
 
+  public getThumbCoordinate(value): number {
+    this.view.notifyAll({ value, type: 'getFractionOfValue' });
+    return this.view.fraction * this.view.trackSize;
+  }
+
   private makeVertical(): void {
     const { $thumbElementMin, $thumbElementMax, $thumbElement } = this.view;
     const $trackElement = this.view.$wrapper.find('.js-slider__track');
@@ -176,11 +181,6 @@ class ThumbView {
     this.view.$wrapper.css({
       width: '10%',
     });
-  }
-
-  private getThumbCoordinate(value): number {
-    this.view.notifyAll({ value, type: 'getFractionOfValue' });
-    return this.view.fraction * this.view.trackSize;
   }
 }
 

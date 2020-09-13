@@ -16,8 +16,6 @@ class TrackView {
 
   private thumbList: NodeList;
 
-  private trackSize: number;
-
   private thumbSize: number;
 
   private $wrapper: JQuery;
@@ -43,26 +41,23 @@ class TrackView {
     const isTrackElement = target === trackElement || target.classList.contains('js-slider__progress');
     const isClickedElement = isItemElement || isTrackElement;
     if (isClickedElement) {
-      const trackHeight = this.view.$trackElement[0].getBoundingClientRect().height;
-      const trackWidth = this.view.$trackElement[0].getBoundingClientRect().width;
       this.thumbList = this.view.$wrapper[0].querySelectorAll('.js-slider__thumb');
-      this.trackSize = this.isVertical ? trackHeight : trackWidth;
 
       this.thumbElement = isRange ? this.getRangeThumbElement(event) as HTMLElement
         : this.thumbList[0] as HTMLElement;
 
-      if (isItemElement) {
-        this.view.notifyAll({
-          value: Number(target.textContent),
-          type: 'getCoordinates',
-        });
-      }
       const distance = isItemElement
-        ? this.view.coordinate
+        ? this.thumbView.getThumbCoordinate(Number(target.textContent))
         : this.getDistance({ event, trackElement });
 
       this.view.thumbView.setThumbPosition({ thumbElement: this.thumbElement, distance });
-      this.view.handleView.updateData({ distance, trackElement, thumbElement: this.thumbElement });
+      const keyPosition = isVertical ? 'top' : 'left';
+      const thumbCoordinate = parseFloat(this.thumbElement.style[keyPosition]);
+      this.view.handleView.updateData({
+        distance: thumbCoordinate,
+        trackElement,
+        thumbElement: this.thumbElement,
+      });
     }
   }
 
@@ -82,7 +77,7 @@ class TrackView {
 
     const coordinateOfMiddle = ThumbView.getCoordinatesOfMiddle({
       start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
-      itemSize: this.trackSize,
+      itemSize: this.view.trackSize,
     });
     const position = this.isVertical ? event.pageY - window.scrollY : event.pageX;
 

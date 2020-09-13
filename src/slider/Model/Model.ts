@@ -58,7 +58,7 @@ class Model extends Observable {
 
     if (step) {
       const state = min + Math.round((value - min) / step) * step;
-      this.notifyAll({ value: { state, actionType: 'validateStepValue' }, type: 'updateState' });
+      this.notifyAll({ value: { data: state, actionType: 'validateStepValue' }, type: 'updateState' });
       return state;
     }
     this.notifyAll({ value: { data: value, actionType: 'validateStepValue' }, type: 'updateState' });

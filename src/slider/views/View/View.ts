@@ -113,10 +113,6 @@ class View extends Observable {
   public getValidStepValue(value: number): void{
     this.stepValue = value;
   }
-
-  public setCoordinate(value: number): void {
-    this.coordinate = value * this.trackSize;
-  }
 }
 
 export default View;
