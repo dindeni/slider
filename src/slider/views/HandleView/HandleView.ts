@@ -69,7 +69,7 @@ class HandleView {
     this.isVertical = isVertical;
     this.withProgress = withProgress;
     this.trackElement = $element.find('.js-slider__track').get(0);
-    this.trackWidth = this.trackElement.getBoundingClientRect().width;
+    this.trackWidth = this.view.trackSize;
     this.trackHeight = this.trackElement.getBoundingClientRect().height;
     const thumbCollection = $element.find('.js-slider__thumb');
     this.thumbElement = (thumbCollection.get(0));

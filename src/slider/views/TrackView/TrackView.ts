@@ -64,7 +64,6 @@ class TrackView {
   public getTrackSize(): number {
     this.view.$trackElement = this.view.$wrapper.find('.js-slider__track');
     this.thumbSize = this.view.thumbSize;
-
     const trackSize = this.view.$trackElement.width();
 
     return Math.round((trackSize || 0) - this.view.thumbSize);

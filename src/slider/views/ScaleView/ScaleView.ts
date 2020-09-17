@@ -1,8 +1,6 @@
 import View from '../View/View';
 
 class ScaleView {
-  trackSize: number;
-
   $wrapper: JQuery;
 
   view: View;
@@ -13,8 +11,7 @@ class ScaleView {
   }
 
   public createScale(): void {
-    this.trackSize = this.view.trackSize;
-    this.generateStepCoordinate(this.trackSize);
+    this.generateStepCoordinate(this.view.trackSize);
 
     const $ul = $('<ul class="slider__scale"></ul>').appendTo(this.view.$wrapper);
     this.view.scaleData.shortValue.map((item, index) => {

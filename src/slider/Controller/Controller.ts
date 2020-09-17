@@ -13,7 +13,7 @@ interface UpdateStateOptions {
 class Controller extends Observable {
   private model: Model;
 
-  private view: View = new View();
+  readonly view: View = new View();
 
   constructor(model) {
     super();

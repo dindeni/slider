@@ -22,14 +22,15 @@ class Model extends Observable {
     this.sliderOptions.value = this.validateStepValue(this.sliderOptions.value || min);
   }
 
-  public calculateFractionOfValue(value: number): void {
+  public calculateFractionOfValue(value: number): number {
     const { min, max } = this.sliderOptions;
 
     const fraction = (value - min) / (max - min);
     this.notifyAll({ value: { data: fraction, actionType: 'getFractionOfValue' }, type: 'updateState' });
+    return fraction;
   }
 
-  public validateValue(options: ValidationOptions): void {
+  public validateValue(options: ValidationOptions): boolean {
     const { type, value } = options;
 
     const {
@@ -50,7 +51,9 @@ class Model extends Observable {
       }
     };
 
-    this.notifyAll({ value: { data: getState(), actionType: 'validateValue' }, type: 'updateState' });
+    const data = getState();
+    this.notifyAll({ value: { data, actionType: 'validateValue' }, type: 'updateState' });
+    return data;
   }
 
   public validateStepValue(value: number): number {
