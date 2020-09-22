@@ -1,6 +1,6 @@
+import { CoordinateOfMiddleOptions, DistanceOptions } from '../../../types/types';
 import View from '../View/View';
 import ScaleView from '../ScaleView/ScaleView';
-import { CoordinateOfMiddleOptions, DistanceOptions } from '../../../types/types';
 
 interface ThumbPositionsOptions {
   thumbElement: HTMLElement;
