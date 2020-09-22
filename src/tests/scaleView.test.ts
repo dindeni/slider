@@ -38,6 +38,6 @@ describe('ScaleView', () => {
     view.scaleData.coordinates = [0, 75, 150, 225, 300];
     view.trackSize = 300;
     const coordinate = scaleView.setStepPosition(210);
-    expect(coordinate).toBe(225)
+    expect(coordinate).toBe(225);
   });
 });

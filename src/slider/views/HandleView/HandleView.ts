@@ -43,6 +43,8 @@ class HandleView {
 
   private $element: JQuery;
 
+  private labelElement: HTMLElement;
+
   private readonly view: View;
 
   private trackView: TrackView;
@@ -74,11 +76,12 @@ class HandleView {
     const thumbCollection = $element.find('.js-slider__thumb');
     this.thumbElement = (thumbCollection.get(0));
     this.$element = $element;
+    this.labelElement = this.thumbElement.firstChild as HTMLElement;
 
-    this.thumbElement.addEventListener('mousedown', this.handleDocumentMousedown);
+    this.thumbElement.addEventListener('mousedown', this.handleThumbElementMousedown);
     if (isRange) {
       this.thumbElementMax = thumbCollection.get(1);
-      this.view.$thumbElementMax.get(0).addEventListener('mousedown', this.handleDocumentMousedown);
+      this.view.$thumbElementMax.get(0).addEventListener('mousedown', this.handleThumbElementMousedown);
     }
 
     const sliderElement = $element[0];
@@ -189,16 +192,20 @@ class HandleView {
     this.updateData(optionsForData);
   }
 
-  private handleDocumentMousedown(event): void {
-    if (event.target.classList.contains('js-slider__thumb')) {
-      this.thumbElement = event.target;
+  private handleThumbElementMousedown(event: MouseEvent): void {
+    const isTargetLabel = (event.target as HTMLElement).classList.contains('js-slider__label');
+    const isTargetThumbOrLabel = isTargetLabel || (event.target as HTMLElement).classList.contains('js-slider__thumb');
+    if (isTargetThumbOrLabel) {
+      this.thumbElement = isTargetLabel
+        ? ((event.target as HTMLElement).parentElement as HTMLElement)
+        : event.target as HTMLElement;
 
       if (this.view.sliderSettings.isVertical) {
         this.coordinateYStart = event.screenY;
-        this.shift = parseFloat((event.target as HTMLElement).style.top);
+        this.shift = parseFloat((this.thumbElement as HTMLElement).style.top);
       } else {
         this.coordinateXStart = event.screenX;
-        this.shift = parseFloat((event.target as HTMLElement).style.left);
+        this.shift = parseFloat((this.thumbElement as HTMLElement).style.left);
       }
 
       const handleDocumentMouseup = (): void => {

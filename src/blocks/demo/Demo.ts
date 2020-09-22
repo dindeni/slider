@@ -160,18 +160,26 @@ class Demo {
     inputs.forEach((input: HTMLInputElement, index: number) => {
       const key = this.settingsKeys[index];
 
+      const isStepInputChecked = key === 'step' && input.checked;
+      if (isStepInputChecked) {
+        isStep = true;
+        return;
+      }
+
       if (input.type === 'checkbox') {
         const value = input.checked;
         settings = { ...settings, ...{ [key]: value } };
-        isStep = key === 'step' ? value : false;
       } else {
         const value = Number(input.value);
         settings = { ...settings, ...{ [key]: value } };
       }
 
-      if (index === inputs.length - 1 && isStep) {
-        const value = Number(input.value || (settings.max - settings.min) / 5);
-        settings = { ...settings, ...{ step: value } };
+      const isStepValueInput = index === inputs.length - 1 && isStep;
+      if (isStepValueInput) {
+        const inputValue = (Number(input.value) === 0 || !input.value)
+          ? (settings.max - settings.min) / 5
+          : Number(input.value);
+        settings = { ...settings, ...{ step: inputValue } };
       }
     });
     return settings;
@@ -197,6 +205,7 @@ class Demo {
     const {
       isRange, min, max, step,
     } = settings;
+
 
     if (isRange) {
       const minInput = (this.wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement);
