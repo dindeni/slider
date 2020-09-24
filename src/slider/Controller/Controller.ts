@@ -43,7 +43,7 @@ class Controller extends Observable {
     this.model.calculateFractionOfValue(value);
   }
 
-  private updateState(value: UpdateStateOptions): undefined {
+  private updateState(value: UpdateStateOptions): null {
     switch (value.actionType) {
       case 'validateValue': this.view.setValueState(value.data as boolean);
         break;
@@ -51,9 +51,9 @@ class Controller extends Observable {
         break;
       case 'getFractionOfValue': this.view.getFractionOfValue(value.data as number);
         break;
-      default: return undefined;
+      default: return null;
     }
-    return undefined;
+    return null;
   }
 
   private updateOptions(options: SliderElementOptions): void {
