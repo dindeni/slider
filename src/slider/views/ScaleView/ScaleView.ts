@@ -5,7 +5,7 @@ class ScaleView {
 
   view: View;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
     this.$wrapper = this.view.sliderSettings.$element;
   }
@@ -24,7 +24,7 @@ class ScaleView {
     });
   }
 
-  public setStepPosition(distance): number {
+  public setStepPosition(distance: number): number {
     const fraction = distance / this.view.trackSize;
     this.view.labelView.calculateSliderValue(fraction);
     this.view.notifyAll({ value: this.view.labelView.labelValue, type: 'validateStepValue' });

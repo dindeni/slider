@@ -1,10 +1,11 @@
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
-import { SliderElementOptions } from '../types/types';
+import { SliderElementOptions, Slider } from '../types/types';
 
 describe('Controller', () => {
-  let controller;
-  let options;
+  let controller: Controller;
+  let elementOptions: SliderElementOptions;
+  let options: Slider;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
@@ -21,7 +22,7 @@ describe('Controller', () => {
       withLabel: true,
       step: undefined,
     };
-    const elementOptions = { ...options, $element };
+    elementOptions = { ...options, $element };
     model.getSliderOptions(elementOptions);
   });
 
@@ -38,6 +39,7 @@ describe('Controller', () => {
       const {
         min, max, isRange, isVertical, withProgress, withLabel, step,
       } = controller.view.sliderSettings;
+
       expect({
         min, max, isRange, isVertical, withProgress, withLabel, step,
       }).toEqual(options);
@@ -58,13 +60,13 @@ describe('Controller', () => {
   });
 
   it('should reload slider', () => {
-    const newOptions = { ...options, isRange: true };
+    const newOptions = { ...elementOptions, isRange: true };
     controller.reloadSlider({ ...newOptions });
     const {
       min, max, isRange, isVertical, withProgress, withLabel, step,
     } = controller.view.sliderSettings;
     expect({
       min, max, isRange, isVertical, withProgress, withLabel, step,
-    }).toEqual(newOptions);
+    }).toEqual({ ...options, isRange: true });
   });
 });

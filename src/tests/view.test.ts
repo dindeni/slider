@@ -1,10 +1,11 @@
 import View from '../slider/views/View/View';
+import { SliderElementOptions } from '../types/types';
 
 describe('View', () => {
   let options;
-  let elementOptions;
+  let elementOptions: SliderElementOptions;
   let view: View;
-  let $element;
+  let $element: JQuery;
 
   beforeAll(() => {
     $element = $('<div class="slider js-slider"></div>');

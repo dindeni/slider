@@ -1,12 +1,13 @@
 import ScaleView from '../slider/views/ScaleView/ScaleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import View from '../slider/views/View/View';
 
 describe('ScaleView', () => {
   let options;
   let scaleView: ScaleView;
   let $element;
-  let view;
+  let view: View;
   let controller: Controller;
 
   beforeAll(() => {

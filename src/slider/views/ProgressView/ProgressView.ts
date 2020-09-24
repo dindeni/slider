@@ -3,7 +3,7 @@ import View from '../View/View';
 class ProgressView {
   view: View;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
   }
 

@@ -53,7 +53,7 @@ class HandleView {
 
   private thumbView: ThumbView;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
     this.thumbView = new ThumbView(view);
     autoBind(this);
@@ -166,7 +166,7 @@ class HandleView {
     }
   }
 
-  private handleDocumentMousemove(event): void {
+  private handleDocumentMousemove(event: MouseEvent): void {
     event.preventDefault();
     const coordinateStart = this.isVertical ? this.coordinateYStart : this.coordinateXStart;
     const coordinateMove = this.isVertical ? event.screenY : event.screenX;

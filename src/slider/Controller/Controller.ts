@@ -1,21 +1,16 @@
 import autoBind from 'auto-bind';
 
-import { SliderElementOptions, ValidationOptions } from '../../types/types';
+import { SliderElementOptions, ValidationOptions, UpdateStateOptions } from '../../types/types';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
-
-interface UpdateStateOptions {
-  data: any;
-  actionType: 'validateValue' | 'validateStepValue' | 'getFractionOfValue';
-}
 
 class Controller extends Observable {
   private model: Model;
 
   readonly view: View = new View();
 
-  constructor(model) {
+  constructor(model: Model) {
     super();
     this.model = model;
     autoBind(this);
@@ -27,7 +22,7 @@ class Controller extends Observable {
     this.view.createElements(this.model.sliderOptions);
   }
 
-  public passMethod(method: Function): void {
+  public passMethod(method: (options: SliderElementOptions) => void): void {
     method(this.model.sliderOptions);
   }
 
@@ -50,11 +45,11 @@ class Controller extends Observable {
 
   private updateState(value: UpdateStateOptions): undefined {
     switch (value.actionType) {
-      case 'validateValue': this.view.setValueState(value.data);
+      case 'validateValue': this.view.setValueState(value.data as boolean);
         break;
-      case 'validateStepValue': this.view.getValidStepValue(value.data);
+      case 'validateStepValue': this.view.getValidStepValue(value.data as number);
         break;
-      case 'getFractionOfValue': this.view.getFractionOfValue(value.data);
+      case 'getFractionOfValue': this.view.getFractionOfValue(value.data as number);
         break;
       default: return undefined;
     }

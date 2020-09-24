@@ -2,12 +2,11 @@ import Observable from '../slider/Observable/Observable';
 
 describe('Observable', () => {
   let observable: Observable;
-  let spyObservable;
-
+  let spyObservable: jest.SpyInstance;
   beforeAll(() => {
     observable = new Observable();
-    const sum = (number): number => number + number;
-    const multiply = (number): number => number * number;
+    const sum = (number: number): number => number + number;
+    const multiply = (number: number): number => number * number;
     observable.subscribe({ method: sum, type: 'sum' });
     observable.subscribe({ method: multiply, type: 'multiply' });
     spyObservable = jest.spyOn(observable, 'notifyAll');

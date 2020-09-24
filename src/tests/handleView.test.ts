@@ -1,10 +1,11 @@
 import HandleView from '../slider/views/HandleView/HandleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import { SliderElementOptions, SliderOptions } from '../types/types';
 
 describe('HandleView', () => {
-  let options;
-  let elementOptions;
+  let options: SliderOptions;
+  let elementOptions: SliderElementOptions;
   let handleView: HandleView;
   let view;
 
@@ -75,7 +76,7 @@ describe('HandleView', () => {
       right: 0,
       x: 0,
       y: 0,
-      toJSON: (): any => {},
+      toJSON: (): void => {},
     }));
     const thumbElement = $('.js-slider__thumb')[0];
     handleView.updateData({

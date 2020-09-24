@@ -1,13 +1,15 @@
 import ThumbView from '../slider/views/ThumbView/ThumbView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import View from '../slider/views/View/View';
+import { SliderElementOptions, SliderOptions } from '../types/types';
 
 describe('ThumbView', () => {
-  let options;
-  let elementOptions;
+  let options: SliderOptions;
+  let elementOptions: SliderElementOptions;
   let thumbView: ThumbView;
-  let $element;
-  let view;
+  let $element: JQuery;
+  let view: View;
   let controller: Controller;
 
   beforeAll(() => {

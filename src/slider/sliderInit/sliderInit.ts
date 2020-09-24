@@ -1,16 +1,16 @@
-import { SliderOptions } from '../../types/types';
+import { SliderOptions, SliderReturnOption } from '../../types/types';
 import Controller from '../Controller/Controller';
 import Model from '../Model/Model';
 
 declare global {
   interface JQuery {
-    slider(options?: SliderOptions): {reload: Function} | JQuery;
+    slider(options?: SliderOptions): SliderReturnOption;
     }
 }
 
 /* eslint-disable func-names */
 
-$.fn.slider = function (options?: SliderOptions): { reload: Function; method: Function } | JQuery {
+$.fn.slider = function (options?: SliderOptions): SliderReturnOption {
   const optionsDefault = {
     progress: false,
     min: 0,
@@ -41,3 +41,5 @@ $.fn.slider = function (options?: SliderOptions): { reload: Function; method: Fu
   this.data = { ...this.data, reload: controller.reloadSlider };
   return this.data;
 };
+
+export default $.fn.slider;

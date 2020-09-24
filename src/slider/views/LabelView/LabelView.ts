@@ -10,7 +10,7 @@ class LabelView {
 
   private readonly view: View;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
   }
 

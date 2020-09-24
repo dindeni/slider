@@ -72,7 +72,7 @@ class Model extends Observable {
     const {
       min, max, value, valueMin, valueMax,
     } = options;
-    const validate = (checkedValue): number | undefined => {
+    const validate = (checkedValue: number): number | undefined => {
       if (checkedValue) {
         if (checkedValue > max) {
           return max;
@@ -83,9 +83,9 @@ class Model extends Observable {
         return checkedValue;
       } return undefined;
     };
-    this.sliderOptions.value = validate(value);
-    this.sliderOptions.valueMin = validate(valueMin);
-    this.sliderOptions.valueMax = validate(valueMax);
+    this.sliderOptions.value = validate(value as number);
+    this.sliderOptions.valueMin = validate(valueMin as number);
+    this.sliderOptions.valueMax = validate(valueMax as number);
   }
 }
 

@@ -1,11 +1,12 @@
 import TrackView from '../slider/views/TrackView/TrackView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import { SliderElementOptions } from '../types/types';
 
 describe('TrackView', () => {
-  let options;
-  let trackView;
-  let $element;
+  let options: SliderElementOptions;
+  let trackView: TrackView;
+  let $element: JQuery;
 
   beforeAll(() => {
     $element = $('<div class="slider js-slider"></div>');
@@ -31,15 +32,20 @@ describe('TrackView', () => {
 
   it('should move thumb after click on track', () => {
     const trackElement = $('.js-slider__track')[0];
-    const event = {
-      target: trackElement,
-      pageX: 100,
-      pageY: 0,
-    };
-    trackView.handleSliderElementClick({
-      event, trackElement, isVertical: false, isRange: true,
+    const event: MouseEvent = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+      clientX: 100,
+      clientY: 0,
     });
-    expect(trackView.thumbElement.style.left).toBe('100px');
+    trackElement.dispatchEvent(event);
+    const { min, max, withProgress } = options;
+
+    trackView.handleSliderElementClick({
+      event, trackElement, isVertical: false, isRange: true, min, max, withProgress,
+    });
+    expect($('.js-slider__thumb')[0].style.left).toBe('100px');
   });
 
   it('should get track size', () => {

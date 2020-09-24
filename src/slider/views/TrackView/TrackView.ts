@@ -24,7 +24,7 @@ class TrackView {
 
   private thumbView: ThumbView;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
     this.$wrapper = this.view.sliderSettings.$element;
     this.thumbView = new ThumbView(view);
@@ -78,7 +78,7 @@ class TrackView {
       start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
       itemSize: this.view.trackSize,
     });
-    const position = this.isVertical ? event.pageY - window.scrollY : event.pageX;
+    const position = this.isVertical ? event.clientY : event.clientX;
 
     if (position < coordinateOfMiddle) {
       return thumbMin;
@@ -90,9 +90,9 @@ class TrackView {
     const { event, trackElement } = options;
 
     const thumbDistance = this.isVertical
-      ? event.pageY - window.scrollY - trackElement.getBoundingClientRect().top - this.thumbElement
+      ? event.clientY - trackElement.getBoundingClientRect().top - this.thumbElement
         .getBoundingClientRect().height / 2
-      : event.pageX - trackElement.getBoundingClientRect().left
+      : event.clientX - trackElement.getBoundingClientRect().left
        - this.thumbElement.getBoundingClientRect().width / 2;
     if (thumbDistance < 0) {
       return 0;

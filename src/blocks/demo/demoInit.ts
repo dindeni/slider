@@ -25,7 +25,7 @@ const sliderSettings = [
 ];
 
 const demoElements = document.querySelectorAll('.js-demo');
-demoElements.forEach((demoElement, index) => {
+demoElements.forEach((demoElement: HTMLElement, index: number) => {
   const demo = new Demo({ wrapper: demoElement, settings: sliderSettings[index] });
   demo.loadSliders();
 });

@@ -20,7 +20,7 @@ class ThumbView {
 
   private readonly view: View;
 
-  constructor(view) {
+  constructor(view: View) {
     this.view = view;
     this.$wrapper = this.view.sliderSettings.$element;
     this.scaleView = new ScaleView(view);
@@ -147,7 +147,7 @@ class ThumbView {
     return start + itemSize / 2;
   }
 
-  public getThumbCoordinate(value): number {
+  public getThumbCoordinate(value: number): number {
     this.view.notifyAll({ value, type: 'getFractionOfValue' });
     return this.view.fraction * this.view.trackSize;
   }

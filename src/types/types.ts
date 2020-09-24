@@ -11,9 +11,13 @@ interface Slider {
   withLabel?: boolean;
 }
 
+type MethodOption = (options: SliderElementOptions) => void;
+
+type SliderReturnOption = { reload: MethodOption; method: MethodOption } | JQuery;
+
 interface SliderElementOptions extends Slider {
   $element: JQuery;
-  method?: Function;
+  method?: MethodOption;
 }
 
 type SliderOptions = Omit<SliderElementOptions, '$element'>;
@@ -40,8 +44,14 @@ interface ValidationOptions {
   value: number;
 }
 
+interface UpdateStateOptions {
+  data: number | boolean;
+  actionType: 'validateValue' | 'validateStepValue' | 'getFractionOfValue';
+}
+
 /* eslint-disable no-undef */
 export {
   SliderOptions, SliderElementOptions, Slider, ScaleData, DistanceOptions,
-  CoordinateOfMiddleOptions, ValidationOptions,
+  CoordinateOfMiddleOptions, ValidationOptions, UpdateStateOptions, SliderReturnOption,
+  MethodOption,
 };
