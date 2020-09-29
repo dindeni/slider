@@ -174,7 +174,7 @@ class HandleView {
 
     this.thumbView.setThumbPosition({
       thumbElement: this.thumbElement,
-      distance: this.view.distance + this.shift,
+      distance: Math.round(this.view.distance + this.shift),
     });
     if (this.isRange) {
       this.thumbView.changeZIndex(this.thumbElement);
