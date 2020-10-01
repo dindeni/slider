@@ -14,11 +14,9 @@ class TrackView {
 
   private isVertical: boolean;
 
-  private thumbList: NodeList;
-
   private thumbSize: number;
 
-  private $wrapper: JQuery;
+  private $wrapper: JQuery<HTMLElement>;
 
   readonly view: View;
 
@@ -41,10 +39,8 @@ class TrackView {
     const isTrackElement = target === trackElement || target.classList.contains('js-slider__progress');
     const isClickedElement = isItemElement || isTrackElement;
     if (isClickedElement) {
-      this.thumbList = this.view.$wrapper[0].querySelectorAll('.js-slider__thumb');
-
-      this.thumbElement = isRange ? this.getRangeThumbElement(event) as HTMLElement
-        : this.thumbList[0] as HTMLElement;
+      this.thumbElement = isRange ? this.getRangeThumbElement(event)
+        : this.$wrapper.find('.js-slider__thumb')[0];
 
       const distance = isItemElement
         ? this.thumbView.getThumbCoordinate(Number(target.textContent))
@@ -70,8 +66,8 @@ class TrackView {
   }
 
   private getRangeThumbElement(event: MouseEvent): HTMLElement {
-    const thumbMin = this.thumbList[0] as HTMLElement;
-    const thumbMax = this.thumbList[1]as HTMLElement;
+    const thumbMin = this.$wrapper.find('.js-slider__thumb_type_min')[0];
+    const thumbMax = this.$wrapper.find('.js-slider__thumb_type_max')[0];
     const trackPositionKey = this.isVertical ? 'top' : 'left';
 
     const coordinateOfMiddle = ThumbView.getCoordinatesOfMiddle({

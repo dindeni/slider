@@ -8,11 +8,11 @@ import LabelView from '../LabelView/LabelView';
 import ProgressView from '../ProgressView/ProgressView';
 
 class View extends Observable {
-  public $thumbElement: JQuery;
+  public $thumbElement: JQuery<HTMLElement>;
 
-  public $thumbElementMin: JQuery;
+  public $thumbElementMin: JQuery<HTMLElement>;
 
-  public $thumbElementMax: JQuery;
+  public $thumbElementMax: JQuery<HTMLElement>;
 
   public thumbCoordinate: number;
 
@@ -20,7 +20,7 @@ class View extends Observable {
 
   public thumbCoordinateMax: number;
 
-  public $trackElement: JQuery;
+  public $trackElement: JQuery<HTMLElement>;
 
   public coordinate: number;
 
@@ -32,7 +32,7 @@ class View extends Observable {
 
   public distance: number;
 
-  public $wrapper: JQuery;
+  public $wrapper: JQuery<HTMLElement>;
 
   public trackSize: number;
 

@@ -9,7 +9,6 @@ declare global {
 }
 
 /* eslint-disable func-names */
-
 $.fn.slider = function (options?: SliderOptions): SliderReturnOption {
   const optionsDefault = {
     progress: false,

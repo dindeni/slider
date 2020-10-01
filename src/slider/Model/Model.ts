@@ -83,9 +83,15 @@ class Model extends Observable {
         return checkedValue;
       } return undefined;
     };
-    this.sliderOptions.value = validate(value as number);
-    this.sliderOptions.valueMin = validate(valueMin as number);
-    this.sliderOptions.valueMax = validate(valueMax as number);
+    if (value) {
+      this.sliderOptions.value = validate(value);
+    }
+    if (valueMin) {
+      this.sliderOptions.valueMin = validate(valueMin);
+    }
+    if (valueMax) {
+      this.sliderOptions.valueMax = validate(valueMax);
+    }
   }
 }
 

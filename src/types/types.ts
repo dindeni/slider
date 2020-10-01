@@ -1,4 +1,4 @@
-interface Slider {
+export interface Slider {
   min: number;
   max: number;
   isVertical: boolean;
@@ -11,47 +11,41 @@ interface Slider {
   withLabel?: boolean;
 }
 
-type MethodOption = (options: SliderElementOptions) => void;
+export type MethodOption = (options: SliderElementOptions) => void;
 
-type SliderReturnOption = { reload: MethodOption; method: MethodOption } | JQuery;
+export type SliderReturnOption = { reload: MethodOption; method: MethodOption }
+  | JQuery<HTMLElement>;
 
-interface SliderElementOptions extends Slider {
-  $element: JQuery;
+export interface SliderElementOptions extends Slider {
+  $element: JQuery<HTMLElement>;
   method?: MethodOption;
 }
 
-type SliderOptions = Omit<SliderElementOptions, '$element'>;
+export type SliderOptions = Omit<SliderElementOptions, '$element'>;
 
-interface ScaleData {
+export interface ScaleData {
   value: number[];
   coordinates: number[];
   shortValue: number[];
   shortCoordinates: number[];
 }
 
-interface DistanceOptions {
+export interface DistanceOptions {
   coordinateStart: number;
   coordinateMove: number;
 }
 
-interface CoordinateOfMiddleOptions {
+export interface CoordinateOfMiddleOptions {
   start: number;
   itemSize: number;
 }
 
-interface ValidationOptions {
-  type?: 'min' | 'max';
+export interface ValidationOptions {
   value: number;
+  type?: 'min' | 'max';
 }
 
-interface UpdateStateOptions {
+export interface UpdateStateOptions {
   data: number | boolean;
   actionType: 'validateValue' | 'validateStepValue' | 'getFractionOfValue';
 }
-
-/* eslint-disable no-undef */
-export {
-  SliderOptions, SliderElementOptions, Slider, ScaleData, DistanceOptions,
-  CoordinateOfMiddleOptions, ValidationOptions, UpdateStateOptions, SliderReturnOption,
-  MethodOption,
-};

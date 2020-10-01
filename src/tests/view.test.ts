@@ -5,7 +5,7 @@ describe('View', () => {
   let options;
   let elementOptions: SliderElementOptions;
   let view: View;
-  let $element: JQuery;
+  let $element: JQuery<HTMLElement>;
 
   beforeAll(() => {
     $element = $('<div class="slider js-slider"></div>');

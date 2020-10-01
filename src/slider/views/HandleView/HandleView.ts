@@ -33,7 +33,7 @@ class HandleView {
 
   private withProgress: boolean;
 
-  private thumbElement: HTMLElement;
+  private thumbElement: HTMLElement | null;
 
   private thumbElementMax: HTMLElement;
 
@@ -41,9 +41,9 @@ class HandleView {
 
   private trackHeight: number;
 
-  private $element: JQuery;
+  private $element: JQuery<HTMLElement>;
 
-  private labelElement: HTMLElement;
+  private labelElement: HTMLElement | null;
 
   private readonly view: View;
 
@@ -76,7 +76,7 @@ class HandleView {
     const thumbCollection = $element.find('.js-slider__thumb');
     this.thumbElement = (thumbCollection.get(0));
     this.$element = $element;
-    this.labelElement = this.thumbElement.firstChild as HTMLElement;
+    this.labelElement = this.thumbElement.querySelector('.js-slider__label');
 
     this.thumbElement.addEventListener('mousedown', this.handleThumbElementMousedown);
     if (isRange) {
@@ -128,7 +128,9 @@ class HandleView {
     const sliderElement = this.view.sliderSettings.$element;
     if (sliderElement.length !== 0) {
       handleView.removeWindowEvent();
-      this.view.parentElement = sliderElement[0].parentElement as HTMLElement;
+      if (sliderElement[0].parentElement) {
+        this.view.parentElement = sliderElement[0].parentElement;
+      }
       $(this.view.parentElement).empty();
       this.view.createElements(this.view.sliderSettings);
     }
@@ -172,40 +174,41 @@ class HandleView {
     const coordinateMove = this.isVertical ? event.screenY : event.screenX;
     this.thumbView.calculateDistance({ coordinateStart, coordinateMove });
 
-    this.thumbView.setThumbPosition({
-      thumbElement: this.thumbElement,
-      distance: Math.round(this.view.distance + this.shift),
-    });
-    if (this.isRange) {
-      this.thumbView.changeZIndex(this.thumbElement);
+    if (this.thumbElement) {
+      this.thumbView.setThumbPosition({
+        thumbElement: this.thumbElement,
+        distance: Math.round(this.view.distance + this.shift),
+      });
+      if (this.isRange) {
+        this.thumbView.changeZIndex(this.thumbElement);
+      }
+
+      const optionsForData = {
+        trackElement: this.trackElement,
+        distance: this.isVertical ? parseFloat(this.thumbElement.style.top)
+          : parseFloat(this.thumbElement.style.left),
+        thumbElement: this.thumbElement,
+        progressSize: this.isVertical ? parseFloat(this.thumbElement.style.top)
+          : parseFloat(this.thumbElement.style.left),
+      };
+
+      this.updateData(optionsForData);
     }
-
-    const optionsForData = {
-      trackElement: this.trackElement,
-      distance: this.isVertical ? parseFloat(this.thumbElement.style.top)
-        : parseFloat(this.thumbElement.style.left),
-      thumbElement: this.thumbElement,
-      progressSize: this.isVertical ? parseFloat(this.thumbElement.style.top)
-        : parseFloat(this.thumbElement.style.left),
-    };
-
-    this.updateData(optionsForData);
   }
 
   private handleThumbElementMousedown(event: MouseEvent): void {
-    const isTargetLabel = (event.target as HTMLElement).classList.contains('js-slider__label');
-    const isTargetThumbOrLabel = isTargetLabel || (event.target as HTMLElement).classList.contains('js-slider__thumb');
+    const targetElement = event.target as HTMLElement;
+    const isTargetLabel = targetElement.classList.contains('js-slider__label');
+    const isTargetThumbOrLabel = isTargetLabel || targetElement.classList.contains('js-slider__thumb');
     if (isTargetThumbOrLabel) {
-      this.thumbElement = isTargetLabel
-        ? ((event.target as HTMLElement).parentElement as HTMLElement)
-        : event.target as HTMLElement;
+      this.thumbElement = isTargetLabel ? targetElement.parentElement : targetElement;
 
-      if (this.view.sliderSettings.isVertical) {
+      if (this.view.sliderSettings.isVertical && this.thumbElement) {
         this.coordinateYStart = event.screenY;
-        this.shift = parseFloat((this.thumbElement as HTMLElement).style.top);
-      } else {
+        this.shift = parseFloat(this.thumbElement.style.top);
+      } else if (this.thumbElement) {
         this.coordinateXStart = event.screenX;
-        this.shift = parseFloat((this.thumbElement as HTMLElement).style.left);
+        this.shift = parseFloat(this.thumbElement.style.left);
       }
 
       const handleDocumentMouseup = (): void => {
@@ -229,7 +232,7 @@ class HandleView {
     $(window).off('resize', this.handleWindowResize);
   }
 
-  private static getLabelValue(options: {$element: JQuery; isRange: boolean}):
+  private static getLabelValue(options: {$element: JQuery<HTMLElement>; isRange: boolean}):
       { valueMin?: number; valueMax?: number; value?: number } {
     const { $element, isRange } = options;
     if (isRange) {

@@ -6,7 +6,7 @@ import { SliderElementOptions } from '../types/types';
 describe('TrackView', () => {
   let options: SliderElementOptions;
   let trackView: TrackView;
-  let $element: JQuery;
+  let $element: JQuery<HTMLElement>;
 
   beforeAll(() => {
     $element = $('<div class="slider js-slider"></div>');

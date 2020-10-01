@@ -1,7 +1,7 @@
 import View from '../View/View';
 
 class ScaleView {
-  $wrapper: JQuery;
+  $wrapper: JQuery<HTMLElement>;
 
   view: View;
 

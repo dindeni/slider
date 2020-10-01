@@ -33,7 +33,7 @@ class LabelView {
   public updateLabelValue(options: UpdatingLabelOptions): void {
     const { value, thumbElement } = options;
 
-    const labelElement: JQuery = $(thumbElement).children();
+    const labelElement = $(thumbElement).children();
     labelElement.text(value);
 
     if (labelElement.hasClass('js-slider__label_type_min')) {

@@ -8,7 +8,7 @@ describe('ThumbView', () => {
   let options: SliderOptions;
   let elementOptions: SliderElementOptions;
   let thumbView: ThumbView;
-  let $element: JQuery;
+  let $element: JQuery<HTMLElement>;
   let view: View;
   let controller: Controller;
 

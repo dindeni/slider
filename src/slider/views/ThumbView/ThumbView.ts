@@ -14,7 +14,7 @@ class ThumbView {
 
   private thumbCoordinate: number;
 
-  private $wrapper: JQuery;
+  private $wrapper: JQuery<HTMLElement>;
 
   private scaleView: ScaleView;
 
@@ -121,21 +121,20 @@ class ThumbView {
     const isLessMiddle = (isVertical && thumbElement.getBoundingClientRect().top
       + window.scrollY < coordinateOfMiddle)
       || (!isVertical && thumbElement.getBoundingClientRect().left < coordinateOfMiddle);
-    const labelElementMin = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_min') as HTMLElement;
-    const labelElementMax = (thumbElement.parentElement as HTMLElement).querySelector('.js-slider__label_type_max') as HTMLElement;
-    const isLabelsExist = labelElementMin && labelElementMax;
+    const labelElementMin: HTMLElement | null = this.$wrapper[0].querySelector('.js-slider__label_type_min');
+    const labelElementMax: HTMLElement | null = this.$wrapper[0].querySelector('.js-slider__label_type_max');
 
     if (isLessMiddle) {
       $thumbElementMax.css({ zIndex: '200' });
       $thumbElementMin.css({ zIndex: '100' });
-      if (isLabelsExist) {
+      if (labelElementMin && labelElementMax) {
         labelElementMax.style.zIndex = '200';
         labelElementMin.style.zIndex = '100';
       }
     } else {
       $thumbElementMax.css({ zIndex: '100' });
       $thumbElementMin.css({ zIndex: '200' });
-      if (isLabelsExist) {
+      if (labelElementMin && labelElementMax) {
         labelElementMax.style.zIndex = '100';
         labelElementMin.style.zIndex = '200';
       }
