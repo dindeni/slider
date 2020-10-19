@@ -83,6 +83,7 @@ class ThumbView {
     const thumb = thumbElement;
 
     const currentValue: number = min + (max - min) * (distance / this.view.trackSize);
+
     if (isRange) {
       const thumbType = thumbElement === $thumbElementMin.get(0) ? 'min' : 'max';
       this.view.notifyAll({ value: { value: currentValue, type: thumbType }, type: 'validateValue' });
@@ -90,9 +91,14 @@ class ThumbView {
       this.view.notifyAll({ value: { value: currentValue }, type: 'validateValue' });
     }
 
+    const keyCoordinate = isVertical ? 'top' : 'left';
     if (this.view.isValidValue) {
-      const keyCoordinate = isVertical ? 'top' : 'left';
       thumb.style[keyCoordinate] = step ? `${this.scaleView.setStepPosition(distance).toString()}px` : `${distance}px`;
+    }
+    if (distance > this.view.trackSize) {
+      thumb.style[keyCoordinate] = `${this.view.trackSize}px`;
+    } else if (distance < 0) {
+      thumb.style[keyCoordinate] = '0px';
     }
   }
 

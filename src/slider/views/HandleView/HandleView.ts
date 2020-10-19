@@ -179,6 +179,7 @@ class HandleView {
         thumbElement: this.thumbElement,
         distance: Math.round(this.view.distance + this.shift),
       });
+
       if (this.isRange) {
         this.thumbView.changeZIndex(this.thumbElement);
       }
