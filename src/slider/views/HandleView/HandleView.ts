@@ -218,7 +218,6 @@ class HandleView {
       };
 
       document.addEventListener('mousemove', this.handleDocumentMousemove);
-      document.removeEventListener('mouseup', handleDocumentMouseup);
       document.addEventListener('mouseup', handleDocumentMouseup);
     }
   }
