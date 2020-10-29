@@ -5,7 +5,6 @@ import Model from '../slider/Model/Model';
 describe('ProgressView', () => {
   let options;
   let labelView: LabelView;
-  let view;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
@@ -22,9 +21,8 @@ describe('ProgressView', () => {
     const model = new Model();
     const controller = new Controller(model);
     model.getSliderOptions(options);
-    view = controller.view;
     controller.init();
-    labelView = new LabelView(view);
+    labelView = controller.view.labelView;
   });
 
   it('should create label', () => {
@@ -33,13 +31,15 @@ describe('ProgressView', () => {
 
   it('should update label value min', () => {
     const $thumbMin = $('.js-slider__thumb_type_min');
-    labelView.updateLabelValue({ thumbElement: $thumbMin[0], value: 250 });
-    expect($thumbMin.children().text()).toBe('250');
+    const $label = $('.js-slider__label_type_min');
+    labelView.updateLabelValue({ thumbElement: $thumbMin[0], fraction: 0.5 });
+    expect($label.text()).toBe('300');
   });
 
-  it('should update label value', () => {
+  it('should update label value max', () => {
     const $thumbMax = $('.js-slider__thumb_type_max');
-    labelView.updateLabelValue({ thumbElement: $thumbMax[0], value: 400 });
-    expect($thumbMax.children().text()).toBe('400');
+    const $label = $('.js-slider__label_type_max');
+    labelView.updateLabelValue({ thumbElement: $thumbMax[0], fraction: 0.8 });
+    expect($label.text()).toBe('420');
   });
 });

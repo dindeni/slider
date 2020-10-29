@@ -1,44 +1,44 @@
 import ScaleView from '../slider/views/ScaleView/ScaleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
-import View from '../slider/views/View/View';
 
 describe('ScaleView', () => {
-  let options;
   let scaleView: ScaleView;
-  let $element;
-  let view: View;
   let controller: Controller;
 
   beforeAll(() => {
-    $element = $('<div class="slider js-slider"></div>');
+    const $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
-    options = {
+    const options = {
       isRange: true,
       isVertical: false,
       min: 100,
       max: 500,
       withProgress: true,
       withLabel: true,
-      step: 100,
+      step: 25,
       $element,
     };
     const model = new Model();
     controller = new Controller(model);
     model.getSliderOptions(options);
-    view = controller.view;
     controller.init();
-    scaleView = new ScaleView(view);
+    scaleView = controller.view.scaleView;
   });
 
   it('should create scale', () => {
-    expect($('.js-slider__scale-item').length).toBe(5);
+    expect($('.js-slider__scale-item').length).toBe(9);
   });
 
-  it('should set scale coordinate', () => {
-    view.scaleData.coordinates = [0, 75, 150, 225, 300];
-    view.trackSize = 300;
-    const coordinate = scaleView.setStepPosition(210);
-    expect(coordinate).toBe(225);
+  it('should set position min', () => {
+    const element = $('.js-slider__thumb_type_min')[0];
+    scaleView.setPosition({ element, value: 160, trackSize: 200 });
+    expect(element.style.left).toEqual('25px');
+  });
+
+  it('should set position max', () => {
+    const element = $('.js-slider__thumb_type_max')[0];
+    scaleView.setPosition({ element, value: 200, trackSize: 200 });
+    expect(element.style.left).toEqual('50px');
   });
 });

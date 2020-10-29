@@ -7,7 +7,7 @@
     "develop": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "deploy": "webpack --config webpack.prod.js && gh-pages -d build",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "homepage": "https://dindeni.github.io/slider",
   "author": "",

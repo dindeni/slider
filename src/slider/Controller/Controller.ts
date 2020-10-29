@@ -28,7 +28,7 @@ class Controller extends Observable {
 
   public reloadSlider(options: SliderElementOptions): void {
     this.model.getSliderOptions(options);
-    this.view.handleView.reloadSlider(options);
+    this.view.reloadSlider(options);
   }
 
   private setValidStepValue(value: number): void {
@@ -39,7 +39,7 @@ class Controller extends Observable {
     this.model.validateValue(options);
   }
 
-  private getFractionOfValue(value: number): void {
+  private setFractionOfValue(value: number): void {
     this.model.calculateFractionOfValue(value);
   }
 
@@ -49,7 +49,7 @@ class Controller extends Observable {
         break;
       case 'validateStepValue': this.view.getValidStepValue(value.data as number);
         break;
-      case 'getFractionOfValue': this.view.getFractionOfValue(value.data as number);
+      case 'setFractionOfValue': this.view.setFractionOfValue(value.data as number);
         break;
       default: return null;
     }
@@ -67,7 +67,7 @@ class Controller extends Observable {
     this.view.subscribe({ method: this.updateOptions, type: 'updateOptions' });
     this.view.subscribe({ method: this.setValueState, type: 'validateValue' });
     this.view.subscribe({ method: this.setValidStepValue, type: 'validateStepValue' });
-    this.view.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.view.subscribe({ method: this.setFractionOfValue, type: 'setFractionOfValue' });
     this.model.subscribe({ method: this.updateState, type: 'updateState' });
   }
 }

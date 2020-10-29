@@ -26,7 +26,7 @@ class Model extends Observable {
     const { min, max } = this.sliderOptions;
 
     const fraction = (value - min) / (max - min);
-    this.notifyAll({ value: { data: fraction, actionType: 'getFractionOfValue' }, type: 'updateState' });
+    this.notifyAll({ value: { data: fraction, actionType: 'setFractionOfValue' }, type: 'updateState' });
     return fraction;
   }
 

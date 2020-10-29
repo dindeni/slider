@@ -1,6 +1,11 @@
-import { SliderElementOptions, ValidationOptions, UpdateStateOptions } from '../../types/types';
+import {
+  SliderElementOptions, ValidationOptions, UpdateStateOptions, DistanceOptions,
+  ThumbPositionsOptions, ChangeZIndexOptions, UpdatingLabelOptions, SetStepThumbOptions,
+} from '../../types/types';
 
-type ObserverValueOption = number | SliderElementOptions | ValidationOptions | UpdateStateOptions;
+type ObserverValueOption = number | SliderElementOptions | ValidationOptions | UpdateStateOptions
+  | DistanceOptions | ThumbPositionsOptions | ChangeZIndexOptions | UpdatingLabelOptions
+  | SetStepThumbOptions;
 
 interface ObserverAndType {
   type: string;

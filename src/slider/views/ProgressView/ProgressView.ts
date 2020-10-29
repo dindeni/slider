@@ -1,27 +1,29 @@
-import View from '../View/View';
+import { SliderElementOptions } from '../../../types/types';
 
 class ProgressView {
-  view: View;
+  settings: SliderElementOptions;
 
-  constructor(view: View) {
-    this.view = view;
+  constructor(settings: SliderElementOptions) {
+    this.settings = settings;
   }
 
   public createProgressNode(): void {
-    $('<div class="slider__progress js-slider__progress"></div>').appendTo(this.view.$trackElement);
+    const $trackElement = this.settings.$element.find('.js-slider__track');
+    $('<div class="slider__progress js-slider__progress"></div>').appendTo($trackElement);
   }
 
   public makeProgress(): void {
-    const { isVertical, isRange } = this.view.sliderSettings;
+    const { isVertical, isRange, $element } = this.settings;
 
-    const $progressElement = this.view.$wrapper.find('.js-slider__progress');
+    const $progressElement = $element.find('.js-slider__progress');
+    const thumbCollection = $element.find('.js-slider__thumb');
     if (isRange) {
       const thumbMin = isVertical
-        ? parseFloat(this.view.$thumbElementMin.css('top'))
-        : parseFloat(this.view.$thumbElementMin.css('left'));
+        ? parseFloat(thumbCollection[0].style.top)
+        : parseFloat(thumbCollection[0].style.left);
       const thumbMax = isVertical
-        ? parseFloat(this.view.$thumbElementMax.css('top'))
-        : parseFloat(this.view.$thumbElementMax.css('left'));
+        ? parseFloat(thumbCollection[1].style.top)
+        : parseFloat(thumbCollection[1].style.left);
       const progressSize = thumbMax - thumbMin;
       isVertical
         ? $progressElement.css({
@@ -34,8 +36,8 @@ class ProgressView {
         });
     } else {
       const progressSize = isVertical
-        ? parseFloat(this.view.$thumbElement.css('top'))
-        : parseFloat(this.view.$thumbElement.css('left'));
+        ? parseFloat(thumbCollection[0].style.top)
+        : parseFloat(thumbCollection[0].style.left);
       isVertical
         ? $progressElement.css({
           height: `${progressSize}px`,

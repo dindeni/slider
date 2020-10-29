@@ -1,191 +1,249 @@
-import { CoordinateOfMiddleOptions, DistanceOptions } from '../../../types/types';
-import View from '../View/View';
-import ScaleView from '../ScaleView/ScaleView';
+import {
+  DistanceOptions, ThumbPositionsOptions, ChangeZIndexOptions, SliderElementOptions,
+} from '../../../types/types';
+import Observable from '../../Observable/Observable';
 
-interface ThumbPositionsOptions {
-  thumbElement: HTMLElement;
-  distance: number;
+interface ThumbCoordinateOptions {
+  value: number;
+  trackSize: number;
 }
 
-class ThumbView {
-  private thumbCoordinateMin: number;
+interface CorrectPositionOptions {
+  element: HTMLElement;
+  distance: number;
+  key: 'top' | 'left';
+  trackSize: number;
+}
 
-  private thumbCoordinateMax: number;
+type CheckRangePositionOptions = Omit<CorrectPositionOptions, 'trackSize'>;
+
+class ThumbView extends Observable {
+  public $thumbElement: JQuery<HTMLElement>;
+
+  public $thumbElementMin: JQuery<HTMLElement>;
+
+  public $thumbElementMax: JQuery<HTMLElement>;
+
+  public thumbCoordinateMin: number;
+
+  public thumbCoordinateMax: number;
 
   private thumbCoordinate: number;
 
-  private $wrapper: JQuery<HTMLElement>;
+  public size: number;
 
-  private scaleView: ScaleView;
+  public distance: number;
 
-  private readonly view: View;
+  private fraction: number;
 
-  constructor(view: View) {
-    this.view = view;
-    this.$wrapper = this.view.sliderSettings.$element;
-    this.scaleView = new ScaleView(view);
+  private readonly settings: SliderElementOptions;
+
+  private isValidValue: boolean;
+
+  constructor(settings: SliderElementOptions) {
+    super();
+    this.settings = settings;
+    this.getThumbSize();
   }
 
-  public createThumb(): void {
+  public createThumb(trackSize: number): void {
     const {
-      isRange, isVertical, min, max, value, valueMin, valueMax,
-    } = this.view.sliderSettings;
-
-    this.view.$wrapper.css({ width: '100%' });
-    const { trackSize } = this.view;
+      isRange, isVertical, min, max, value, valueMin, valueMax, $element,
+    } = this.settings;
 
     if (isRange) {
       this.thumbCoordinateMin = this.getThumbCoordinate(
-        valueMin || min,
+        { value: valueMin || min, trackSize },
       );
 
       this.thumbCoordinateMax = this.getThumbCoordinate(
-        valueMax || max,
+        { value: valueMax || max, trackSize },
       );
 
-      this.view.$thumbElementMin = isVertical
-        ? this.view.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')
-        : this.view.$wrapper.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min');
-      this.view.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>')
-        .appendTo(this.view.$wrapper);
+      this.$thumbElementMin = isVertical
+        ? $element.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')
+        : $element.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min');
+      this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>')
+        .appendTo($element);
     } else {
       this.thumbCoordinate = this.getThumbCoordinate(
-        value || min,
+        { value: value || min, trackSize },
       );
-      this.view.$thumbElement = this.view.$wrapper.find('.js-slider__thumb');
+      this.$thumbElement = $element.find('.js-slider__thumb');
     }
 
     if (isVertical) {
       this.makeVertical();
     } else if (isRange) {
-      this.view.$thumbElementMin.css({
+      this.$thumbElementMin.css({
         left: `${this.thumbCoordinateMin}px`,
         zIndex: this.thumbCoordinateMin > (trackSize / 2) ? 100 : 50,
       });
 
-      this.view.$thumbElementMax.css({
+      this.$thumbElementMax.css({
         left: `${this.thumbCoordinateMax}px`,
         zIndex: this.thumbCoordinateMax > (trackSize / 2) ? 50 : 100,
       });
     } else {
-      this.view.$thumbElement.css({
+      this.$thumbElement.css({
         left: `${this.thumbCoordinate}px`,
       });
+    }
+
+    if (!isVertical) {
+      $element.css({ width: '100%' });
     }
   }
 
   public setThumbPosition(options: ThumbPositionsOptions): void {
-    const { thumbElement, distance } = options;
+    const {
+      thumbElement, shift, trackSize, coordinateStart, coordinateMove,
+    } = options;
     const {
       isVertical, step, isRange, min, max,
-    } = this.view.sliderSettings;
-    const { $thumbElementMin } = this.view;
-    const thumb = thumbElement;
+    } = this.settings;
+    if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
+      this.calculateDistance({ coordinateStart, coordinateMove });
+    }
+    const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
 
-    const currentValue: number = min + (max - min) * (distance / this.view.trackSize);
-
+    const currentValue: number = min + (max - min) * (distance / trackSize);
     if (isRange) {
-      const thumbType = thumbElement === $thumbElementMin.get(0) ? 'min' : 'max';
-      this.view.notifyAll({ value: { value: currentValue, type: thumbType }, type: 'validateValue' });
+      const thumbType = $(thumbElement).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
+      this.notifyAll({ value: { value: currentValue, type: thumbType }, type: 'validateValue' });
     } else {
-      this.view.notifyAll({ value: { value: currentValue }, type: 'validateValue' });
+      this.notifyAll({ value: { value: currentValue }, type: 'validateValue' });
     }
 
-    const keyCoordinate = isVertical ? 'top' : 'left';
-    if (this.view.isValidValue) {
-      thumb.style[keyCoordinate] = step ? `${this.scaleView.setStepPosition(distance).toString()}px` : `${distance}px`;
+    const key = isVertical ? 'top' : 'left';
+    if (this.isValidValue) {
+      if (step) {
+        this.notifyAll({
+          value: {
+            trackSize, element: thumbElement, value: currentValue,
+          },
+          type: 'setStepThumb',
+        });
+      } else {
+        thumbElement.style[key] = `${distance}px`;
+      }
     }
-    if (distance > this.view.trackSize) {
-      thumb.style[keyCoordinate] = `${this.view.trackSize}px`;
-    } else if (distance < 0) {
-      thumb.style[keyCoordinate] = '0px';
-    }
-  }
 
-  public getThumbSize(): number {
-    const $thumb = this.view.$wrapper.find('.slider__thumb');
-    this.view.thumbSize = $thumb.width() || 0;
-    return this.view.thumbSize;
-  }
-
-  public calculateDistance(options: DistanceOptions): void {
-    const { coordinateStart, coordinateMove } = options;
-    this.view.distance = coordinateMove - coordinateStart;
-  }
-
-  public changeZIndex(thumbElement: HTMLElement): void {
-    const { isVertical } = this.view.sliderSettings;
-    const { $thumbElementMin, $thumbElementMax } = this.view;
-
-    const trackElement = this.$wrapper.find('.js-slider__track').get(0);
-    const start = isVertical ? trackElement.getBoundingClientRect().top + window.scrollY
-      : trackElement.getBoundingClientRect().left;
-    const coordinateOfMiddle = ThumbView.getCoordinatesOfMiddle({
-      start, itemSize: this.view.trackSize,
+    this.correctThumbPosition({
+      element: thumbElement, trackSize, distance, key,
     });
+  }
 
+  public setValueState(isValidValue: boolean): void {
+    this.isValidValue = isValidValue;
+  }
+
+  public changeZIndex(options: ChangeZIndexOptions): void {
+    const { isVertical, $element } = this.settings;
+    const { thumbElement, trackSize } = options;
+
+    const coordinateOfMiddle = this.getCoordinatesOfMiddle(trackSize);
     const isLessMiddle = (isVertical && thumbElement.getBoundingClientRect().top
       + window.scrollY < coordinateOfMiddle)
       || (!isVertical && thumbElement.getBoundingClientRect().left < coordinateOfMiddle);
-    const labelElementMin: HTMLElement | null = this.$wrapper[0].querySelector('.js-slider__label_type_min');
-    const labelElementMax: HTMLElement | null = this.$wrapper[0].querySelector('.js-slider__label_type_max');
+    const labelElementMin = $element.find('.js-slider__label_type_min');
+    const labelElementMax = $element.find('.js-slider__label_type_max');
 
+    const $minElement = $element.find('.js-slider__thumb_type_min');
+    const $maxElement = $element.find('.js-slider__thumb_type_max');
     if (isLessMiddle) {
-      $thumbElementMax.css({ zIndex: '200' });
-      $thumbElementMin.css({ zIndex: '100' });
+      $maxElement.css({ zIndex: '200' });
+      $minElement.css({ zIndex: '100' });
       if (labelElementMin && labelElementMax) {
-        labelElementMax.style.zIndex = '200';
-        labelElementMin.style.zIndex = '100';
+        labelElementMax.css({ zIndex: '200' });
+        labelElementMin.css({ zIndex: '100' });
       }
     } else {
-      $thumbElementMax.css({ zIndex: '100' });
-      $thumbElementMin.css({ zIndex: '200' });
+      $maxElement.css({ zIndex: '100' });
+      $minElement.css({ zIndex: '200' });
       if (labelElementMin && labelElementMax) {
-        labelElementMax.style.zIndex = '100';
-        labelElementMin.style.zIndex = '200';
+        labelElementMax.css({ zIndex: '100' });
+        labelElementMin.css({ zIndex: '200' });
       }
     }
   }
 
-  public static getCoordinatesOfMiddle(options: CoordinateOfMiddleOptions): number {
-    const { start, itemSize } = options;
-    return start + itemSize / 2;
+  public getFractionOfValue(fraction: number): void {
+    this.fraction = fraction;
   }
 
-  public getThumbCoordinate(value: number): number {
-    this.view.notifyAll({ value, type: 'getFractionOfValue' });
-    return this.view.fraction * this.view.trackSize;
+  private getCoordinatesOfMiddle(itemSize: number): number {
+    const { isVertical, $element } = this.settings;
+    const key = isVertical ? 'top' : 'left';
+    const startPosition = $element.find('.js-slider__track')[0].getBoundingClientRect()[key];
+    return startPosition + (itemSize / 2);
+  }
+
+  private checkRangePosition(options: CheckRangePositionOptions): boolean {
+    const { element, distance, key } = options;
+
+    if (!this.settings.isRange) {
+      return true;
+    }
+    if (element.classList.contains('js-slider__thumb_type_min')) {
+      return distance < parseInt(this.$thumbElementMax.css(key), 10);
+    }
+    return distance > parseInt(this.$thumbElementMin.css(key), 10);
+  }
+
+  private correctThumbPosition(options: CorrectPositionOptions): null {
+    const {
+      element, distance, key, trackSize,
+    } = options;
+
+    const isValidDistance = this.checkRangePosition({ element, distance, key });
+    if (!isValidDistance) {
+      return null;
+    }
+    if (distance > trackSize) {
+      element.style[key] = `${trackSize}px`;
+    } else if (distance < 0) {
+      element.style[key] = '0px';
+    }
+    return null;
+  }
+
+  private getThumbCoordinate(options: ThumbCoordinateOptions): number {
+    const { value, trackSize } = options;
+
+    this.notifyAll({ value, type: 'getFractionOfValue' });
+    return this.fraction * trackSize;
+  }
+
+  private getThumbSize(): void {
+    const $thumb = this.settings.$element.find('.slider__thumb');
+    this.size = $thumb.width() || 0;
+  }
+
+  private calculateDistance(options: DistanceOptions): void {
+    const { coordinateStart, coordinateMove } = options;
+    this.distance = coordinateMove - coordinateStart;
   }
 
   private makeVertical(): void {
-    const { $thumbElementMin, $thumbElementMax, $thumbElement } = this.view;
-    const $trackElement = this.view.$wrapper.find('.js-slider__track');
+    const { $element, isRange } = this.settings;
+
+    const $trackElement = $element.find('.js-slider__track');
     const trackWidth: number | undefined = $trackElement.width() || 0;
-    const trackHeight: number | undefined = $trackElement.height() || 0;
-
-    $trackElement.css({
-      width: `${trackHeight}px`,
-      height: `${trackWidth}px`,
-    });
-
-    if (this.view.sliderSettings.isRange) {
-      $thumbElementMin.css({
+    if (isRange) {
+      this.$thumbElementMin.css({
         top: `${this.thumbCoordinateMin}px`,
-        zIndex: (this.view.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
+        zIndex: (this.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
       });
-      $thumbElementMax.css({
+      this.$thumbElementMax.css({
         top: `${this.thumbCoordinateMax}px`,
         zIndex: this.thumbCoordinateMax < (trackWidth / 2) ? 200 : 50,
       });
     } else {
-      $thumbElement.css({
+      this.$thumbElement.css({
         top: `${this.thumbCoordinate || 0}px`,
       });
     }
-
-    this.view.$wrapper.css({
-      width: '10%',
-    });
   }
 }
 

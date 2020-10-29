@@ -35,17 +35,33 @@ export interface DistanceOptions {
   coordinateMove: number;
 }
 
-export interface CoordinateOfMiddleOptions {
-  start: number;
-  itemSize: number;
-}
-
 export interface ValidationOptions {
   value: number;
   type?: 'min' | 'max';
 }
 
+export interface ThumbPositionsOptions {
+  thumbElement: HTMLElement;
+  shift: number;
+  trackSize: number;
+  coordinateStart?: number;
+  coordinateMove?: number;
+}
+
+export type ChangeZIndexOptions = Pick<ThumbPositionsOptions, 'thumbElement' | 'trackSize'>;
+
+export interface UpdatingLabelOptions {
+  fraction: number;
+  thumbElement: HTMLElement;
+}
+
+export interface SetStepThumbOptions {
+  trackSize: number;
+  element: HTMLElement;
+  value: number;
+}
+
 export interface UpdateStateOptions {
   data: number | boolean;
-  actionType: 'validateValue' | 'validateStepValue' | 'getFractionOfValue';
+  actionType: 'validateValue' | 'validateStepValue' | 'setFractionOfValue';
 }

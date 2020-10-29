@@ -1,21 +1,34 @@
 import ThumbView from '../slider/views/ThumbView/ThumbView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
-import View from '../slider/views/View/View';
-import { SliderElementOptions, SliderOptions } from '../types/types';
+import { SliderElementOptions } from '../types/types';
 
 describe('ThumbView', () => {
-  let options: SliderOptions;
-  let elementOptions: SliderElementOptions;
+  let options: SliderElementOptions;
   let thumbView: ThumbView;
   let $element: JQuery<HTMLElement>;
-  let view: View;
   let controller: Controller;
+
+  const simulateGetBounding = (settings: { element: HTMLElement; left: number }): void => {
+    const { element, left } = settings;
+    element.getBoundingClientRect = jest.fn((): DOMRect => ({
+      top: 0,
+      bottom: 0,
+      left,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: (): void => {},
+    }));
+  };
 
   beforeAll(() => {
     $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
     options = {
+      $element,
       isRange: true,
       isVertical: false,
       min: 100,
@@ -24,62 +37,44 @@ describe('ThumbView', () => {
       withLabel: true,
       step: undefined,
     };
-    elementOptions = { ...options, $element };
     const model = new Model();
     controller = new Controller(model);
-    model.getSliderOptions(elementOptions);
+    model.getSliderOptions(options);
     controller.init();
-    view = controller.view;
-    thumbView = new ThumbView(view);
-    view.trackSize = 300;
+    thumbView = controller.view.thumbView;
   });
 
-  it('should create thumb', () => {
+  it('should create elements', () => {
     $('.js-slider__thumb_type_max').remove();
-    thumbView.createThumb();
-    expect($('.js-slider__thumb_type_min').length).toBe(1);
+    thumbView.createThumb(200);
     expect($('.js-slider__thumb_type_max').length).toBe(1);
   });
 
   it('should set thumb position', () => {
-    const thumbElement = $('.js-slider__thumb')[0];
-    thumbView.setThumbPosition({ thumbElement, distance: 150 });
+    const thumbElement = $('.js-slider__thumb_type_min')[0];
+    thumbView.setThumbPosition({ thumbElement, shift: 150, trackSize: 300 });
     expect(thumbElement.style.left).toBe('150px');
   });
 
-  it('should get thumb size', () => {
-    const $thumbElement = $('.js-slider__thumb');
-    $thumbElement.css({ width: '20px' });
-    const thumbSize = thumbView.getThumbSize();
-    expect(thumbSize).toBe(20);
-  });
-
-  it('should calculate distance', () => {
-    thumbView.calculateDistance({ coordinateStart: 50, coordinateMove: 100 });
-    expect(view.distance).toBe(50);
-  });
-
-  it('should change thumb zIndex', () => {
+  it('should change thumb zIndex min', () => {
     const $thumb = $('.js-slider__thumb_type_min');
-    thumbView.changeZIndex($thumb[0]);
+    $thumb.css({ zIndex: '500' });
+    simulateGetBounding({ element: $thumb[0], left: 150 });
+    thumbView.changeZIndex({ thumbElement: $thumb[0], trackSize: 200 });
+    expect($thumb.css('zIndex')).toBe('200');
+  });
+
+  it('should change thumb zIndex max', () => {
+    const $thumb = $('.js-slider__thumb_type_max');
+    $thumb.css({ zIndex: '500' });
+    simulateGetBounding({ element: $thumb[0], left: 200 });
+    thumbView.changeZIndex({ thumbElement: $thumb[0], trackSize: 200 });
     expect($thumb.css('zIndex')).toBe('100');
   });
 
-  it('should get coordinate of middle', () => {
-    const coordinate = ThumbView.getCoordinatesOfMiddle({ start: 0, itemSize: 300 });
-    expect(coordinate).toBe(150);
-  });
-
-  it('should get thumb coordinate', () => {
-    const coordinate = thumbView.getThumbCoordinate(300);
-    expect(coordinate).toBe(150);
-  });
-
-  it('should set vertical thumb position', () => {
-    controller.reloadSlider({ ...elementOptions, isVertical: true });
-    view.trackSize = 300;
+  it('should create vertical thumb', () => {
+    controller.reloadSlider({ ...options, isVertical: true });
     const thumbElement = $('.js-slider__thumb_type_max')[0];
-    thumbView.setThumbPosition({ thumbElement, distance: 150 });
-    expect(thumbElement.style.top).toBe('150px');
+    expect(thumbElement.style.top).toBe('200px');
   });
 });

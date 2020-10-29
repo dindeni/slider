@@ -1,11 +1,12 @@
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
-import { SliderElementOptions, Slider } from '../types/types';
+import { SliderElementOptions } from '../types/types';
+
+import SpyInstance = jest.SpyInstance;
 
 describe('Controller', () => {
   let controller: Controller;
-  let elementOptions: SliderElementOptions;
-  let options: Slider;
+  let options: SliderElementOptions;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
@@ -14,6 +15,7 @@ describe('Controller', () => {
     const model = new Model();
     controller = new Controller(model);
     options = {
+      $element,
       isRange: false,
       isVertical: false,
       min: 100,
@@ -22,12 +24,13 @@ describe('Controller', () => {
       withLabel: true,
       step: undefined,
     };
-    elementOptions = { ...options, $element };
-    model.getSliderOptions(elementOptions);
+    model.getSliderOptions(options);
   });
 
   describe('Initialization', () => {
+    let spyGetOptions: SpyInstance;
     beforeAll(() => {
+      spyGetOptions = jest.spyOn(controller.view, 'getSliderOptions');
       controller.init();
     });
 
@@ -36,13 +39,7 @@ describe('Controller', () => {
     });
 
     it('should pass options', () => {
-      const {
-        min, max, isRange, isVertical, withProgress, withLabel, step,
-      } = controller.view.sliderSettings;
-
-      expect({
-        min, max, isRange, isVertical, withProgress, withLabel, step,
-      }).toEqual(options);
+      expect(spyGetOptions).toHaveBeenCalledWith(options);
     });
 
     it('should create elements', () => {
@@ -60,13 +57,9 @@ describe('Controller', () => {
   });
 
   it('should reload slider', () => {
-    const newOptions = { ...elementOptions, isRange: true };
+    const newOptions = { ...options, isRange: true };
+    const spy = jest.spyOn(controller.view, 'reloadSlider');
     controller.reloadSlider({ ...newOptions });
-    const {
-      min, max, isRange, isVertical, withProgress, withLabel, step,
-    } = controller.view.sliderSettings;
-    expect({
-      min, max, isRange, isVertical, withProgress, withLabel, step,
-    }).toEqual({ ...options, isRange: true });
+    expect(spy).toBeCalledWith({ ...newOptions });
   });
 });

@@ -1,28 +1,24 @@
-import View from '../View/View';
-
-interface UpdatingLabelOptions {
-  value: number;
-  thumbElement: HTMLElement;
-}
+import { SliderElementOptions, UpdatingLabelOptions } from '../../../types/types';
 
 class LabelView {
   public labelValue: number;
 
-  private readonly view: View;
+  private readonly settings: SliderElementOptions;
 
-  constructor(view: View) {
-    this.view = view;
+  constructor(settings: SliderElementOptions) {
+    this.settings = settings;
   }
 
-  public createLabel(): void {
+  public createLabel(trackSize: number): void {
     const {
-      isRange, isVertical, value, min,
-    } = this.view.sliderSettings;
-    const { $thumbElement } = this.view;
+      isRange, isVertical, value, min, $element,
+    } = this.settings;
+
+    const thumbSet = $element.children('.js-slider__thumb');
     if (isRange) {
-      this.createRangeLabel();
+      this.createRangeLabel({ thumbSet, trackSize });
     } else {
-      const $labelElement = $('<div class="slider__label js-slider__label"></div>').appendTo($thumbElement);
+      const $labelElement = $('<div class="slider__label js-slider__label"></div>').appendTo(thumbSet[0]);
       $labelElement.text(value || min);
       if (isVertical) {
         $labelElement.addClass('slider__label_type_vertical');
@@ -31,22 +27,15 @@ class LabelView {
   }
 
   public updateLabelValue(options: UpdatingLabelOptions): void {
-    const { value, thumbElement } = options;
+    const { fraction, thumbElement } = options;
 
+    this.calculateSliderValue(fraction);
     const labelElement = $(thumbElement).children();
-    labelElement.text(value);
-
-    if (labelElement.hasClass('js-slider__label_type_min')) {
-      this.view.sliderSettings.valueMin = value;
-    } else if (labelElement.hasClass('js-slider__label_type_max')) {
-      this.view.sliderSettings.valueMax = value;
-    } else {
-      this.view.sliderSettings.value = value;
-    }
+    labelElement.text(this.labelValue);
   }
 
   public calculateSliderValue(fraction: number): void {
-    const { min, max } = this.view.sliderSettings;
+    const { min, max } = this.settings;
 
     const isBelow0 = fraction <= 0;
     if (isBelow0) {
@@ -56,20 +45,18 @@ class LabelView {
     }
   }
 
-  private createRangeLabel(): void {
+  private createRangeLabel(options: { thumbSet: JQuery<HTMLElement>; trackSize: number }): void {
+    const { thumbSet, trackSize } = options;
     const {
       isVertical, min, max, valueMin, valueMax,
-    } = this.view.sliderSettings;
+    } = this.settings;
 
-    const {
-      $thumbElementMin, $thumbElementMax, thumbCoordinateMin, thumbCoordinateMax,
-    } = this.view;
-    const { trackSize } = this.view;
+    const key = isVertical ? 'top' : 'left';
 
     const $labelElementMin = $('<div class="slider__label js-slider__label slider__label_type_min js-slider__label_type_min"></div>')
-      .appendTo($thumbElementMin);
+      .appendTo(thumbSet[0]);
     $labelElementMin.css({
-      zIndex: thumbCoordinateMin > (trackSize / 2) ? 100 : 50,
+      zIndex: parseInt($('.js-slider__thumb_type_min').css(key), 10) > (trackSize / 2) ? 100 : 50,
     });
     if (isVertical) {
       $labelElementMin.addClass('slider__label_type_vertical');
@@ -77,9 +64,9 @@ class LabelView {
     $labelElementMin.text(valueMin || min);
 
     const $labelElementMax = $('<div class="slider__label js-slider__label slider__label_type_max js-slider__label_type_max"></div>')
-      .appendTo($thumbElementMax);
+      .appendTo(thumbSet[1]);
     $labelElementMax.css({
-      zIndex: thumbCoordinateMax > (trackSize / 2) ? 50 : 100,
+      zIndex: parseInt($('.js-slider__thumb_type_max').css(key), 10) > (trackSize / 2) ? 50 : 100,
     });
     $labelElementMax.text(valueMax || max);
   }

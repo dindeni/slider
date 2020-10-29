@@ -3,14 +3,12 @@ import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 
 describe('ProgressView', () => {
-  let options;
   let progressView: ProgressView;
-  let view;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
-    options = {
+    const options = {
       isRange: true,
       isVertical: false,
       min: 100,
@@ -22,9 +20,8 @@ describe('ProgressView', () => {
     const model = new Model();
     const controller = new Controller(model);
     model.getSliderOptions(options);
-    view = controller.view;
     controller.init();
-    progressView = new ProgressView(view);
+    progressView = controller.view.progressView;
   });
 
   it('should create progress', () => {
@@ -32,8 +29,7 @@ describe('ProgressView', () => {
   });
 
   it('should styling progress', () => {
-    $('.js-slider__thumb_type_max').css({ left: '300px' });
     progressView.makeProgress();
-    expect($('.js-slider__progress').css('width')).toBe('300px');
+    expect($('.js-slider__progress').css('width')).toBe('200px');
   });
 });

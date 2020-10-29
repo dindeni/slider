@@ -1,45 +1,56 @@
-import View from '../View/View';
+import { ScaleData, SetStepThumbOptions, SliderElementOptions } from '../../../types/types';
+import Observable from '../../Observable/Observable';
 
-class ScaleView {
-  $wrapper: JQuery<HTMLElement>;
+class ScaleView extends Observable {
+  settings: SliderElementOptions;
 
-  view: View;
+  value: number;
 
-  constructor(view: View) {
-    this.view = view;
-    this.$wrapper = this.view.sliderSettings.$element;
+  public scaleData: ScaleData = {
+    value: [], coordinates: [], shortValue: [], shortCoordinates: [],
+  };
+
+  constructor(settings: SliderElementOptions) {
+    super();
+    this.settings = settings;
   }
 
-  public createScale(): void {
-    this.generateStepCoordinate(this.view.trackSize);
+  public createScale(trackSize: number): void {
+    const { $element, isVertical } = this.settings;
 
-    const $ul = $('<ul class="slider__scale"></ul>').appendTo(this.view.$wrapper);
-    this.view.scaleData.shortValue.map((item, index) => {
+    this.generateStepCoordinate(trackSize);
+
+    const $ul = $('<ul class="slider__scale"></ul>').appendTo($element);
+    this.scaleData.shortValue.map((item, index) => {
       const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
       const verticalCorrection = 7;
-      return this.view.sliderSettings.isVertical
-        ? $itemElement.css({ top: `${(this.view.scaleData.shortCoordinates[index]) - verticalCorrection}px` })
-        : $itemElement.css({ left: `${this.view.scaleData.shortCoordinates[index]}px` });
+      return isVertical
+        ? $itemElement.css({ top: `${(this.scaleData.shortCoordinates[index]) - verticalCorrection}px` })
+        : $itemElement.css({ left: `${this.scaleData.shortCoordinates[index]}px` });
     });
   }
 
-  public setStepPosition(distance: number): number {
-    const fraction = distance / this.view.trackSize;
-    this.view.labelView.calculateSliderValue(fraction);
-    this.view.notifyAll({ value: this.view.labelView.labelValue, type: 'validateStepValue' });
-    const getIndex = (): number => this.view.scaleData.value.findIndex(
-      (value) => value === this.view.stepValue,
+  public setPosition(options: SetStepThumbOptions): void {
+    const { trackSize, element, value } = options;
+
+    if (this.scaleData.coordinates.length === 0) {
+      this.generateStepCoordinate(trackSize);
+    }
+    this.notifyAll({ value, type: 'validateStepValue' });
+    const getIndex = (): number => this.scaleData.value.findIndex(
+      (scaleValue) => scaleValue === this.value,
     );
 
-    return this.view.scaleData.coordinates[getIndex()];
+    const key = this.settings.isVertical ? 'top' : 'left';
+    element.style[key] = `${this.scaleData.coordinates[getIndex()].toString()}px`;
   }
 
   private generateStepCoordinate(trackSize: number): void {
-    const { max, min, step } = this.view.sliderSettings;
+    const { max, min, step } = this.settings;
 
-    this.view.scaleData.coordinates = [];
-    this.view.scaleData.value = [];
+    this.scaleData.coordinates = [];
+    this.scaleData.value = [];
 
     if (step) {
       let stepCount = 0;
@@ -47,26 +58,26 @@ class ScaleView {
       [...Array(arrayLength)].map(() => {
         const fractionOfValue = stepCount / (max - min);
         const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
-        this.view.scaleData.value.push(stepCount + min);
-        this.view.scaleData.coordinates.push(coordinatesItems);
+        this.scaleData.value.push(stepCount + min);
+        this.scaleData.coordinates.push(coordinatesItems);
         stepCount += step;
         return stepCount;
       });
 
-      const isLastCoordinate = this.view.scaleData.coordinates[
-        this.view.scaleData.coordinates.length - 1] !== trackSize;
+      const isLastCoordinate = this.scaleData.coordinates[
+        this.scaleData.coordinates.length - 1] !== trackSize;
       if (isLastCoordinate) {
-        this.view.scaleData.coordinates.pop();
-        this.view.scaleData.coordinates.push(trackSize);
-        this.view.scaleData.value.pop();
-        this.view.scaleData.value.push(max);
+        this.scaleData.coordinates.pop();
+        this.scaleData.coordinates.push(trackSize);
+        this.scaleData.value.pop();
+        this.scaleData.value.push(max);
       }
     }
     this.checkStepData();
   }
 
   private checkStepData(): void {
-    const { coordinates, value } = this.view.scaleData;
+    const { coordinates, value } = this.scaleData;
     let shortValue = value;
     let shortCoordinates = coordinates;
 
@@ -81,8 +92,8 @@ class ScaleView {
         (currentValue, index) => index === 0 || index % 2 === 0,
       );
     }
-    this.view.scaleData.shortValue = shortValue;
-    this.view.scaleData.shortCoordinates = shortCoordinates;
+    this.scaleData.shortValue = shortValue;
+    this.scaleData.shortCoordinates = shortCoordinates;
   }
 }
 

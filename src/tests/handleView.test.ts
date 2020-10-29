@@ -7,15 +7,14 @@ describe('HandleView', () => {
   let options: SliderOptions;
   let elementOptions: SliderElementOptions;
   let handleView: HandleView;
-  let view;
 
-  const createEvent = (eventOptions: { type: 'mousedown' | 'mousemove'; screenX: number; screenY: number }): MouseEvent => {
-    const { type, screenX, screenY } = eventOptions;
+  const createEvent = (eventOptions: { type: 'mousedown' | 'mousemove' | 'click'; clientX: number; clientY: number }): MouseEvent => {
+    const { type, clientX, clientY } = eventOptions;
     return new MouseEvent(type, {
       view: window,
       bubbles: true,
-      screenX,
-      screenY,
+      clientX,
+      clientY,
       cancelable: true,
     });
   };
@@ -35,33 +34,35 @@ describe('HandleView', () => {
     const model = new Model();
     const controller = new Controller(model);
     model.getSliderOptions(elementOptions);
-    view = controller.view;
     controller.init();
-    view.trackSize = 300;
-    handleView = new HandleView(view);
+    handleView = controller.view.handleView;
   });
 
   describe('Events addDragAndDrop', () => {
-    beforeAll(() => {
-      handleView.addDragAndDrop(elementOptions);
-    });
-
     it('should move thumb max', () => {
-      const mouseDown = createEvent({ type: 'mousedown', screenX: 0, screenY: 0 });
-      const mouseMove = createEvent({ type: 'mousemove', screenX: 250, screenY: 0 });
+      const mouseDown = createEvent({ type: 'mousedown', clientX: 0, clientY: 0 });
+      const mouseMove = createEvent({ type: 'mousemove', clientX: -100, clientY: 0 });
       const $thumbMax = $('.js-slider__thumb_type_max');
       $thumbMax[0].dispatchEvent(mouseDown);
       $thumbMax[0].dispatchEvent(mouseMove);
-      expect($thumbMax.css('left')).toBe('250px');
+      expect($thumbMax.css('left')).toBe('100px');
     });
 
     it('should move thumb min', () => {
-      const mouseDown = createEvent({ type: 'mousedown', screenX: 0, screenY: 0 });
-      const mouseMove = createEvent({ type: 'mousemove', screenX: 100, screenY: 0 });
+      const mouseDown = createEvent({ type: 'mousedown', clientX: 0, clientY: 0 });
+      const mouseMove = createEvent({ type: 'mousemove', clientX: 100, clientY: 0 });
       const $thumbMin = $('.js-slider__thumb_type_min');
       $thumbMin[0].dispatchEvent(mouseDown);
       $thumbMin[0].dispatchEvent(mouseMove);
       expect($thumbMin.css('left')).toBe('100px');
+    });
+
+    it('should move thumb after click', () => {
+      const mouseClick = createEvent({ type: 'click', clientX: 50, clientY: 0 });
+      const $track = $('.js-slider__track');
+      const $thumbMin = $('.js-slider__thumb_type_min');
+      $track[0].dispatchEvent(mouseClick);
+      expect($thumbMin.css('left')).toEqual('50px');
     });
   });
 

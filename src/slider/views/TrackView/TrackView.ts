@@ -1,99 +1,43 @@
-import { Slider } from '../../../types/types';
-import View from '../View/View';
-import ThumbView from '../ThumbView/ThumbView';
-
-interface TrackElementOptions {
-  event: MouseEvent;
-  trackElement: HTMLElement;
-}
-interface TrackClickOptions extends Slider, TrackElementOptions {
-}
+import { SliderElementOptions } from '../../../types/types';
 
 class TrackView {
-  private thumbElement: HTMLElement;
+  public size: number;
 
-  private isVertical: boolean;
+  private $trackElement: JQuery<HTMLElement>;
 
-  private thumbSize: number;
+  private readonly settings: SliderElementOptions;
 
-  private $wrapper: JQuery<HTMLElement>;
-
-  readonly view: View;
-
-  private thumbView: ThumbView;
-
-  constructor(view: View) {
-    this.view = view;
-    this.$wrapper = this.view.sliderSettings.$element;
-    this.thumbView = new ThumbView(view);
+  constructor(settings: SliderElementOptions) {
+    this.settings = settings;
+    this.checkTrackSize();
   }
 
-  public handleSliderElementClick(options: TrackClickOptions): void {
-    const {
-      event, trackElement, isVertical, isRange,
-    } = options;
-    this.isVertical = isVertical;
-    const target = event.target as HTMLElement;
-
-    const isItemElement = target.classList.contains('js-slider__scale-item');
-    const isTrackElement = target === trackElement || target.classList.contains('js-slider__progress');
-    const isClickedElement = isItemElement || isTrackElement;
-    if (isClickedElement) {
-      this.thumbElement = isRange ? this.getRangeThumbElement(event)
-        : this.$wrapper.find('.js-slider__thumb')[0];
-
-      const distance = isItemElement
-        ? this.thumbView.getThumbCoordinate(Number(target.textContent))
-        : this.getDistance({ event, trackElement });
-
-      this.view.thumbView.setThumbPosition({ thumbElement: this.thumbElement, distance });
-      const keyPosition = isVertical ? 'top' : 'left';
-      const thumbCoordinate = parseFloat(this.thumbElement.style[keyPosition]);
-      this.view.handleView.updateData({
-        distance: thumbCoordinate,
-        trackElement,
-        thumbElement: this.thumbElement,
-      });
-    }
-  }
-
-  public getTrackSize(): number {
-    this.view.$trackElement = this.view.$wrapper.find('.js-slider__track');
-    this.thumbSize = this.view.thumbSize;
-    const trackSize = this.view.$trackElement.width();
-
-    return Math.round((trackSize || 0) - this.view.thumbSize);
-  }
-
-  private getRangeThumbElement(event: MouseEvent): HTMLElement {
-    const thumbMin = this.$wrapper.find('.js-slider__thumb_type_min')[0];
-    const thumbMax = this.$wrapper.find('.js-slider__thumb_type_max')[0];
-    const trackPositionKey = this.isVertical ? 'top' : 'left';
-
-    const coordinateOfMiddle = ThumbView.getCoordinatesOfMiddle({
-      start: this.view.$trackElement[0].getBoundingClientRect()[trackPositionKey],
-      itemSize: this.view.trackSize,
+  public makeVertical(): void {
+    const { $element } = this.settings;
+    const trackElement = $element.find('.js-slider__track');
+    trackElement.css({
+      height: `${trackElement.width()}px`,
+      width: `${trackElement.height()}px`,
     });
-    const position = this.isVertical ? event.clientY : event.clientX;
-
-    if (position < coordinateOfMiddle) {
-      return thumbMin;
-    }
-    return thumbMax;
+    $element.css({
+      width: '10%',
+    });
   }
 
-  private getDistance(options: TrackElementOptions): number {
-    const { event, trackElement } = options;
+  public getSize(): void {
+    const { isVertical, $element } = this.settings;
+    const $thumbElement = $element.find('.js-slider__thumb');
+    const trackSize = isVertical ? this.$trackElement.height() : this.$trackElement.width();
 
-    const thumbDistance = this.isVertical
-      ? event.clientY - trackElement.getBoundingClientRect().top - this.thumbElement
-        .getBoundingClientRect().height / 2
-      : event.clientX - trackElement.getBoundingClientRect().left
-       - this.thumbElement.getBoundingClientRect().width / 2;
-    if (thumbDistance < 0) {
-      return 0;
+    this.size = Math.round((trackSize || 0) - ($thumbElement.width() || 0));
+  }
+
+  private checkTrackSize(): void {
+    const { $element } = this.settings;
+    this.$trackElement = $element.find('.js-slider__track');
+    if (!this.$trackElement.width()) {
+      this.$trackElement.css({ width: '200px' });
     }
-    return thumbDistance;
   }
 }
 

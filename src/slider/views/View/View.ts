@@ -1,4 +1,9 @@
-import { SliderElementOptions, ScaleData } from '../../../types/types';
+import autoBind from 'auto-bind';
+
+import {
+  ChangeZIndexOptions, SetStepThumbOptions, ScaleData, SliderElementOptions, ThumbPositionsOptions,
+  UpdatingLabelOptions, ValidationOptions,
+} from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import HandleView from '../HandleView/HandleView';
 import ScaleView from '../ScaleView/ScaleView';
@@ -7,48 +12,18 @@ import ThumbView from '../ThumbView/ThumbView';
 import LabelView from '../LabelView/LabelView';
 import ProgressView from '../ProgressView/ProgressView';
 
+
 class View extends Observable {
-  public $thumbElement: JQuery<HTMLElement>;
+  constructor() {
+    super();
+    autoBind(this);
+  }
 
-  public $thumbElementMin: JQuery<HTMLElement>;
+  private settings: SliderElementOptions;
 
-  public $thumbElementMax: JQuery<HTMLElement>;
+  public scaleView: ScaleView;
 
-  public thumbCoordinate: number;
-
-  public thumbCoordinateMin: number;
-
-  public thumbCoordinateMax: number;
-
-  public $trackElement: JQuery<HTMLElement>;
-
-  public coordinate: number;
-
-  public scaleData: ScaleData = {
-    value: [], coordinates: [], shortValue: [], shortCoordinates: [],
-  };
-
-  public sliderSettings: SliderElementOptions;
-
-  public distance: number;
-
-  public $wrapper: JQuery<HTMLElement>;
-
-  public trackSize: number;
-
-  public thumbSize: number;
-
-  public isValidValue: boolean;
-
-  public parentElement: HTMLElement;
-
-  public stepValue: number;
-
-  public fraction: number;
-
-  private scaleView: ScaleView;
-
-  private trackView: TrackView;
+  public trackView: TrackView;
 
   public handleView: HandleView;
 
@@ -60,28 +35,32 @@ class View extends Observable {
 
   public createElements(options: SliderElementOptions): void {
     const {
-      $element, isRange, isVertical, min, max, step, withProgress, withLabel,
+      isVertical, step, withProgress, withLabel,
     } = options;
 
-    this.$wrapper = $element;
-    this.handleView = new HandleView(this);
-    this.scaleView = new ScaleView(this);
-    this.trackView = new TrackView(this);
-    this.thumbView = new ThumbView(this);
-    this.labelView = new LabelView(this);
-    this.progressView = new ProgressView(this);
+    this.settings = options;
+    this.handleView = new HandleView();
+    this.handleView.createBasicNodes(options);
+    this.thumbView = new ThumbView(options);
+    this.trackView = new TrackView(options);
 
-    this.handleView.createBasicNodes();
-    this.thumbSize = this.thumbView.getThumbSize();
-    this.trackSize = this.trackView.getTrackSize();
+    if (isVertical) {
+      this.trackView.makeVertical();
+    }
+    this.scaleView = new ScaleView(options);
+    this.labelView = new LabelView(options);
+    this.progressView = new ProgressView(options);
 
+    this.subscribeViews();
+
+    this.trackView.getSize();
     if (step) {
-      this.scaleView.createScale();
+      this.scaleView.createScale(this.trackView.size);
     }
 
-    this.thumbView.createThumb();
+    this.thumbView.createThumb(this.trackView.size);
     if (withLabel) {
-      this.labelView.createLabel();
+      this.labelView.createLabel(this.trackView.size);
     }
 
     if (withProgress) {
@@ -90,28 +69,99 @@ class View extends Observable {
     }
 
     this.handleView.addDragAndDrop({
-      min, max, isRange, withLabel, isVertical, withProgress, $element: this.$wrapper, step,
+      ...options, trackSize: this.getTrackSize(),
     });
   }
 
   public getSliderOptions(sliderSettings: SliderElementOptions): void {
-    this.sliderSettings = {
+    this.settings = {
       ...sliderSettings,
       valueMin: sliderSettings.min,
       valueMax: sliderSettings.max,
     };
   }
 
-  public getFractionOfValue(fraction: number): void {
-    this.fraction = fraction;
+  public setFractionOfValue(fraction: number): void {
+    this.thumbView.getFractionOfValue(fraction);
+    this.handleView.getFractionOfValue(fraction);
   }
 
   public setValueState(isValid: boolean): void {
-    this.isValidValue = isValid;
+    this.thumbView.setValueState(isValid);
   }
 
   public getValidStepValue(value: number): void{
-    this.stepValue = value;
+    this.scaleView.value = value;
+  }
+
+  public getTrackSize(): number {
+    return this.trackView.size;
+  }
+
+  public getThumbSize(): number {
+    return this.thumbView.size;
+  }
+
+  public getScaleData(): ScaleData {
+    return this.scaleView.scaleData;
+  }
+
+  public reloadSlider(options: SliderElementOptions): void {
+    this.handleView.reloadSlider(options);
+  }
+
+  private setThumbPosition(options: ThumbPositionsOptions): void {
+    this.thumbView.setThumbPosition(options);
+  }
+
+  private setStepThumb(options: SetStepThumbOptions): void {
+    this.scaleView.setPosition(options);
+  }
+
+  private changeZIndex(options: ChangeZIndexOptions): void {
+    this.thumbView.changeZIndex(options);
+  }
+
+  private updateLabelValue(options: UpdatingLabelOptions): void {
+    this.labelView.updateLabelValue(options);
+    if (this.settings.withProgress) {
+      this.progressView.makeProgress();
+    }
+  }
+
+  private getFractionOfValue(value: number): void {
+    this.notifyAll({ value, type: 'setFractionOfValue' });
+  }
+
+  private updateOptions(options: SliderElementOptions): void {
+    this.settings = options;
+    this.notifyAll({ value: options, type: 'updateOptions' });
+  }
+
+  private recreate(options: SliderElementOptions): void {
+    this.settings = options;
+    this.createElements(options);
+  }
+
+  private validateValue(options: ValidationOptions): void {
+    this.notifyAll({ value: options, type: 'validateValue' });
+  }
+
+  private validateStepValue(value: number): void {
+    this.notifyAll({ value, type: 'validateStepValue' });
+  }
+
+  private subscribeViews(): void {
+    this.handleView.subscribe({ method: this.setThumbPosition, type: 'setThumbPosition' });
+    this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
+    this.handleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
+    this.handleView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.handleView.subscribe({ method: this.updateOptions, type: 'updateOptions' });
+    this.handleView.subscribe({ method: this.recreate, type: 'recreate' });
+    this.thumbView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
+    this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
+    this.scaleView.subscribe({ method: this.validateStepValue, type: 'validateStepValue' });
   }
 }
 
