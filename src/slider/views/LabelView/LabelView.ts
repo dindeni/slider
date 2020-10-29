@@ -9,7 +9,7 @@ class LabelView {
     this.settings = settings;
   }
 
-  public createLabel(trackSize: number): void {
+  public create(trackSize: number): void {
     const {
       isRange, isVertical, value, min, $element,
     } = this.settings;
@@ -26,19 +26,19 @@ class LabelView {
     }
   }
 
-  public updateLabelValue(options: UpdatingLabelOptions): void {
+  public updateValue(options: UpdatingLabelOptions): void {
     const { fraction, thumbElement } = options;
 
-    this.calculateSliderValue(fraction);
+    this.calculateValue(fraction);
     const labelElement = $(thumbElement).children();
     labelElement.text(this.labelValue);
   }
 
-  public calculateSliderValue(fraction: number): void {
+  public calculateValue(fraction: number): void {
     const { min, max } = this.settings;
 
-    const isBelow0 = fraction <= 0;
-    if (isBelow0) {
+    const isBelowZero = fraction <= 0;
+    if (isBelowZero) {
       this.labelValue = min;
     } else {
       this.labelValue = Math.round(min + ((max - min) * fraction));

@@ -9,7 +9,7 @@ class TrackView {
 
   constructor(settings: SliderElementOptions) {
     this.settings = settings;
-    this.checkTrackSize();
+    this.checkSize();
   }
 
   public makeVertical(): void {
@@ -32,7 +32,7 @@ class TrackView {
     this.size = Math.round((trackSize || 0) - ($thumbElement.width() || 0));
   }
 
-  private checkTrackSize(): void {
+  private checkSize(): void {
     const { $element } = this.settings;
     this.$trackElement = $element.find('.js-slider__track');
     if (!this.$trackElement.width()) {

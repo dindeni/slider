@@ -18,21 +18,21 @@ interface CorrectPositionOptions {
 type CheckRangePositionOptions = Omit<CorrectPositionOptions, 'trackSize'>;
 
 class ThumbView extends Observable {
-  public $thumbElement: JQuery<HTMLElement>;
-
-  public $thumbElementMin: JQuery<HTMLElement>;
-
-  public $thumbElementMax: JQuery<HTMLElement>;
-
-  public thumbCoordinateMin: number;
-
-  public thumbCoordinateMax: number;
-
-  private thumbCoordinate: number;
-
   public size: number;
 
-  public distance: number;
+  private $element: JQuery<HTMLElement>;
+
+  private $elementMin: JQuery<HTMLElement>;
+
+  private $elementMax: JQuery<HTMLElement>;
+
+  private coordinateMin: number;
+
+  private coordinateMax: number;
+
+  private coordinate: number;
+
+  private distance: number;
 
   private fraction: number;
 
@@ -43,50 +43,50 @@ class ThumbView extends Observable {
   constructor(settings: SliderElementOptions) {
     super();
     this.settings = settings;
-    this.getThumbSize();
+    this.getSize();
   }
 
-  public createThumb(trackSize: number): void {
+  public create(trackSize: number): void {
     const {
       isRange, isVertical, min, max, value, valueMin, valueMax, $element,
     } = this.settings;
 
     if (isRange) {
-      this.thumbCoordinateMin = this.getThumbCoordinate(
+      this.coordinateMin = this.getCoordinate(
         { value: valueMin || min, trackSize },
       );
 
-      this.thumbCoordinateMax = this.getThumbCoordinate(
+      this.coordinateMax = this.getCoordinate(
         { value: valueMax || max, trackSize },
       );
 
-      this.$thumbElementMin = isVertical
+      this.$elementMin = isVertical
         ? $element.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min slider__thumb_type_vertical js-slider__thumb_type_vertical')
         : $element.find('.js-slider__thumb').addClass('slider__thumb_type_min js-slider__thumb_type_min');
-      this.$thumbElementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>')
+      this.$elementMax = $('<div class="slider__thumb js-slider__thumb slider__thumb_type_max js-slider__thumb_type_max"></div>')
         .appendTo($element);
     } else {
-      this.thumbCoordinate = this.getThumbCoordinate(
+      this.coordinate = this.getCoordinate(
         { value: value || min, trackSize },
       );
-      this.$thumbElement = $element.find('.js-slider__thumb');
+      this.$element = $element.find('.js-slider__thumb');
     }
 
     if (isVertical) {
       this.makeVertical();
     } else if (isRange) {
-      this.$thumbElementMin.css({
-        left: `${this.thumbCoordinateMin}px`,
-        zIndex: this.thumbCoordinateMin > (trackSize / 2) ? 100 : 50,
+      this.$elementMin.css({
+        left: `${this.coordinateMin}px`,
+        zIndex: this.coordinateMin > (trackSize / 2) ? 100 : 50,
       });
 
-      this.$thumbElementMax.css({
-        left: `${this.thumbCoordinateMax}px`,
-        zIndex: this.thumbCoordinateMax > (trackSize / 2) ? 50 : 100,
+      this.$elementMax.css({
+        left: `${this.coordinateMax}px`,
+        zIndex: this.coordinateMax > (trackSize / 2) ? 50 : 100,
       });
     } else {
-      this.$thumbElement.css({
-        left: `${this.thumbCoordinate}px`,
+      this.$element.css({
+        left: `${this.coordinate}px`,
       });
     }
 
@@ -95,7 +95,7 @@ class ThumbView extends Observable {
     }
   }
 
-  public setThumbPosition(options: ThumbPositionsOptions): void {
+  public setPosition(options: ThumbPositionsOptions): void {
     const {
       thumbElement, shift, trackSize, coordinateStart, coordinateMove,
     } = options;
@@ -129,12 +129,12 @@ class ThumbView extends Observable {
       }
     }
 
-    this.correctThumbPosition({
+    this.correctPosition({
       element: thumbElement, trackSize, distance, key,
     });
   }
 
-  public setValueState(isValidValue: boolean): void {
+  public setIsValidValue(isValidValue: boolean): void {
     this.isValidValue = isValidValue;
   }
 
@@ -186,12 +186,12 @@ class ThumbView extends Observable {
       return true;
     }
     if (element.classList.contains('js-slider__thumb_type_min')) {
-      return distance < parseInt(this.$thumbElementMax.css(key), 10);
+      return distance < parseInt(this.$elementMax.css(key), 10);
     }
-    return distance > parseInt(this.$thumbElementMin.css(key), 10);
+    return distance > parseInt(this.$elementMin.css(key), 10);
   }
 
-  private correctThumbPosition(options: CorrectPositionOptions): null {
+  private correctPosition(options: CorrectPositionOptions): null {
     const {
       element, distance, key, trackSize,
     } = options;
@@ -208,14 +208,14 @@ class ThumbView extends Observable {
     return null;
   }
 
-  private getThumbCoordinate(options: ThumbCoordinateOptions): number {
+  private getCoordinate(options: ThumbCoordinateOptions): number {
     const { value, trackSize } = options;
 
     this.notifyAll({ value, type: 'getFractionOfValue' });
     return this.fraction * trackSize;
   }
 
-  private getThumbSize(): void {
+  private getSize(): void {
     const $thumb = this.settings.$element.find('.slider__thumb');
     this.size = $thumb.width() || 0;
   }
@@ -231,17 +231,17 @@ class ThumbView extends Observable {
     const $trackElement = $element.find('.js-slider__track');
     const trackWidth: number | undefined = $trackElement.width() || 0;
     if (isRange) {
-      this.$thumbElementMin.css({
-        top: `${this.thumbCoordinateMin}px`,
-        zIndex: (this.thumbCoordinateMin) < (trackWidth / 2) ? 50 : 200,
+      this.$elementMin.css({
+        top: `${this.coordinateMin}px`,
+        zIndex: (this.coordinateMin) < (trackWidth / 2) ? 50 : 200,
       });
-      this.$thumbElementMax.css({
-        top: `${this.thumbCoordinateMax}px`,
-        zIndex: this.thumbCoordinateMax < (trackWidth / 2) ? 200 : 50,
+      this.$elementMax.css({
+        top: `${this.coordinateMax}px`,
+        zIndex: this.coordinateMax < (trackWidth / 2) ? 200 : 50,
       });
     } else {
-      this.$thumbElement.css({
-        top: `${this.thumbCoordinate || 0}px`,
+      this.$element.css({
+        top: `${this.coordinate || 0}px`,
       });
     }
   }

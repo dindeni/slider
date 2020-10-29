@@ -7,12 +7,12 @@ class ProgressView {
     this.settings = settings;
   }
 
-  public createProgressNode(): void {
+  public createNode(): void {
     const $trackElement = this.settings.$element.find('.js-slider__track');
     $('<div class="slider__progress js-slider__progress"></div>').appendTo($trackElement);
   }
 
-  public makeProgress(): void {
+  public update(): void {
     const { isVertical, isRange, $element } = this.settings;
 
     const $progressElement = $element.find('.js-slider__progress');

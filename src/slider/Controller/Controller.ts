@@ -45,7 +45,7 @@ class Controller extends Observable {
 
   private updateState(value: UpdateStateOptions): null {
     switch (value.actionType) {
-      case 'validateValue': this.view.setValueState(value.data as boolean);
+      case 'validateValue': this.view.setIsValidValue(value.data as boolean);
         break;
       case 'validateStepValue': this.view.getValidStepValue(value.data as number);
         break;

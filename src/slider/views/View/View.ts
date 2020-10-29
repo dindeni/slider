@@ -55,17 +55,17 @@ class View extends Observable {
 
     this.trackView.getSize();
     if (step) {
-      this.scaleView.createScale(this.trackView.size);
+      this.scaleView.create(this.trackView.size);
     }
 
-    this.thumbView.createThumb(this.trackView.size);
+    this.thumbView.create(this.trackView.size);
     if (withLabel) {
-      this.labelView.createLabel(this.trackView.size);
+      this.labelView.create(this.trackView.size);
     }
 
     if (withProgress) {
-      this.progressView.createProgressNode();
-      this.progressView.makeProgress();
+      this.progressView.createNode();
+      this.progressView.update();
     }
 
     this.handleView.addDragAndDrop({
@@ -86,8 +86,8 @@ class View extends Observable {
     this.handleView.getFractionOfValue(fraction);
   }
 
-  public setValueState(isValid: boolean): void {
-    this.thumbView.setValueState(isValid);
+  public setIsValidValue(isValid: boolean): void {
+    this.thumbView.setIsValidValue(isValid);
   }
 
   public getValidStepValue(value: number): void{
@@ -103,7 +103,7 @@ class View extends Observable {
   }
 
   public getScaleData(): ScaleData {
-    return this.scaleView.scaleData;
+    return this.scaleView.data;
   }
 
   public reloadSlider(options: SliderElementOptions): void {
@@ -111,7 +111,7 @@ class View extends Observable {
   }
 
   private setThumbPosition(options: ThumbPositionsOptions): void {
-    this.thumbView.setThumbPosition(options);
+    this.thumbView.setPosition(options);
   }
 
   private setStepThumb(options: SetStepThumbOptions): void {
@@ -123,9 +123,9 @@ class View extends Observable {
   }
 
   private updateLabelValue(options: UpdatingLabelOptions): void {
-    this.labelView.updateLabelValue(options);
+    this.labelView.updateValue(options);
     if (this.settings.withProgress) {
-      this.progressView.makeProgress();
+      this.progressView.update();
     }
   }
 

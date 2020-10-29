@@ -46,13 +46,13 @@ describe('ThumbView', () => {
 
   it('should create elements', () => {
     $('.js-slider__thumb_type_max').remove();
-    thumbView.createThumb(200);
+    thumbView.create(200);
     expect($('.js-slider__thumb_type_max').length).toBe(1);
   });
 
   it('should set thumb position', () => {
     const thumbElement = $('.js-slider__thumb_type_min')[0];
-    thumbView.setThumbPosition({ thumbElement, shift: 150, trackSize: 300 });
+    thumbView.setPosition({ thumbElement, shift: 150, trackSize: 300 });
     expect(thumbElement.style.left).toBe('150px');
   });
 

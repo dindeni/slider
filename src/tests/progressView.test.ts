@@ -29,7 +29,7 @@ describe('ProgressView', () => {
   });
 
   it('should styling progress', () => {
-    progressView.makeProgress();
+    progressView.update();
     expect($('.js-slider__progress').css('width')).toBe('200px');
   });
 });

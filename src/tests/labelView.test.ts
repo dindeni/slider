@@ -32,14 +32,14 @@ describe('ProgressView', () => {
   it('should update label value min', () => {
     const $thumbMin = $('.js-slider__thumb_type_min');
     const $label = $('.js-slider__label_type_min');
-    labelView.updateLabelValue({ thumbElement: $thumbMin[0], fraction: 0.5 });
+    labelView.updateValue({ thumbElement: $thumbMin[0], fraction: 0.5 });
     expect($label.text()).toBe('300');
   });
 
   it('should update label value max', () => {
     const $thumbMax = $('.js-slider__thumb_type_max');
     const $label = $('.js-slider__label_type_max');
-    labelView.updateLabelValue({ thumbElement: $thumbMax[0], fraction: 0.8 });
+    labelView.updateValue({ thumbElement: $thumbMax[0], fraction: 0.8 });
     expect($label.text()).toBe('420');
   });
 });
