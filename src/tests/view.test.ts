@@ -42,10 +42,6 @@ describe('View', () => {
     expect(view.getTrackSize()).toBe(200);
   });
 
-  it('should get thumb size', () => {
-    expect(view.getThumbSize()).toBe(0);
-  });
-
   it('should get scale data', () => {
     view.reloadSlider({ ...options, step: 100 });
     expect(view.getScaleData()).toEqual({
@@ -61,10 +57,5 @@ describe('View', () => {
     $element.appendTo(document.body);
     view.reloadSlider({ ...options, $element, isRange: false });
     expect($('.js-slider__thumb_type_min').length).toBe(0);
-  });
-
-  it('should get thumb size', () => {
-    view.thumbView.size = 20;
-    expect(view.getThumbSize()).toEqual(20);
   });
 });

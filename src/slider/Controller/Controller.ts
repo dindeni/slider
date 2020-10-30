@@ -6,9 +6,9 @@ import View from '../views/View/View';
 import Observable from '../Observable/Observable';
 
 class Controller extends Observable {
-  private model: Model;
+  public readonly view: View = new View();
 
-  readonly view: View = new View();
+  private model: Model;
 
   constructor(model: Model) {
     super();

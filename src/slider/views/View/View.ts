@@ -98,10 +98,6 @@ class View extends Observable {
     return this.trackView.size;
   }
 
-  public getThumbSize(): number {
-    return this.thumbView.size;
-  }
-
   public getScaleData(): ScaleData {
     return this.scaleView.data;
   }

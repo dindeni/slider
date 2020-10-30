@@ -2,13 +2,13 @@ import { ScaleData, SetStepThumbOptions, SliderElementOptions } from '../../../t
 import Observable from '../../Observable/Observable';
 
 class ScaleView extends Observable {
-  settings: SliderElementOptions;
-
-  value: number;
-
   public data: ScaleData = {
     value: [], coordinates: [], shortValue: [], shortCoordinates: [],
   };
+
+  public value: number;
+
+  private readonly settings: SliderElementOptions;
 
   constructor(settings: SliderElementOptions) {
     super();
