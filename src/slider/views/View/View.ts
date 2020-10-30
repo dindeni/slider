@@ -55,12 +55,12 @@ class View extends Observable {
 
     this.trackView.getSize();
     if (step) {
-      this.scaleView.create(this.trackView.size);
+      this.scaleView.create(this.getTrackSize());
     }
 
-    this.thumbView.create(this.trackView.size);
+    this.thumbView.create(this.getTrackSize());
     if (withLabel) {
-      this.labelView.create(this.trackView.size);
+      this.labelView.create(this.getTrackSize());
     }
 
     if (withProgress) {
