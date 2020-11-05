@@ -5,14 +5,17 @@
   &_type_vertical {
     .slider {
       &__label {
-        left: -46px;
-        top: -2px;
+        left: 1.9rem;
+        top: 50%;
+        transform: translate(0, -50%);
 
         &::before{
-          width: 3.5rem;
-          height: 2.15rem;
-          background: url("icon-label-vertical.svg") no-repeat;
-          top: -.14rem;
+          border-right: .5rem solid #e75735;
+          border-top: .5rem solid transparent;
+          border-bottom: .5rem solid transparent;
+          left: -.3rem;
+          bottom: 0;
+          transform: translate(-50%, -50%);
         }
       }
 
@@ -22,6 +25,15 @@
 
       &__progress {
         width: 5px;
+      }
+
+      &__scale {
+        position: absolute;
+        display: flex;
+        justify-content: flex-end;
+        top: 0;
+        left: -5rem;
+        margin: 0;
       }
     }
   }
@@ -41,21 +53,28 @@
   }
 
   &__label{
-    height: 2.15rem;
-    width: 2.69rem;
     color: #ffffff;
     text-align: center;
     line-height: 1.92rem;
+    background: #e75735;
+    border-radius: .4rem;
+    min-width: 2.5rem;
     position: absolute;
-    top: -30px;
-    left: -7px;
+    top: -2.4rem;
+    left: 50%;
+    transform: translate(-50%);
+    display: flex;
+    justify-content: center;
+    padding: .1rem .4rem;
     &::before{
       content: '';
       position: absolute;
-      height: 2.15rem;
-      width: 2.69rem;
-      background: url("icon-label.svg") no-repeat;
-      left: 0;
+      border-top: .5rem solid #e75735;
+      border-left: .5rem solid transparent;
+      border-right: 0.5rem solid transparent;
+      left: 50%;
+      transform: translate(-50%);
+      bottom: -.3rem;
       z-index: -1;
     }
   }
