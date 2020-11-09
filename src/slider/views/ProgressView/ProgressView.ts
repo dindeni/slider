@@ -1,7 +1,18 @@
 import { SliderElementOptions } from '../../../types/types';
 
 class ProgressView {
-  settings: SliderElementOptions;
+  private readonly settings: SliderElementOptions;
+
+  private $progress: JQuery<HTMLElement>;
+
+  private $thumbMin: JQuery<HTMLElement>;
+
+  private $thumbMax: JQuery<HTMLElement>;
+
+  private $thumb: JQuery<HTMLElement>;
+
+  private size: number;
+
 
   constructor(settings: SliderElementOptions) {
     this.settings = settings;
@@ -9,43 +20,40 @@ class ProgressView {
 
   public createNode(): void {
     const $trackElement = this.settings.$element.find('.js-slider__track');
-    $('<div class="slider__progress js-slider__progress"></div>').appendTo($trackElement);
+    this.$progress = $('<div class="slider__progress js-slider__progress"></div>');
+    this.$progress.appendTo($trackElement);
+    this.setVariables();
   }
 
   public update(): void {
-    const { isVertical, isRange, $element } = this.settings;
+    const { isVertical, isRange } = this.settings;
 
-    const $progressElement = $element.find('.js-slider__progress');
-    const thumbCollection = $element.find('.js-slider__thumb');
+    const key = isVertical ? 'top' : 'left';
     if (isRange) {
-      const thumbMin = isVertical
-        ? parseFloat(thumbCollection[0].style.top)
-        : parseFloat(thumbCollection[0].style.left);
-      const thumbMax = isVertical
-        ? parseFloat(thumbCollection[1].style.top)
-        : parseFloat(thumbCollection[1].style.left);
-      const progressSize = thumbMax - thumbMin;
-      isVertical
-        ? $progressElement.css({
-          height: `${progressSize}px`,
-          top: thumbMin,
-        })
-        : $progressElement.css({
-          width: `${progressSize}px`,
-          left: thumbMin,
-        });
+      const min = parseFloat(this.$thumbMin.css(key));
+      const max = parseFloat(this.$thumbMax.css(key));
+      this.size = max - min;
+      this.$progress.css({ [key]: `${min}px` });
     } else {
-      const progressSize = isVertical
-        ? parseFloat(thumbCollection[0].style.top)
-        : parseFloat(thumbCollection[0].style.left);
-      isVertical
-        ? $progressElement.css({
-          height: `${progressSize}px`,
-        })
-        : $progressElement.css({
-          width: `${progressSize}px`,
-        });
+      this.size = parseFloat(this.$thumb.css(key));
     }
+    isVertical
+      ? this.$progress.css({
+        height: `${this.size}px`,
+      })
+      : this.$progress.css({
+        width: `${this.size}px`,
+      });
+  }
+
+  private setVariables(): void {
+    const { $element, isRange } = this.settings;
+
+    if (isRange) {
+      this.$thumbMin = $element.find('.js-slider__thumb_type_min');
+      this.$thumbMax = $element.find('.js-slider__thumb_type_max');
+    }
+    this.$thumb = $element.find('.js-slider__thumb');
   }
 }
 

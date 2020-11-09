@@ -52,7 +52,7 @@ describe('ThumbView', () => {
 
   it('should set thumb position', () => {
     const thumbElement = $('.js-slider__thumb_type_min')[0];
-    thumbView.setPosition({ thumbElement, shift: 150, trackSize: 300 });
+    thumbView.updatePosition({ thumbElement, shift: 150, trackSize: 300 });
     expect(thumbElement.style.left).toBe('150px');
   });
 

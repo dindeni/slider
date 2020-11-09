@@ -4,6 +4,7 @@ import { SliderElementOptions, ValidationOptions, UpdateStateOptions } from '../
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
+import { VALIDATE_VALUE, VALIDATE_STEP_VALUE, SET_FRACTION_OF_VALUE } from './constants';
 
 class Controller extends Observable {
   public readonly view: View = new View();
@@ -45,11 +46,11 @@ class Controller extends Observable {
 
   private updateState(value: UpdateStateOptions): null {
     switch (value.actionType) {
-      case 'validateValue': this.view.setIsValidValue(value.data as boolean);
+      case VALIDATE_VALUE: this.view.setIsValidValue(value.data as boolean);
         break;
-      case 'validateStepValue': this.view.getValidStepValue(value.data as number);
+      case VALIDATE_STEP_VALUE: this.view.getValidStepValue(value.data as number);
         break;
-      case 'setFractionOfValue': this.view.setFractionOfValue(value.data as number);
+      case SET_FRACTION_OF_VALUE: this.view.setFractionOfValue(value.data as number);
         break;
       default: return null;
     }

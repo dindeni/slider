@@ -67,7 +67,7 @@ class HandleView extends Observable {
 
     this.trackElement = $element.find('.js-slider__track').get(0);
     const thumbCollection = $element.find('.js-slider__thumb');
-    this.thumbElement = (thumbCollection.get(0));
+    this.thumbElement = thumbCollection.get(0);
 
     this.thumbElement.addEventListener('mousedown', this.handleThumbElementMousedown);
     if (isRange) {
@@ -176,13 +176,22 @@ class HandleView extends Observable {
           event, thumbElement: this.thumbElement, trackElement, isVertical,
         });
       }
+      this.updatePositionAfterClick({ trackSize, trackElement });
+    }
+  }
+
+  private updatePositionAfterClick(options: Pick<ClickOptions, 'trackSize' | 'trackElement'>): void {
+    const { isVertical } = this.settings;
+    const { trackSize, trackElement } = options;
+
+    if (this.thumbElement) {
       this.notifyAll({
         value: {
           thumbElement: this.thumbElement,
           shift: this.distance,
           trackSize,
         },
-        type: 'setThumbPosition',
+        type: 'updateThumbPosition',
       });
       const keyPosition = isVertical ? 'top' : 'left';
       const thumbCoordinate = parseFloat(this.thumbElement.style[keyPosition]);
@@ -197,7 +206,7 @@ class HandleView extends Observable {
   private handleDocumentMousemove(event: MouseEvent): void {
     event.preventDefault();
 
-    const { isVertical, isRange } = this.settings;
+    const { isVertical } = this.settings;
     const coordinateStart = isVertical ? this.coordinateYStart : this.coordinateXStart;
     const coordinateMove = isVertical ? event.clientY : event.clientX;
     this.notifyAll({ value: { coordinateStart, coordinateMove }, type: 'getDistance' });
@@ -211,26 +220,15 @@ class HandleView extends Observable {
           coordinateStart,
           coordinateMove,
         },
-        type: 'setThumbPosition',
+        type: 'updateThumbPosition',
       });
 
-      if (isRange) {
-        this.notifyAll({
-          value: { thumbElement: this.thumbElement, trackSize: this.trackSize },
-          type: 'changeZIndex',
-        });
-      }
-
-      const optionsForData = {
+      this.updateData({
         trackElement: this.trackElement,
+        thumbElement: this.thumbElement,
         distance: isVertical ? parseFloat(this.thumbElement.style.top)
           : parseFloat(this.thumbElement.style.left),
-        thumbElement: this.thumbElement,
-        progressSize: isVertical ? parseFloat(this.thumbElement.style.top)
-          : parseFloat(this.thumbElement.style.left),
-      };
-
-      this.updateData(optionsForData);
+      });
     }
   }
 

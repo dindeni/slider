@@ -1,5 +1,6 @@
 import {
   DistanceOptions, ThumbPositionsOptions, ChangeZIndexOptions, SliderElementOptions,
+  SetStepThumbOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
@@ -55,7 +56,6 @@ class ThumbView extends Observable {
       this.coordinateMin = this.getCoordinate(
         { value: valueMin || min, trackSize },
       );
-
       this.coordinateMax = this.getCoordinate(
         { value: valueMax || max, trackSize },
       );
@@ -74,64 +74,37 @@ class ThumbView extends Observable {
 
     if (isVertical) {
       this.makeVertical();
-    } else if (isRange) {
-      this.$elementMin.css({
-        left: `${this.coordinateMin}px`,
-        zIndex: this.coordinateMin > (trackSize / 2) ? 100 : 50,
-      });
-
-      this.$elementMax.css({
-        left: `${this.coordinateMax}px`,
-        zIndex: this.coordinateMax > (trackSize / 2) ? 50 : 100,
-      });
     } else {
-      this.$element.css({
-        left: `${this.coordinate}px`,
-      });
-    }
-
-    if (!isVertical) {
-      $element.css({ width: '100%' });
+      this.setPosition(trackSize);
     }
   }
 
-  public setPosition(options: ThumbPositionsOptions): void {
+  public updatePosition(options: ThumbPositionsOptions): void {
     const {
       thumbElement, shift, trackSize, coordinateStart, coordinateMove,
     } = options;
     const {
-      isVertical, step, isRange, min, max,
+      isVertical, step, min, max,
     } = this.settings;
+
     if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
       this.calculateDistance({ coordinateStart, coordinateMove });
     }
     const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
 
     const currentValue: number = min + (max - min) * (distance / trackSize);
-    if (isRange) {
-      const thumbType = $(thumbElement).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value: currentValue, type: thumbType }, type: 'validateValue' });
-    } else {
-      this.notifyAll({ value: { value: currentValue }, type: 'validateValue' });
-    }
+    this.callNotifiers({ element: thumbElement, value: currentValue, trackSize });
 
     const key = isVertical ? 'top' : 'left';
-    if (this.isValidValue) {
-      if (step) {
-        this.notifyAll({
-          value: {
-            trackSize, element: thumbElement, value: currentValue,
-          },
-          type: 'setStepThumb',
-        });
-      } else {
-        thumbElement.style[key] = `${distance}px`;
-      }
+    const isValidValueAndNotStep = this.isValidValue && !step;
+    if (isValidValueAndNotStep) {
+      thumbElement.style[key] = `${distance}px`;
     }
 
     this.correctPosition({
       element: thumbElement, trackSize, distance, key,
     });
+    this.changeZIndex({ thumbElement, trackSize });
   }
 
   public setIsValidValue(isValidValue: boolean): void {
@@ -139,37 +112,67 @@ class ThumbView extends Observable {
   }
 
   public changeZIndex(options: ChangeZIndexOptions): void {
-    const { isVertical, $element } = this.settings;
+    const { isVertical } = this.settings;
     const { thumbElement, trackSize } = options;
 
     const coordinateOfMiddle = this.getCoordinatesOfMiddle(trackSize);
     const isLessMiddle = (isVertical && thumbElement.getBoundingClientRect().top
       + window.scrollY < coordinateOfMiddle)
       || (!isVertical && thumbElement.getBoundingClientRect().left < coordinateOfMiddle);
-    const labelElementMin = $element.find('.js-slider__label_type_min');
-    const labelElementMax = $element.find('.js-slider__label_type_max');
 
-    const $minElement = $element.find('.js-slider__thumb_type_min');
-    const $maxElement = $element.find('.js-slider__thumb_type_max');
     if (isLessMiddle) {
-      $maxElement.css({ zIndex: '200' });
-      $minElement.css({ zIndex: '100' });
-      if (labelElementMin && labelElementMax) {
-        labelElementMax.css({ zIndex: '200' });
-        labelElementMin.css({ zIndex: '100' });
-      }
+      this.$elementMax.css({ zIndex: '200' });
+      this.$elementMin.css({ zIndex: '100' });
     } else {
-      $maxElement.css({ zIndex: '100' });
-      $minElement.css({ zIndex: '200' });
-      if (labelElementMin && labelElementMax) {
-        labelElementMax.css({ zIndex: '100' });
-        labelElementMin.css({ zIndex: '200' });
-      }
+      this.$elementMax.css({ zIndex: '100' });
+      this.$elementMin.css({ zIndex: '200' });
     }
   }
 
   public getFractionOfValue(fraction: number): void {
     this.fraction = fraction;
+  }
+
+  private callNotifiers(options: SetStepThumbOptions): void {
+    const { isRange, step } = this.settings;
+    const { element, value, trackSize } = options;
+
+    if (isRange) {
+      const thumbType = $(element).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
+      this.notifyAll({ value: { value, type: thumbType }, type: 'validateValue' });
+    } else {
+      this.notifyAll({ value: { value }, type: 'validateValue' });
+    }
+
+    const isStepAndValidValue = this.isValidValue && step;
+    if (isStepAndValidValue) {
+      this.notifyAll({
+        value: {
+          trackSize, element, value,
+        },
+        type: 'setStepThumb',
+      });
+    }
+  }
+
+  private setPosition(trackSize: number): void {
+    const { isRange } = this.settings;
+
+    if (isRange) {
+      this.$elementMin.css({
+        left: `${this.coordinateMin}px`,
+        zIndex: this.coordinateMin > (trackSize / 2) ? 200 : 100,
+      });
+
+      this.$elementMax.css({
+        left: `${this.coordinateMax}px`,
+        zIndex: this.coordinateMax > (trackSize / 2) ? 100 : 200,
+      });
+    } else {
+      this.$element.css({
+        left: `${this.coordinate}px`,
+      });
+    }
   }
 
   private getCoordinatesOfMiddle(itemSize: number): number {
@@ -233,11 +236,11 @@ class ThumbView extends Observable {
     if (isRange) {
       this.$elementMin.css({
         top: `${this.coordinateMin}px`,
-        zIndex: (this.coordinateMin) < (trackWidth / 2) ? 50 : 200,
+        zIndex: (this.coordinateMin) < (trackWidth / 2) ? 100 : 200,
       });
       this.$elementMax.css({
         top: `${this.coordinateMax}px`,
-        zIndex: this.coordinateMax < (trackWidth / 2) ? 200 : 50,
+        zIndex: this.coordinateMax < (trackWidth / 2) ? 200 : 100,
       });
     } else {
       this.$element.css({

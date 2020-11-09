@@ -60,7 +60,7 @@ class View extends Observable {
 
     this.thumbView.create(this.getTrackSize());
     if (withLabel) {
-      this.labelView.create(this.getTrackSize());
+      this.labelView.create();
     }
 
     if (withProgress) {
@@ -106,8 +106,8 @@ class View extends Observable {
     this.handleView.reloadSlider(options);
   }
 
-  private setThumbPosition(options: ThumbPositionsOptions): void {
-    this.thumbView.setPosition(options);
+  private updateThumbPosition(options: ThumbPositionsOptions): void {
+    this.thumbView.updatePosition(options);
   }
 
   private setStepThumb(options: SetStepThumbOptions): void {
@@ -148,7 +148,7 @@ class View extends Observable {
   }
 
   private subscribeViews(): void {
-    this.handleView.subscribe({ method: this.setThumbPosition, type: 'setThumbPosition' });
+    this.handleView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
     this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
     this.handleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
     this.handleView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
