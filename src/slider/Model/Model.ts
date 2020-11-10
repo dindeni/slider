@@ -26,18 +26,17 @@ class Model extends Observable {
     const { min, max } = this.sliderOptions;
 
     const fraction = (value - min) / (max - min);
-    this.notifyAll({ value: { data: fraction, actionType: 'setFractionOfValue' }, type: 'updateState' });
+    this.notifyAll({ value: fraction, type: 'setFractionOfValue' });
     return fraction;
   }
 
   public validateValue(options: ValidationOptions): boolean {
     const { type, value } = options;
-
     const {
-      min, max, valueMin, valueMax,
+      min, max, valueMin, valueMax, step,
     } = this.sliderOptions;
 
-    const getState = (): boolean => {
+    const validateValue = (): boolean => {
       switch (true) {
         case value > max || value < min:
           return false;
@@ -51,20 +50,25 @@ class Model extends Observable {
       }
     };
 
-    const data = getState();
-    this.notifyAll({ value: { data, actionType: 'validateValue' }, type: 'updateState' });
-    return data;
+    const isValid = validateValue();
+    if (step) {
+      this.validateStepValue(value);
+    }
+    this.notifyAll({ value: isValid, type: 'validateValue' });
+    return isValid;
   }
 
-  public validateStepValue(value: number): number {
-    const { step, min } = this.sliderOptions;
+  private validateStepValue(value: number): number {
+    const { step, min, max } = this.sliderOptions;
 
     if (step) {
-      const state = min + Math.round((value - min) / step) * step;
-      this.notifyAll({ value: { data: state, actionType: 'validateStepValue' }, type: 'updateState' });
-      return state;
+      let validValue = min + Math.round((value - min) / step) * step;
+      if (validValue > max) {
+        validValue = max;
+      }
+      this.notifyAll({ value: validValue, type: 'setStepValue' });
+      return validValue;
     }
-    this.notifyAll({ value: { data: value, actionType: 'validateStepValue' }, type: 'updateState' });
     return value;
   }
 

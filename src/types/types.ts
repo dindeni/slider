@@ -55,13 +55,8 @@ export interface UpdatingLabelOptions {
   thumbElement: HTMLElement;
 }
 
-export interface SetStepThumbOptions {
+export interface ThumbValueOptions {
   trackSize: number;
   element: HTMLElement;
   value: number;
-}
-
-export interface UpdateStateOptions {
-  data: number | boolean;
-  actionType: 'validateValue' | 'validateStepValue' | 'setFractionOfValue';
 }

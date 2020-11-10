@@ -1,7 +1,7 @@
 import autoBind from 'auto-bind';
 
 import {
-  ChangeZIndexOptions, SetStepThumbOptions, ScaleData, SliderElementOptions, ThumbPositionsOptions,
+  ChangeZIndexOptions, ThumbValueOptions, ScaleData, SliderElementOptions, ThumbPositionsOptions,
   UpdatingLabelOptions, ValidationOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
@@ -90,7 +90,7 @@ class View extends Observable {
     this.thumbView.setIsValidValue(isValid);
   }
 
-  public getValidStepValue(value: number): void{
+  public setStepValue(value: number): void{
     this.scaleView.value = value;
   }
 
@@ -110,7 +110,7 @@ class View extends Observable {
     this.thumbView.updatePosition(options);
   }
 
-  private setStepThumb(options: SetStepThumbOptions): void {
+  private setStepThumb(options: ThumbValueOptions): void {
     this.scaleView.setPosition(options);
   }
 
@@ -157,7 +157,7 @@ class View extends Observable {
     this.thumbView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
     this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
     this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
-    this.scaleView.subscribe({ method: this.validateStepValue, type: 'validateStepValue' });
+    this.scaleView.subscribe({ method: this.setStepValue, type: 'setStepValue' });
   }
 }
 

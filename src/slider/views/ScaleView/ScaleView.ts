@@ -1,4 +1,4 @@
-import { ScaleData, SetStepThumbOptions, SliderElementOptions } from '../../../types/types';
+import { ScaleData, ThumbValueOptions, SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
 class ScaleView extends Observable {
@@ -31,19 +31,22 @@ class ScaleView extends Observable {
     });
   }
 
-  public setPosition(options: SetStepThumbOptions): void {
-    const { trackSize, element, value } = options;
+  public setPosition(options: Omit<ThumbValueOptions, 'value'>): void {
+    const { trackSize, element } = options;
 
     if (this.data.coordinates.length === 0) {
       this.generateCoordinates(trackSize);
     }
-    this.notifyAll({ value, type: 'validateStepValue' });
+
     const getIndex = (): number => this.data.value.findIndex(
       (scaleValue) => scaleValue === this.value,
     );
 
     const key = this.settings.isVertical ? 'top' : 'left';
-    element.style[key] = `${this.data.coordinates[getIndex()].toString()}px`;
+    const index = getIndex();
+    if (index !== -1) {
+      element.style[key] = `${this.data.coordinates[getIndex()].toString()}px`;
+    }
   }
 
   private generateCoordinates(trackSize: number): void {

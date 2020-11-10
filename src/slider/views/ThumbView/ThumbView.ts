@@ -1,6 +1,6 @@
 import {
   DistanceOptions, ThumbPositionsOptions, ChangeZIndexOptions, SliderElementOptions,
-  SetStepThumbOptions,
+  ThumbValueOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
@@ -84,7 +84,7 @@ class ThumbView extends Observable {
       thumbElement, shift, trackSize, coordinateStart, coordinateMove,
     } = options;
     const {
-      isVertical, step, min, max,
+      isVertical, step, min, max, isRange,
     } = this.settings;
 
     if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
@@ -104,7 +104,9 @@ class ThumbView extends Observable {
     this.correctPosition({
       element: thumbElement, trackSize, distance, key,
     });
-    this.changeZIndex({ thumbElement, trackSize });
+    if (isRange) {
+      this.changeZIndex({ thumbElement, trackSize });
+    }
   }
 
   public setIsValidValue(isValidValue: boolean): void {
@@ -133,7 +135,7 @@ class ThumbView extends Observable {
     this.fraction = fraction;
   }
 
-  private callNotifiers(options: SetStepThumbOptions): void {
+  private callNotifiers(options: ThumbValueOptions): void {
     const { isRange, step } = this.settings;
     const { element, value, trackSize } = options;
 

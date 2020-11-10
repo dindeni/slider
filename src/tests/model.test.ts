@@ -42,11 +42,6 @@ describe('Model', () => {
     expect(fraction).toBe(0.5);
   });
 
-  it('should validate step value', () => {
-    const value = model.validateStepValue(66);
-    expect(value).toBe(100);
-  });
-
   it('should validate value min', () => {
     const state = model.validateValue({ value: 400, type: 'min' });
     expect(state).toBeFalsy();

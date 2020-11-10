@@ -32,13 +32,15 @@ describe('ScaleView', () => {
 
   it('should set position min', () => {
     const element = $('.js-slider__thumb_type_min')[0];
-    scaleView.setPosition({ element, value: 160, trackSize: 200 });
+    scaleView.value = 150;
+    scaleView.setPosition({ element, trackSize: 200 });
     expect(element.style.left).toEqual('25px');
   });
 
   it('should set position max', () => {
     const element = $('.js-slider__thumb_type_max')[0];
-    scaleView.setPosition({ element, value: 200, trackSize: 200 });
+    scaleView.value = 200;
+    scaleView.setPosition({ element, trackSize: 200 });
     expect(element.style.left).toEqual('50px');
   });
 });
