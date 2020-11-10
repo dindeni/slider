@@ -29,12 +29,12 @@ class LabelView {
   public updateValue(options: UpdatingLabelOptions): void {
     const { fraction, thumbElement } = options;
 
-    this.calculateValue(fraction);
+    this.setValue(fraction);
     const labelElement = $(thumbElement).children();
     labelElement.text(this.labelValue);
   }
 
-  public calculateValue(fraction: number): void {
+  private setValue(fraction: number): void {
     const { min, max } = this.settings;
 
     const isBelowZero = fraction <= 0;
