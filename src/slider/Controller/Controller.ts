@@ -18,7 +18,7 @@ class Controller extends Observable {
 
   public init(): void {
     this.subscribeAll();
-    this.view.getSliderOptions(this.model.sliderOptions);
+    this.view.setSliderOptions(this.model.sliderOptions);
     this.view.createElements(this.model.sliderOptions);
   }
 
@@ -27,7 +27,7 @@ class Controller extends Observable {
   }
 
   public reloadSlider(options: SliderElementOptions): void {
-    this.model.getSliderOptions(options);
+    this.model.setSliderOptions(options);
     this.view.reloadSlider(options);
   }
 
@@ -40,7 +40,7 @@ class Controller extends Observable {
   }
 
   private updateOptions(options: SliderElementOptions): void {
-    this.model.getSliderOptions(options);
+    this.model.setSliderOptions(options);
     if (this.model.sliderOptions.method) {
       this.passMethod(this.model.sliderOptions.method);
     }

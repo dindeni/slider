@@ -1,7 +1,7 @@
 import autoBind from 'auto-bind';
 
 import {
-  ChangeZIndexOptions, ThumbValueOptions, ScaleData, SliderElementOptions, ThumbPositionsOptions,
+  ChangeZIndexOptions, ThumbValueOptions, SliderElementOptions, ThumbPositionsOptions,
   UpdatingLabelOptions, ValidationOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
@@ -52,7 +52,6 @@ class View extends Observable {
     this.progressView = new ProgressView(options);
 
     this.subscribeViews();
-
     this.trackView.getSize();
     if (step) {
       this.scaleView.create(this.getTrackSize());
@@ -73,7 +72,7 @@ class View extends Observable {
     });
   }
 
-  public getSliderOptions(sliderSettings: SliderElementOptions): void {
+  public setSliderOptions(sliderSettings: SliderElementOptions): void {
     this.settings = {
       ...sliderSettings,
       valueMin: sliderSettings.min,
@@ -96,10 +95,6 @@ class View extends Observable {
 
   public getTrackSize(): number {
     return this.trackView.size;
-  }
-
-  public getScaleData(): ScaleData {
-    return this.scaleView.data;
   }
 
   public reloadSlider(options: SliderElementOptions): void {
@@ -143,10 +138,6 @@ class View extends Observable {
     this.notifyAll({ value: options, type: 'validateValue' });
   }
 
-  private validateStepValue(value: number): void {
-    this.notifyAll({ value, type: 'validateStepValue' });
-  }
-
   private subscribeViews(): void {
     this.handleView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
     this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
@@ -157,7 +148,6 @@ class View extends Observable {
     this.thumbView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
     this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
     this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
-    this.scaleView.subscribe({ method: this.setStepValue, type: 'setStepValue' });
   }
 }
 

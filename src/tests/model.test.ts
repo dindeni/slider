@@ -22,14 +22,14 @@ describe('Model', () => {
   });
 
   it('should get valid options', () => {
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     const { valueMin, valueMax } = model.sliderOptions;
     expect(valueMin).toBe(100);
     expect(valueMax).toBe(500);
   });
 
   it('should get valid step options', () => {
-    model.getSliderOptions({
+    model.setSliderOptions({
       ...options, step: 100, valueMin: 155, valueMax: 321,
     });
     const { valueMin, valueMax } = model.sliderOptions;

@@ -20,7 +20,7 @@ describe('ProgressView', () => {
     };
     const model = new Model();
     const controller = new Controller(model);
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     controller.init();
     labelView = controller.view.labelView;
   });

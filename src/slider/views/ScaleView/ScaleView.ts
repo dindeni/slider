@@ -1,7 +1,6 @@
 import { ScaleData, ThumbValueOptions, SliderElementOptions } from '../../../types/types';
-import Observable from '../../Observable/Observable';
 
-class ScaleView extends Observable {
+class ScaleView {
   public data: ScaleData = {
     value: [], coordinates: [], shortValue: [], shortCoordinates: [],
   };
@@ -11,7 +10,6 @@ class ScaleView extends Observable {
   private readonly settings: SliderElementOptions;
 
   constructor(settings: SliderElementOptions) {
-    super();
     this.settings = settings;
   }
 

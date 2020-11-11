@@ -25,7 +25,7 @@ describe('View', () => {
 
     const model = new Model();
     const controller = new Controller(model);
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     controller.init();
     view = controller.view;
     $trackElement = $('.js-slider__track');
@@ -40,16 +40,6 @@ describe('View', () => {
 
   it('should get track size', () => {
     expect(view.getTrackSize()).toBe(200);
-  });
-
-  it('should get scale data', () => {
-    view.reloadSlider({ ...options, step: 100 });
-    expect(view.getScaleData()).toEqual({
-      coordinates: [0, 50, 100, 150, 200],
-      shortCoordinates: [0, 50, 100, 150, 200],
-      value: [100, 200, 300, 400, 500],
-      shortValue: [100, 200, 300, 400, 500],
-    });
   });
 
   it('should reload slider', () => {

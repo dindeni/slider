@@ -33,7 +33,7 @@ describe('HandleView', () => {
     elementOptions = { ...options, $element };
     const model = new Model();
     const controller = new Controller(model);
-    model.getSliderOptions(elementOptions);
+    model.setSliderOptions(elementOptions);
     controller.init();
     handleView = controller.view.handleView;
   });

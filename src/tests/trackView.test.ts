@@ -20,7 +20,7 @@ describe('TrackView', () => {
     };
     const model = new Model();
     const controller = new Controller(model);
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     controller.init();
     trackView = controller.view.trackView;
   });

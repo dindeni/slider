@@ -39,7 +39,7 @@ describe('ThumbView', () => {
     };
     const model = new Model();
     controller = new Controller(model);
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     controller.init();
     thumbView = controller.view.thumbView;
   });

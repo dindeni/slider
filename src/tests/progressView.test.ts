@@ -19,7 +19,7 @@ describe('ProgressView', () => {
     };
     const model = new Model();
     const controller = new Controller(model);
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
     controller.init();
     progressView = controller.view.progressView;
   });

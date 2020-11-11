@@ -24,7 +24,7 @@ $.fn.slider = function (options?: SliderOptions): SliderReturnOption {
 
   const model = new Model();
   const controller = new Controller(model);
-  model.getSliderOptions(config);
+  model.setSliderOptions(config);
 
   controller.init();
   this.data = {};

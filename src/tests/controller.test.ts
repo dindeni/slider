@@ -24,13 +24,13 @@ describe('Controller', () => {
       withLabel: true,
       step: undefined,
     };
-    model.getSliderOptions(options);
+    model.setSliderOptions(options);
   });
 
   describe('Initialization', () => {
     let spyGetOptions: SpyInstance;
     beforeAll(() => {
-      spyGetOptions = jest.spyOn(controller.view, 'getSliderOptions');
+      spyGetOptions = jest.spyOn(controller.view, 'setSliderOptions');
       controller.init();
     });
 
