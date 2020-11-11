@@ -81,8 +81,8 @@ class View extends Observable {
   }
 
   public setFractionOfValue(fraction: number): void {
-    this.thumbView.getFractionOfValue(fraction);
-    this.handleView.getFractionOfValue(fraction);
+    this.thumbView.setFractionOfValue(fraction);
+    this.handleView.setFractionOfValue(fraction);
   }
 
   public setIsValidValue(isValid: boolean): void {
@@ -120,7 +120,7 @@ class View extends Observable {
     }
   }
 
-  private getFractionOfValue(value: number): void {
+  private notifyAboutValueChange(value: number): void {
     this.notifyAll({ value, type: 'setFractionOfValue' });
   }
 
@@ -142,10 +142,10 @@ class View extends Observable {
     this.handleView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
     this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
     this.handleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
-    this.handleView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.handleView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
     this.handleView.subscribe({ method: this.updateOptions, type: 'updateOptions' });
     this.handleView.subscribe({ method: this.recreate, type: 'recreate' });
-    this.thumbView.subscribe({ method: this.getFractionOfValue, type: 'getFractionOfValue' });
+    this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
     this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
     this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
   }

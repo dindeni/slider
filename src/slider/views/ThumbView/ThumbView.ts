@@ -44,7 +44,7 @@ class ThumbView extends Observable {
   constructor(settings: SliderElementOptions) {
     super();
     this.settings = settings;
-    this.getSize();
+    this.setSize();
   }
 
   public create(trackSize: number): void {
@@ -88,7 +88,7 @@ class ThumbView extends Observable {
     } = this.settings;
 
     if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
-      this.calculateDistance({ coordinateStart, coordinateMove });
+      this.setDistance({ coordinateStart, coordinateMove });
     }
     const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
 
@@ -131,7 +131,7 @@ class ThumbView extends Observable {
     }
   }
 
-  public getFractionOfValue(fraction: number): void {
+  public setFractionOfValue(fraction: number): void {
     this.fraction = fraction;
   }
 
@@ -216,16 +216,16 @@ class ThumbView extends Observable {
   private getCoordinate(options: ThumbCoordinateOptions): number {
     const { value, trackSize } = options;
 
-    this.notifyAll({ value, type: 'getFractionOfValue' });
+    this.notifyAll({ value, type: 'notifyAboutValueChange' });
     return this.fraction * trackSize;
   }
 
-  private getSize(): void {
+  private setSize(): void {
     const $thumb = this.settings.$element.find('.slider__thumb');
     this.size = $thumb.width() || 0;
   }
 
-  private calculateDistance(options: DistanceOptions): void {
+  private setDistance(options: DistanceOptions): void {
     const { coordinateStart, coordinateMove } = options;
     this.distance = coordinateMove - coordinateStart;
   }

@@ -149,7 +149,7 @@ class HandleView extends Observable {
     }
   }
 
-  public getFractionOfValue(fraction: number): void {
+  public setFractionOfValue(fraction: number): void {
     this.fraction = fraction;
   }
 
@@ -169,7 +169,7 @@ class HandleView extends Observable {
 
       if (isItemElement) {
         const value = Number(target.textContent);
-        this.notifyAll({ value, type: 'getFractionOfValue' });
+        this.notifyAll({ value, type: 'notifyAboutValueChange' });
         this.distance = this.fraction * trackSize;
       } else {
         this.distance = HandleView.getDistance({
