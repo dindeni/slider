@@ -1,10 +1,10 @@
 import {
   SliderElementOptions, ValidationOptions, DistanceOptions, ThumbPositionsOptions,
-  ChangeZIndexOptions, UpdatingLabelOptions, ThumbValueOptions,
+  UpdatingLabelOptions, ThumbValueOptions,
 } from '../../types/types';
 
-type ObserverValueOption = number | boolean | SliderElementOptions | ValidationOptions
-  | DistanceOptions | ThumbPositionsOptions | ChangeZIndexOptions | UpdatingLabelOptions
+type ObserverValueOption = number | boolean | HTMLElement | SliderElementOptions | ValidationOptions
+  | DistanceOptions | ThumbPositionsOptions | UpdatingLabelOptions
   | ThumbValueOptions;
 
 interface ObserverAndType {

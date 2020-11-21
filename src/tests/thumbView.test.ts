@@ -2,12 +2,14 @@ import ThumbView from '../slider/views/ThumbView/ThumbView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
+import createEvent from './events';
 
 describe('ThumbView', () => {
   let options: SliderElementOptions;
   let thumbView: ThumbView;
-  let $element: JQuery<HTMLElement>;
   let controller: Controller;
+  let $thumbMin: JQuery<HTMLElement>;
+  let $thumbMax: JQuery<HTMLElement>;
 
   const simulateGetBounding = (settings: { element: HTMLElement; left: number }): void => {
     const { element, left } = settings;
@@ -25,7 +27,7 @@ describe('ThumbView', () => {
   };
 
   beforeAll(() => {
-    $element = $('<div class="slider js-slider"></div>');
+    const $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
     options = {
       $element,
@@ -42,34 +44,53 @@ describe('ThumbView', () => {
     model.setSliderOptions(options);
     controller.init();
     thumbView = controller.view.thumbView;
+    thumbView.setStartPosition(300);
+    $thumbMin = $('.js-slider__thumb_type_min');
+    $thumbMax = $('.js-slider__thumb_type_max');
   });
 
   it('should create elements', () => {
-    $('.js-slider__thumb_type_max').remove();
-    thumbView.create(200);
-    expect($('.js-slider__thumb_type_max').length).toBe(1);
+    expect($('.js-slider__thumb').length).toBe(2);
   });
 
-  it('should set thumb position', () => {
-    const thumbElement = $('.js-slider__thumb_type_min')[0];
-    thumbView.updatePosition({ thumbElement, shift: 150, trackSize: 300 });
-    expect(thumbElement.style.left).toBe('150px');
+  it('should move thumb min', () => {
+    const mousedown = createEvent({ type: 'mousedown', clientX: 0, clientY: 0 });
+    const mousemove = createEvent({ type: 'mousemove', clientX: 50, clientY: 0 });
+    $thumbMin[0].dispatchEvent(mousedown);
+    $thumbMin[0].dispatchEvent(mousemove);
+    expect($thumbMin.css('left')).toBe('50px');
+  });
+
+  it('should move thumb max', () => {
+    const mousedown = createEvent({ type: 'mousedown', clientX: 300, clientY: 0 });
+    const mousemove = createEvent({ type: 'mousemove', clientX: 200, clientY: 0 });
+    $thumbMax[0].dispatchEvent(mousedown);
+    $thumbMax[0].dispatchEvent(mousemove);
+    expect($thumbMax.css('left')).toBe('200px');
+  });
+
+  it('should update thumb position min', () => {
+    thumbView.updatePosition({ thumbElement: $thumbMin[0], shift: 150, trackSize: 300 });
+    expect($thumbMin.css('left')).toBe('150px');
+  });
+
+  it('should update thumb position max', () => {
+    thumbView.updatePosition({ thumbElement: $thumbMax[0], shift: 200, trackSize: 300 });
+    expect($thumbMax.css('left')).toBe('200px');
   });
 
   it('should change thumb zIndex min', () => {
-    const $thumb = $('.js-slider__thumb_type_min');
-    $thumb.css({ zIndex: '500' });
-    simulateGetBounding({ element: $thumb[0], left: 150 });
-    thumbView.changeZIndex({ thumbElement: $thumb[0], trackSize: 200 });
-    expect($thumb.css('zIndex')).toBe('200');
+    $thumbMin.css({ zIndex: '500' });
+    simulateGetBounding({ element: $thumbMin[0], left: 150 });
+    thumbView.changeZIndex($thumbMin[0]);
+    expect($thumbMin.css('zIndex')).toBe('200');
   });
 
   it('should change thumb zIndex max', () => {
-    const $thumb = $('.js-slider__thumb_type_max');
-    $thumb.css({ zIndex: '500' });
-    simulateGetBounding({ element: $thumb[0], left: 200 });
-    thumbView.changeZIndex({ thumbElement: $thumb[0], trackSize: 200 });
-    expect($thumb.css('zIndex')).toBe('100');
+    $thumbMax.css({ zIndex: '500' });
+    simulateGetBounding({ element: $thumbMax[0], left: 200 });
+    thumbView.changeZIndex($thumbMax[0]);
+    expect($thumbMax.css('zIndex')).toBe('100');
   });
 
   it('should create vertical thumb', () => {

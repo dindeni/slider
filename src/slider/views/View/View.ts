@@ -1,8 +1,8 @@
 import autoBind from 'auto-bind';
 
 import {
-  ChangeZIndexOptions, ThumbValueOptions, SliderElementOptions, ThumbPositionsOptions,
-  UpdatingLabelOptions, ValidationOptions,
+  ThumbValueOptions, SliderElementOptions, UpdatingLabelOptions,
+  ValidationOptions, ThumbPositionsOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import HandleView from '../HandleView/HandleView';
@@ -39,10 +39,10 @@ class View extends Observable {
     } = options;
 
     this.settings = options;
-    this.handleView = new HandleView();
-    this.handleView.createBasicNodes(options);
+    this.handleView = new HandleView(options);
     this.thumbView = new ThumbView(options);
     this.trackView = new TrackView(options);
+    this.thumbView.create();
 
     if (isVertical) {
       this.trackView.makeVertical();
@@ -53,23 +53,18 @@ class View extends Observable {
 
     this.subscribeViews();
     this.trackView.getSize();
+    if (withLabel) {
+      this.labelView.create(this.getTrackSize());
+    }
     if (step) {
       this.scaleView.create(this.getTrackSize());
     }
-
-    this.thumbView.create(this.getTrackSize());
-    if (withLabel) {
-      this.labelView.create();
-    }
-
     if (withProgress) {
       this.progressView.createNode();
       this.progressView.update();
     }
-
-    this.handleView.addDragAndDrop({
-      ...options, trackSize: this.getTrackSize(),
-    });
+    this.thumbView.setStartPosition(this.getTrackSize());
+    this.handleView.addEvent();
   }
 
   public setSliderOptions(sliderSettings: SliderElementOptions): void {
@@ -82,7 +77,7 @@ class View extends Observable {
 
   public setFractionOfValue(fraction: number): void {
     this.thumbView.setFractionOfValue(fraction);
-    this.handleView.setFractionOfValue(fraction);
+    this.trackView.setFractionOfValue(fraction);
   }
 
   public setIsValidValue(isValid: boolean): void {
@@ -109,8 +104,8 @@ class View extends Observable {
     this.scaleView.setPosition(options);
   }
 
-  private changeZIndex(options: ChangeZIndexOptions): void {
-    this.thumbView.changeZIndex(options);
+  private changeZIndex(element: HTMLElement): void {
+    this.thumbView.changeZIndex(element);
   }
 
   private updateLabelValue(options: UpdatingLabelOptions): void {
@@ -130,6 +125,7 @@ class View extends Observable {
   }
 
   private recreate(options: SliderElementOptions): void {
+    this.trackView.removeEvent();
     this.settings = options;
     this.createElements(options);
   }
@@ -139,15 +135,16 @@ class View extends Observable {
   }
 
   private subscribeViews(): void {
-    this.handleView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
+    this.trackView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
     this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
-    this.handleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
-    this.handleView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
-    this.handleView.subscribe({ method: this.updateOptions, type: 'updateOptions' });
+    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
     this.handleView.subscribe({ method: this.recreate, type: 'recreate' });
     this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
     this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
     this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
+    this.thumbView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
+    this.scaleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
+    this.labelView.subscribe({ method: this.updateOptions, type: 'updateOptions' });
   }
 }
 

@@ -1,6 +1,7 @@
 import { ScaleData, ThumbValueOptions, SliderElementOptions } from '../../../types/types';
+import Observable from '../../Observable/Observable';
 
-class ScaleView {
+class ScaleView extends Observable {
   public data: ScaleData = {
     value: [], coordinates: [], shortValue: [], shortCoordinates: [],
   };
@@ -10,6 +11,7 @@ class ScaleView {
   private readonly settings: SliderElementOptions;
 
   constructor(settings: SliderElementOptions) {
+    super();
     this.settings = settings;
   }
 
@@ -43,7 +45,8 @@ class ScaleView {
     const key = this.settings.isVertical ? 'top' : 'left';
     const index = getIndex();
     if (index !== -1) {
-      element.style[key] = `${this.data.coordinates[getIndex()].toString()}px`;
+      element.style[key] = `${this.data.coordinates[index].toString()}px`;
+      this.notifyAll({ value: { thumbElement: element, value: this.data.value[index] }, type: 'updateLabelValue' });
     }
   }
 

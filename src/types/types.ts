@@ -48,10 +48,8 @@ export interface ThumbPositionsOptions {
   coordinateMove?: number;
 }
 
-export type ChangeZIndexOptions = Pick<ThumbPositionsOptions, 'thumbElement' | 'trackSize'>;
-
 export interface UpdatingLabelOptions {
-  fraction: number;
+  value: number;
   thumbElement: HTMLElement;
 }
 
