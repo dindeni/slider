@@ -105,7 +105,7 @@ class ThumbView extends Observable {
     this.isValidValue = isValidValue;
   }
 
-  public changeZIndex(element: HTMLElement): void {
+  private changeZIndex(element: HTMLElement): void {
     const { isVertical } = this.settings;
 
     const coordinateOfMiddle = this.getCoordinatesOfMiddle();

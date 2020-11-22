@@ -105,10 +105,6 @@ class View extends Observable {
     this.scaleView.setPosition(options);
   }
 
-  private changeZIndex(element: HTMLElement): void {
-    this.thumbView.changeZIndex(element);
-  }
-
   private updateLabelValue(options: UpdatingLabelOptions): void {
     this.labelView.updateValue(options);
     if (this.settings.withProgress) {
@@ -137,12 +133,12 @@ class View extends Observable {
 
   private subscribeViews(): void {
     const {
-      VALIDATE, UPDATE_OPTIONS, UPDATE_THUMB_POSITION, CHANGE_Z_INDEX, RECREATE, VALUE_CHANGE,
+      VALIDATE, UPDATE_OPTIONS, UPDATE_THUMB_POSITION, RECREATE, VALUE_CHANGE,
       SET_STEP_THUMB, UPDATE_LABEL_VALUE,
     } = EventTypes;
 
     this.trackView.subscribe({ method: this.updateThumbPosition, type: UPDATE_THUMB_POSITION });
-    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: CHANGE_Z_INDEX });
+    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
     this.handleView.subscribe({ method: this.recreate, type: RECREATE });
     this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
     this.thumbView.subscribe({ method: this.setStepThumb, type: SET_STEP_THUMB });

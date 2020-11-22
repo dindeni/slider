@@ -11,21 +11,6 @@ describe('ThumbView', () => {
   let $thumbMin: JQuery<HTMLElement>;
   let $thumbMax: JQuery<HTMLElement>;
 
-  const simulateGetBounding = (settings: { element: HTMLElement; left: number }): void => {
-    const { element, left } = settings;
-    element.getBoundingClientRect = jest.fn((): DOMRect => ({
-      top: 0,
-      bottom: 0,
-      left,
-      right: 0,
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      toJSON: (): void => {},
-    }));
-  };
-
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
@@ -77,20 +62,6 @@ describe('ThumbView', () => {
   it('should update thumb position max', () => {
     thumbView.updatePosition({ thumbElement: $thumbMax[0], shift: 200, trackSize: 300 });
     expect($thumbMax.css('left')).toBe('200px');
-  });
-
-  it('should change thumb zIndex min', () => {
-    $thumbMin.css({ zIndex: '500' });
-    simulateGetBounding({ element: $thumbMin[0], left: 150 });
-    thumbView.changeZIndex($thumbMin[0]);
-    expect($thumbMin.css('zIndex')).toBe('200');
-  });
-
-  it('should change thumb zIndex max', () => {
-    $thumbMax.css({ zIndex: '500' });
-    simulateGetBounding({ element: $thumbMax[0], left: 200 });
-    thumbView.changeZIndex($thumbMax[0]);
-    expect($thumbMax.css('zIndex')).toBe('100');
   });
 
   it('should create vertical thumb', () => {
