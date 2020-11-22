@@ -5,6 +5,7 @@ import {
   ValidationOptions, ThumbPositionsOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 import HandleView from '../HandleView/HandleView';
 import ScaleView from '../ScaleView/ScaleView';
 import TrackView from '../TrackView/TrackView';
@@ -116,12 +117,12 @@ class View extends Observable {
   }
 
   private notifyAboutValueChange(value: number): void {
-    this.notifyAll({ value, type: 'setFractionOfValue' });
+    this.notifyAll({ value, type: EventTypes.SET_FRACTION });
   }
 
   private updateOptions(options: SliderElementOptions): void {
     this.settings = options;
-    this.notifyAll({ value: options, type: 'updateOptions' });
+    this.notifyAll({ value: options, type: EventTypes.UPDATE_OPTIONS });
   }
 
   private recreate(options: SliderElementOptions): void {
@@ -131,20 +132,24 @@ class View extends Observable {
   }
 
   private validateValue(options: ValidationOptions): void {
-    this.notifyAll({ value: options, type: 'validateValue' });
+    this.notifyAll({ value: options, type: EventTypes.VALIDATE });
   }
 
   private subscribeViews(): void {
-    this.trackView.subscribe({ method: this.updateThumbPosition, type: 'updateThumbPosition' });
-    this.handleView.subscribe({ method: this.changeZIndex, type: 'changeZIndex' });
-    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
-    this.handleView.subscribe({ method: this.recreate, type: 'recreate' });
-    this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: 'notifyAboutValueChange' });
-    this.thumbView.subscribe({ method: this.setStepThumb, type: 'setStepThumb' });
-    this.thumbView.subscribe({ method: this.validateValue, type: 'validateValue' });
-    this.thumbView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
-    this.scaleView.subscribe({ method: this.updateLabelValue, type: 'updateLabelValue' });
-    this.labelView.subscribe({ method: this.updateOptions, type: 'updateOptions' });
+    const {
+      VALIDATE, UPDATE_OPTIONS, UPDATE_THUMB_POSITION, CHANGE_Z_INDEX, RECREATE, VALUE_CHANGE,
+      SET_STEP_THUMB, UPDATE_LABEL_VALUE,
+    } = EventTypes;
+
+    this.trackView.subscribe({ method: this.updateThumbPosition, type: UPDATE_THUMB_POSITION });
+    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: CHANGE_Z_INDEX });
+    this.handleView.subscribe({ method: this.recreate, type: RECREATE });
+    this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
+    this.thumbView.subscribe({ method: this.setStepThumb, type: SET_STEP_THUMB });
+    this.thumbView.subscribe({ method: this.validateValue, type: VALIDATE });
+    this.thumbView.subscribe({ method: this.updateLabelValue, type: UPDATE_LABEL_VALUE });
+    this.scaleView.subscribe({ method: this.updateLabelValue, type: UPDATE_LABEL_VALUE });
+    this.labelView.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });
   }
 }
 

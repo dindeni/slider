@@ -2,6 +2,7 @@ import autoBind from 'auto-bind';
 
 import { SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 
 class HandleView extends Observable {
   private settings: SliderElementOptions;
@@ -20,7 +21,7 @@ class HandleView extends Observable {
     this.settings = { ...this.settings, ...options };
 
     this.settings.$element.empty();
-    this.notifyAll({ value: this.settings, type: 'recreate' });
+    this.notifyAll({ value: this.settings, type: EventTypes.RECREATE });
   }
 
   private handleWindowResize(): void {

@@ -4,6 +4,7 @@ import { SliderElementOptions, ValidationOptions } from '../../types/types';
 import Model from '../Model/Model';
 import View from '../views/View/View';
 import Observable from '../Observable/Observable';
+import EventTypes from '../constants';
 
 class Controller extends Observable {
   public readonly view: View = new View();
@@ -47,12 +48,16 @@ class Controller extends Observable {
   }
 
   private subscribeAll(): void {
-    this.view.subscribe({ method: this.updateOptions, type: 'updateOptions' });
-    this.view.subscribe({ method: this.validateValue, type: 'validateValue' });
-    this.view.subscribe({ method: this.setFractionOfValue, type: 'setFractionOfValue' });
-    this.model.subscribe({ method: this.view.setStepValue, type: 'setStepValue' });
-    this.model.subscribe({ method: this.view.setIsValidValue, type: 'validateValue' });
-    this.model.subscribe({ method: this.view.setFractionOfValue, type: 'setFractionOfValue' });
+    const {
+      UPDATE_OPTIONS, VALIDATE, SET_FRACTION, SET_STEP_VALUE,
+    } = EventTypes;
+
+    this.view.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });
+    this.view.subscribe({ method: this.validateValue, type: VALIDATE });
+    this.view.subscribe({ method: this.setFractionOfValue, type: SET_FRACTION });
+    this.model.subscribe({ method: this.view.setStepValue, type: SET_STEP_VALUE });
+    this.model.subscribe({ method: this.view.setIsValidValue, type: VALIDATE });
+    this.model.subscribe({ method: this.view.setFractionOfValue, type: SET_FRACTION });
   }
 }
 

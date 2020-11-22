@@ -1,5 +1,6 @@
 import { SliderElementOptions, UpdatingLabelOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 
 class LabelView extends Observable {
   public labelValue: number;
@@ -62,14 +63,15 @@ class LabelView extends Observable {
 
   private updateOptions(): void {
     const { isRange, $element } = this.settings;
+    const { UPDATE_OPTIONS } = EventTypes;
 
     if (isRange) {
       const valueMin = parseInt($element.find('.js-slider__label_type_min').text(), 10);
       const valueMax = parseInt($element.find('.js-slider__label_type_max').text(), 10);
-      this.notifyAll({ value: { ...this.settings, valueMin, valueMax }, type: 'updateOptions' });
+      this.notifyAll({ value: { ...this.settings, valueMin, valueMax }, type: UPDATE_OPTIONS });
     } else {
       const value = parseInt($element.find('.js-slider__label').text(), 10);
-      this.notifyAll({ value: { ...this.settings, value }, type: 'updateOptions' });
+      this.notifyAll({ value: { ...this.settings, value }, type: UPDATE_OPTIONS });
     }
   }
 }

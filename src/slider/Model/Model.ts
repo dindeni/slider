@@ -2,6 +2,7 @@ import {
   ValidationOptions, Slider, SliderElementOptions,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
+import EventTypes from '../constants';
 
 type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 'valueMax'>;
 
@@ -26,12 +27,13 @@ class Model extends Observable {
     const { min, max } = this.sliderOptions;
 
     const fraction = (value - min) / (max - min);
-    this.notifyAll({ value: fraction, type: 'setFractionOfValue' });
+    this.notifyAll({ value: fraction, type: EventTypes.SET_FRACTION });
     return fraction;
   }
 
   public validateValue(options: ValidationOptions): boolean {
     const { type, value } = options;
+    const { VALIDATE } = EventTypes;
     const {
       min, max, valueMin, valueMax, step,
     } = this.sliderOptions;
@@ -54,7 +56,7 @@ class Model extends Observable {
     if (step) {
       this.validateStepValue(value);
     }
-    this.notifyAll({ value: isValid, type: 'validateValue' });
+    this.notifyAll({ value: isValid, type: VALIDATE });
     return isValid;
   }
 
@@ -66,7 +68,7 @@ class Model extends Observable {
       if (validValue > max) {
         validValue = max;
       }
-      this.notifyAll({ value: validValue, type: 'setStepValue' });
+      this.notifyAll({ value: validValue, type: EventTypes.SET_STEP_VALUE });
       return validValue;
     }
     return value;

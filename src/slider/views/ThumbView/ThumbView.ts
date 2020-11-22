@@ -4,6 +4,7 @@ import {
   DistanceOptions, ThumbPositionsOptions, SliderElementOptions, ThumbValueOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 import CLASSES_COMMON from './constants';
 
 interface CorrectPositionOptions {
@@ -149,12 +150,13 @@ class ThumbView extends Observable {
   private callNotifiers(options: Omit<ThumbValueOptions, 'trackSize'>): void {
     const { isRange, step } = this.settings;
     const { element, value } = options;
+    const { VALIDATE } = EventTypes;
 
     if (isRange) {
       const thumbType = $(element).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value, type: thumbType }, type: 'validateValue' });
+      this.notifyAll({ value: { value, type: thumbType }, type: VALIDATE });
     } else {
-      this.notifyAll({ value: { value }, type: 'validateValue' });
+      this.notifyAll({ value: { value }, type: VALIDATE });
     }
 
     const isStepAndValidValue = this.isValidValue && step;
@@ -163,15 +165,16 @@ class ThumbView extends Observable {
         value: {
           trackSize: this.trackSize, element, value,
         },
-        type: 'setStepThumb',
+        type: EventTypes.SET_STEP_THUMB,
       });
     }
   }
 
   private notifyLabel(options: Omit<ThumbValueOptions, 'trackSize'>): void {
     const { value, element } = options;
+    const { UPDATE_LABEL_VALUE } = EventTypes;
 
-    this.notifyAll({ value: { thumbElement: element, value }, type: 'updateLabelValue' });
+    this.notifyAll({ value: { thumbElement: element, value }, type: UPDATE_LABEL_VALUE });
   }
 
   private getCoordinatesOfMiddle(): number {
@@ -212,7 +215,7 @@ class ThumbView extends Observable {
   }
 
   private getCoordinate(value: number): number {
-    this.notifyAll({ value, type: 'notifyAboutValueChange' });
+    this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
     return this.fraction * this.trackSize;
   }
 

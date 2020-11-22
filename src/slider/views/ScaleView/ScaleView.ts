@@ -1,5 +1,6 @@
 import { ScaleData, ThumbValueOptions, SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 
 class ScaleView extends Observable {
   public data: ScaleData = {
@@ -33,6 +34,7 @@ class ScaleView extends Observable {
 
   public setPosition(options: Omit<ThumbValueOptions, 'value'>): void {
     const { trackSize, element } = options;
+    const { UPDATE_LABEL_VALUE } = EventTypes;
 
     if (this.data.coordinates.length === 0) {
       this.generateCoordinates(trackSize);
@@ -46,7 +48,10 @@ class ScaleView extends Observable {
     const index = getIndex();
     if (index !== -1) {
       element.style[key] = `${this.data.coordinates[index].toString()}px`;
-      this.notifyAll({ value: { thumbElement: element, value: this.data.value[index] }, type: 'updateLabelValue' });
+      this.notifyAll({
+        value: { thumbElement: element, value: this.data.value[index] },
+        type: UPDATE_LABEL_VALUE,
+      });
     }
   }
 

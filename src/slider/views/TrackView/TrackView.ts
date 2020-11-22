@@ -2,6 +2,7 @@ import autoBind from 'auto-bind';
 
 import { SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
+import EventTypes from '../../constants';
 
 interface GetDistanceOptions {
   event: MouseEvent;
@@ -100,7 +101,7 @@ class TrackView extends Observable {
           shift,
           trackSize: this.size,
         },
-        type: 'updateThumbPosition',
+        type: EventTypes.UPDATE_THUMB_POSITION,
       });
     }
   }
@@ -125,7 +126,7 @@ class TrackView extends Observable {
     const { event, value } = options;
 
     if (value) {
-      this.notifyAll({ value, type: 'notifyAboutValueChange' });
+      this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
       return this.size * this.fraction;
     }
     return this.getDistanceOnTrack(event);
