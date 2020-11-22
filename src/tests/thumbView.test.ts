@@ -41,7 +41,7 @@ describe('ThumbView', () => {
     };
     const model = new Model();
     controller = new Controller(model);
-    model.setSliderOptions(options);
+    model.setSettings(options);
     controller.init();
     thumbView = controller.view.thumbView;
     thumbView.setStartPosition(300);

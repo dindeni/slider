@@ -19,16 +19,16 @@ class Controller extends Observable {
 
   public init(): void {
     this.subscribeAll();
-    this.view.setSliderOptions(this.model.sliderOptions);
-    this.view.createElements(this.model.sliderOptions);
+    this.view.setSliderOptions(this.model.settings);
+    this.view.createElements(this.model.settings);
   }
 
   public passMethod(method: (options: SliderElementOptions) => void): void {
-    method(this.model.sliderOptions);
+    method(this.model.settings);
   }
 
   public reloadSlider(options: SliderElementOptions): void {
-    this.model.setSliderOptions(options);
+    this.model.setSettings(options);
     this.view.reloadSlider(options);
   }
 
@@ -41,9 +41,9 @@ class Controller extends Observable {
   }
 
   private updateOptions(options: SliderElementOptions): void {
-    this.model.setSliderOptions(options);
-    if (this.model.sliderOptions.method) {
-      this.passMethod(this.model.sliderOptions.method);
+    this.model.setSettings(options);
+    if (this.model.settings.method) {
+      this.passMethod(this.model.settings.method);
     }
   }
 

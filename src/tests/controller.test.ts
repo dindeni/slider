@@ -24,7 +24,7 @@ describe('Controller', () => {
       withLabel: true,
       step: undefined,
     };
-    model.setSliderOptions(options);
+    model.setSettings(options);
   });
 
   describe('Initialization', () => {

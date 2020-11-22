@@ -21,7 +21,7 @@ describe('HandleView', () => {
     };
     const model = new Model();
     const controller = new Controller(model);
-    model.setSliderOptions(options);
+    model.setSettings(options);
     controller.init();
     handleView = controller.view.handleView;
   });

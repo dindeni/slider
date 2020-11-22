@@ -22,17 +22,17 @@ describe('Model', () => {
   });
 
   it('should get valid options', () => {
-    model.setSliderOptions(options);
-    const { valueMin, valueMax } = model.sliderOptions;
+    model.setSettings(options);
+    const { valueMin, valueMax } = model.settings;
     expect(valueMin).toBe(100);
     expect(valueMax).toBe(500);
   });
 
   it('should get valid step options', () => {
-    model.setSliderOptions({
+    model.setSettings({
       ...options, step: 100, valueMin: 155, valueMax: 321,
     });
-    const { valueMin, valueMax } = model.sliderOptions;
+    const { valueMin, valueMax } = model.settings;
     expect(valueMin).toBe(200);
     expect(valueMax).toBe(300);
   });

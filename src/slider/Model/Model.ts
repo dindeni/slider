@@ -7,24 +7,24 @@ import EventTypes from '../constants';
 type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 'valueMax'>;
 
 class Model extends Observable {
-  public sliderOptions: SliderElementOptions;
+  public settings: SliderElementOptions;
 
-  public setSliderOptions(options: SliderElementOptions): void {
+  public setSettings(options: SliderElementOptions): void {
     const {
       min, max, value, valueMin, valueMax,
     } = options;
-    this.sliderOptions = options;
+    this.settings = options;
     this.validateExtremumValue({
       min, max, value, valueMin, valueMax,
     });
 
-    this.sliderOptions.valueMin = this.validateStepValue(this.sliderOptions.valueMin || min);
-    this.sliderOptions.valueMax = this.validateStepValue(this.sliderOptions.valueMax || max);
-    this.sliderOptions.value = this.validateStepValue(this.sliderOptions.value || min);
+    this.settings.valueMin = this.validateStepValue(this.settings.valueMin || min);
+    this.settings.valueMax = this.validateStepValue(this.settings.valueMax || max);
+    this.settings.value = this.validateStepValue(this.settings.value || min);
   }
 
   public calculateFractionOfValue(value: number): number {
-    const { min, max } = this.sliderOptions;
+    const { min, max } = this.settings;
 
     const fraction = (value - min) / (max - min);
     this.notifyAll({ value: fraction, type: EventTypes.SET_FRACTION });
@@ -36,7 +36,7 @@ class Model extends Observable {
     const { VALIDATE } = EventTypes;
     const {
       min, max, valueMin, valueMax, step,
-    } = this.sliderOptions;
+    } = this.settings;
 
     const validateValue = (): boolean => {
       switch (true) {
@@ -61,7 +61,7 @@ class Model extends Observable {
   }
 
   private validateStepValue(value: number): number {
-    const { step, min, max } = this.sliderOptions;
+    const { step, min, max } = this.settings;
 
     if (step) {
       let validValue = min + Math.round((value - min) / step) * step;
@@ -90,13 +90,13 @@ class Model extends Observable {
       } return undefined;
     };
     if (value) {
-      this.sliderOptions.value = validate(value);
+      this.settings.value = validate(value);
     }
     if (valueMin) {
-      this.sliderOptions.valueMin = validate(valueMin);
+      this.settings.valueMin = validate(valueMin);
     }
     if (valueMax) {
-      this.sliderOptions.valueMax = validate(valueMax);
+      this.settings.valueMax = validate(valueMax);
     }
   }
 }

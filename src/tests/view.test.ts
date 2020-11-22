@@ -25,7 +25,7 @@ describe('View', () => {
 
     const model = new Model();
     const controller = new Controller(model);
-    model.setSliderOptions(options);
+    model.setSettings(options);
     controller.init();
     view = controller.view;
     $trackElement = $('.js-slider__track');

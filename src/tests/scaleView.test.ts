@@ -21,7 +21,7 @@ describe('ScaleView', () => {
     };
     const model = new Model();
     controller = new Controller(model);
-    model.setSliderOptions(options);
+    model.setSettings(options);
     controller.init();
     scaleView = controller.view.scaleView;
   });
