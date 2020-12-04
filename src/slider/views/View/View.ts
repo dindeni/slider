@@ -3,7 +3,6 @@ import autoBind from 'auto-bind';
 import { SliderElementOptions, ValidationOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
-import HandleView from '../HandleView/HandleView';
 import ScaleView from '../ScaleView/ScaleView';
 import TrackView from '../TrackView/TrackView';
 import ThumbView from '../ThumbView/ThumbView';
@@ -23,8 +22,6 @@ class View extends Observable {
 
   public trackView: TrackView;
 
-  public handleView: HandleView;
-
   public labelView: LabelView;
 
   public thumbView: ThumbView;
@@ -37,7 +34,6 @@ class View extends Observable {
     } = options;
 
     this.settings = options;
-    this.handleView = new HandleView(options);
     this.thumbView = new ThumbView(options);
     this.trackView = new TrackView(options);
     this.thumbView.create();
@@ -63,7 +59,7 @@ class View extends Observable {
       this.progressView.createNode();
       this.progressView.update();
     }
-    this.handleView.addEvent();
+    this.addEvent();
   }
 
   public setSliderOptions(sliderSettings: SliderElementOptions): void {
@@ -98,7 +94,18 @@ class View extends Observable {
   }
 
   public reloadSlider(options: SliderElementOptions): void {
-    this.handleView.reloadSlider(options);
+    this.settings = { ...this.settings, ...options };
+    this.settings.$element.empty();
+    this.recreate(options);
+  }
+
+  private handleWindowResize(): void {
+    this.reloadSlider(this.settings);
+  }
+
+  private addEvent(): void {
+    $(window).off('resize', this.handleWindowResize);
+    $(window).on('resize', this.handleWindowResize);
   }
 
   private notifyAboutValueChange(value: number): void {
@@ -122,12 +129,11 @@ class View extends Observable {
 
   private subscribeViews(): void {
     const {
-      VALIDATE, UPDATE_OPTIONS, RECREATE, VALUE_CHANGE,
+      VALIDATE, UPDATE_OPTIONS, VALUE_CHANGE,
     } = EventTypes;
 
     this.trackView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
     this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
-    this.handleView.subscribe({ method: this.recreate, type: RECREATE });
     this.thumbView.subscribe({ method: this.validateValue, type: VALIDATE });
     this.trackView.subscribe({ method: this.validateValue, type: VALIDATE });
     this.labelView.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });

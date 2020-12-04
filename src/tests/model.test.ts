@@ -21,8 +21,15 @@ describe('Model', () => {
     model = new Model();
   });
 
-  it('should get valid options', () => {
+  it('should get valid options(initial value)', () => {
     model.setSettings(options);
+    const { valueMin, valueMax } = model.settings;
+    expect(valueMin).toBe(100);
+    expect(valueMax).toBe(500);
+  });
+
+  it('should get valid options(wrong value)', () => {
+    model.setSettings({ ...options, valueMin: 10, valueMax: 600 });
     const { valueMin, valueMax } = model.settings;
     expect(valueMin).toBe(100);
     expect(valueMax).toBe(500);

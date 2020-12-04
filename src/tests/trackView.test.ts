@@ -1,13 +1,13 @@
 import TrackView from '../slider/views/TrackView/TrackView';
-import HandleView from '../slider/views/HandleView/HandleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
 import createEvent from './events';
+import View from '../slider/views/View/View';
 
 describe('TrackView', () => {
   let trackView: TrackView;
-  let handleView: HandleView;
+  let view: View;
   let options: SliderElementOptions;
 
   beforeAll(() => {
@@ -28,7 +28,7 @@ describe('TrackView', () => {
     model.setSettings(options);
     controller.init();
     trackView = controller.view.trackView;
-    handleView = controller.view.handleView;
+    view = controller.view;
   });
 
   it('should create track', () => {
@@ -54,7 +54,7 @@ describe('TrackView', () => {
 
   it('should remove click event', () => {
     const spy = jest.spyOn(trackView, 'removeEvent');
-    handleView.reloadSlider(options);
+    view.reloadSlider(options);
     expect(spy).toHaveBeenCalled();
   });
 });

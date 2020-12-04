@@ -48,4 +48,10 @@ describe('View', () => {
     view.reloadSlider({ ...options, $element, isRange: false });
     expect($('.js-slider__thumb_type_min').length).toBe(0);
   });
+
+  it('should call reload after resize', () => {
+    const spy = jest.spyOn(view, 'reloadSlider');
+    $(window).trigger('resize');
+    expect(spy).toBeCalled();
+  });
 });
