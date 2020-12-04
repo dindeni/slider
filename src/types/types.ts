@@ -40,6 +40,10 @@ export interface ValidationOptions {
   type?: 'min' | 'max';
 }
 
+export interface ValueAndType extends Pick<ValidationOptions, 'type'>{
+  value: number | null;
+}
+
 export interface ThumbPositionsOptions {
   thumbElement: HTMLElement;
   shift: number;

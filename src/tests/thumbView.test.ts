@@ -54,16 +54,6 @@ describe('ThumbView', () => {
     expect($thumbMax.css('left')).toBe('200px');
   });
 
-  it('should update thumb position min', () => {
-    thumbView.updatePosition({ thumbElement: $thumbMin[0], shift: 150, trackSize: 300 });
-    expect($thumbMin.css('left')).toBe('150px');
-  });
-
-  it('should update thumb position max', () => {
-    thumbView.updatePosition({ thumbElement: $thumbMax[0], shift: 200, trackSize: 300 });
-    expect($thumbMax.css('left')).toBe('200px');
-  });
-
   it('should create vertical thumb', () => {
     controller.reloadSlider({ ...options, isVertical: true });
     const thumbElement = $('.js-slider__thumb_type_max')[0];

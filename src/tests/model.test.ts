@@ -43,12 +43,12 @@ describe('Model', () => {
   });
 
   it('should validate value min', () => {
-    const state = model.validateValue({ value: 400, type: 'min' });
-    expect(state).toBeFalsy();
+    const result = model.validateValue({ value: 300, type: 'min' });
+    expect(result.value).toBe(300);
   });
 
   it('should validate value max', () => {
-    const state = model.validateValue({ value: 400, type: 'max' });
-    expect(state).toBeTruthy();
+    const result = model.validateValue({ value: 400, type: 'max' });
+    expect(result.value).toBe(400);
   });
 });

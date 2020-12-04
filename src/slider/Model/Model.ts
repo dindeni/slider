@@ -1,23 +1,17 @@
 import {
-  ValidationOptions, Slider, SliderElementOptions,
+  ValidationOptions, SliderElementOptions, ValueAndType,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
 import EventTypes from '../constants';
-
-type OptionsForValidation = Pick<Slider, 'min' | 'max' | 'value' | 'valueMin' | 'valueMax'>;
 
 class Model extends Observable {
   public settings: SliderElementOptions;
 
   public setSettings(options: SliderElementOptions): void {
-    const {
-      min, max, value, valueMin, valueMax,
-    } = options;
+    const { min, max } = options;
     this.settings = options;
-    this.validateExtremumValue({
-      min, max, value, valueMin, valueMax,
-    });
 
+    this.checkSettingsValue();
     this.settings.valueMin = this.validateStepValue(this.settings.valueMin || min);
     this.settings.valueMax = this.validateStepValue(this.settings.valueMax || max);
     this.settings.value = this.validateStepValue(this.settings.value || min);
@@ -31,17 +25,11 @@ class Model extends Observable {
     return fraction;
   }
 
-  public validateValue(options: ValidationOptions): boolean {
+  public validateValue(options: ValidationOptions): ValueAndType {
     const { type, value } = options;
-    const { VALIDATE } = EventTypes;
-    const {
-      min, max, valueMin, valueMax, step,
-    } = this.settings;
-
+    const { valueMin, valueMax, step } = this.settings;
     const validateValue = (): boolean => {
       switch (true) {
-        case value > max || value < min:
-          return false;
         case !type:
           return true;
         case type === 'min':
@@ -53,11 +41,15 @@ class Model extends Observable {
     };
 
     const isValid = validateValue();
+    let validValue = this.validateExtremumValue(value);
     if (step) {
-      this.validateStepValue(value);
+      validValue = this.validateStepValue(validValue);
     }
-    this.notifyAll({ value: isValid, type: VALIDATE });
-    return isValid;
+    if (isValid) {
+      this.notifyAll({ value: { value: validValue, type }, type: EventTypes.UPDATE });
+      return { value: validValue, type };
+    }
+    return { value: null };
   }
 
   private validateStepValue(value: number): number {
@@ -74,29 +66,27 @@ class Model extends Observable {
     return value;
   }
 
-  private validateExtremumValue(options: OptionsForValidation): void {
-    const {
-      min, max, value, valueMin, valueMax,
-    } = options;
-    const validate = (checkedValue: number): number | undefined => {
-      if (checkedValue) {
-        if (checkedValue > max) {
-          return max;
-        }
-        if (checkedValue < min) {
-          return min;
-        }
-        return checkedValue;
-      } return undefined;
-    };
-    if (value) {
-      this.settings.value = validate(value);
+  private validateExtremumValue(checkedValue: number): number {
+    const { min, max } = this.settings;
+
+    switch (true) {
+      case checkedValue > max: return max;
+      case checkedValue < min: return min;
+      default: return checkedValue;
     }
+  }
+
+  private checkSettingsValue(): void {
+    const { value, valueMin, valueMax } = this.settings;
+
     if (valueMin) {
-      this.settings.valueMin = validate(valueMin);
+      this.settings.valueMin = this.validateExtremumValue(valueMin);
     }
     if (valueMax) {
-      this.settings.valueMax = validate(valueMax);
+      this.settings.valueMax = this.validateExtremumValue(valueMax);
+    }
+    if (value) {
+      this.settings.value = this.validateExtremumValue(value);
     }
   }
 }

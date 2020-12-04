@@ -1,9 +1,6 @@
 import autoBind from 'auto-bind';
 
-import {
-  ThumbValueOptions, SliderElementOptions, UpdatingLabelOptions,
-  ValidationOptions, ThumbPositionsOptions,
-} from '../../../types/types';
+import { SliderElementOptions, ValidationOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 import HandleView from '../HandleView/HandleView';
@@ -20,7 +17,7 @@ class View extends Observable {
     autoBind(this);
   }
 
-  private settings: SliderElementOptions;
+  public settings: SliderElementOptions;
 
   public scaleView: ScaleView;
 
@@ -60,11 +57,12 @@ class View extends Observable {
     if (step) {
       this.scaleView.create(this.getTrackSize());
     }
+
+    this.thumbView.setStartPosition(this.getTrackSize());
     if (withProgress) {
       this.progressView.createNode();
       this.progressView.update();
     }
-    this.thumbView.setStartPosition(this.getTrackSize());
     this.handleView.addEvent();
   }
 
@@ -81,12 +79,18 @@ class View extends Observable {
     this.trackView.setFractionOfValue(fraction);
   }
 
-  public setIsValidValue(isValid: boolean): void {
-    this.thumbView.setIsValidValue(isValid);
-  }
+  public update(options: ValueAndType): void {
+    const { withProgress } = this.settings;
 
-  public setStepValue(value: number): void{
-    this.scaleView.value = value;
+    this.thumbView.update();
+    if (this.settings.step) {
+      this.scaleView.update(options);
+    }
+    this.labelView.updateValue(options);
+
+    if (withProgress) {
+      this.progressView.update();
+    }
   }
 
   public getTrackSize(): number {
@@ -95,21 +99,6 @@ class View extends Observable {
 
   public reloadSlider(options: SliderElementOptions): void {
     this.handleView.reloadSlider(options);
-  }
-
-  private updateThumbPosition(options: ThumbPositionsOptions): void {
-    this.thumbView.updatePosition(options);
-  }
-
-  private setStepThumb(options: ThumbValueOptions): void {
-    this.scaleView.setPosition(options);
-  }
-
-  private updateLabelValue(options: UpdatingLabelOptions): void {
-    this.labelView.updateValue(options);
-    if (this.settings.withProgress) {
-      this.progressView.update();
-    }
   }
 
   private notifyAboutValueChange(value: number): void {
@@ -133,18 +122,14 @@ class View extends Observable {
 
   private subscribeViews(): void {
     const {
-      VALIDATE, UPDATE_OPTIONS, UPDATE_THUMB_POSITION, RECREATE, VALUE_CHANGE,
-      SET_STEP_THUMB, UPDATE_LABEL_VALUE,
+      VALIDATE, UPDATE_OPTIONS, RECREATE, VALUE_CHANGE,
     } = EventTypes;
 
-    this.trackView.subscribe({ method: this.updateThumbPosition, type: UPDATE_THUMB_POSITION });
     this.trackView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
-    this.handleView.subscribe({ method: this.recreate, type: RECREATE });
     this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
-    this.thumbView.subscribe({ method: this.setStepThumb, type: SET_STEP_THUMB });
+    this.handleView.subscribe({ method: this.recreate, type: RECREATE });
     this.thumbView.subscribe({ method: this.validateValue, type: VALIDATE });
-    this.thumbView.subscribe({ method: this.updateLabelValue, type: UPDATE_LABEL_VALUE });
-    this.scaleView.subscribe({ method: this.updateLabelValue, type: UPDATE_LABEL_VALUE });
+    this.trackView.subscribe({ method: this.validateValue, type: VALIDATE });
     this.labelView.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });
   }
 }

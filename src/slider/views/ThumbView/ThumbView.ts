@@ -1,7 +1,7 @@
 import autoBind from 'auto-bind';
 
 import {
-  DistanceOptions, ThumbPositionsOptions, SliderElementOptions, ThumbValueOptions,
+  DistanceOptions, ThumbPositionsOptions, SliderElementOptions,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
@@ -36,8 +36,6 @@ class ThumbView extends Observable {
 
   private readonly settings: SliderElementOptions;
 
-  private isValidValue: boolean;
-
   private coordinateXStart: number;
 
   private coordinateYStart: number;
@@ -45,6 +43,8 @@ class ThumbView extends Observable {
   private shift: number;
 
   private currentElement: HTMLElement | null;
+
+  private previousCoordinate: number;
 
   private trackSize: number;
 
@@ -72,37 +72,28 @@ class ThumbView extends Observable {
     this.addEvents();
   }
 
-  public updatePosition(options: ThumbPositionsOptions): void {
-    const {
-      thumbElement, shift, coordinateStart, coordinateMove,
-    } = options;
-    const {
-      isVertical, step, min, max, isRange,
-    } = this.settings;
+  public update(): void {
+    const { step } = this.settings;
 
-    if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
-      this.setDistance({ coordinateStart, coordinateMove });
-    }
-    const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
-
-    const currentValue: number = min + (max - min) * (distance / this.trackSize);
-    this.callNotifiers({ element: thumbElement, value: currentValue });
-
-    const key = isVertical ? 'top' : 'left';
-    const isValidValueAndNotStep = this.isValidValue && !step;
-    if (isValidValueAndNotStep) {
-      thumbElement.style[key] = `${distance}px`;
-      this.notifyLabel({ value: Math.round(currentValue), element: thumbElement });
-    }
-
-    this.correctPosition({ element: thumbElement, distance, key });
-    if (isRange) {
-      this.changeZIndex(thumbElement);
+    if (!step) {
+      const coordinate = this.distance + this.shift;
+      this.setPosition(coordinate);
     }
   }
 
-  public setIsValidValue(isValidValue: boolean): void {
-    this.isValidValue = isValidValue;
+  private setPosition(coordinate: number): void {
+    const { isRange, isVertical } = this.settings;
+
+    if (this.previousCoordinate !== coordinate && this.currentElement) {
+      const key = isVertical ? 'top' : 'left';
+      this.currentElement.style[key] = `${coordinate}px`;
+      this.correctPosition({ element: this.currentElement, distance: coordinate, key });
+      this.previousCoordinate = coordinate;
+
+      if (isRange) {
+        this.changeZIndex(this.currentElement);
+      }
+    }
   }
 
   private changeZIndex(element: HTMLElement): void {
@@ -128,53 +119,42 @@ class ThumbView extends Observable {
 
   public setStartPosition(trackSize: number): void {
     const {
-      isRange, min, max, valueMin, valueMax, value,
+      isRange, isVertical, min, max, valueMin, valueMax, value,
     } = this.settings;
     this.trackSize = trackSize;
 
+    const key = isVertical ? 'top' : 'left';
     if (isRange) {
       this.coordinateMin = this.getCoordinate(valueMin || min);
-      this.updatePosition(
-        { thumbElement: this.$elementMin[0], trackSize, shift: this.coordinateMin },
-      );
+      this.$elementMin.css({ [key]: `${this.coordinateMin}px` });
       this.coordinateMax = this.getCoordinate(valueMax || max);
-      this.updatePosition(
-        { thumbElement: this.$elementMax[0], trackSize, shift: this.coordinateMax },
-      );
+      this.$elementMax.css({ [key]: `${this.coordinateMax}px` });
     } else {
       this.coordinate = this.getCoordinate(value || min);
-      this.updatePosition({ thumbElement: this.$element[0], trackSize, shift: this.coordinate });
+      this.$element.css({ [key]: `${this.coordinate}px` });
     }
   }
 
-  private callNotifiers(options: Omit<ThumbValueOptions, 'trackSize'>): void {
-    const { isRange, step } = this.settings;
-    const { element, value } = options;
+  private validate(options: ThumbPositionsOptions): void {
+    const {
+      thumbElement, shift, coordinateStart, coordinateMove,
+    } = options;
+    const { isRange, min, max } = this.settings;
     const { VALIDATE } = EventTypes;
 
+    if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
+      this.setDistance({ coordinateStart, coordinateMove });
+    }
+    const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
+
+    const currentValue: number = Math.round(min + (max - min) * (distance / this.trackSize));
+
     if (isRange) {
-      const thumbType = $(element).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value, type: thumbType }, type: VALIDATE });
+      const thumbType = $(thumbElement).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
+      this.notifyAll({ value: { value: currentValue, type: thumbType }, type: VALIDATE });
     } else {
-      this.notifyAll({ value: { value }, type: VALIDATE });
+      this.notifyAll({ value: { value: currentValue }, type: VALIDATE });
     }
-
-    const isStepAndValidValue = this.isValidValue && step;
-    if (isStepAndValidValue) {
-      this.notifyAll({
-        value: {
-          trackSize: this.trackSize, element, value,
-        },
-        type: EventTypes.SET_STEP_THUMB,
-      });
-    }
-  }
-
-  private notifyLabel(options: Omit<ThumbValueOptions, 'trackSize'>): void {
-    const { value, element } = options;
-    const { UPDATE_LABEL_VALUE } = EventTypes;
-
-    this.notifyAll({ value: { thumbElement: element, value }, type: UPDATE_LABEL_VALUE });
   }
 
   private getCoordinatesOfMiddle(): number {
@@ -198,18 +178,16 @@ class ThumbView extends Observable {
 
   private correctPosition(options: CorrectPositionOptions): null {
     const { element, distance, key } = options;
-    const { min, max } = this.settings;
 
     const isValidDistance = this.checkRangePosition({ element, distance, key });
     if (!isValidDistance) {
       return null;
     }
+
     if (distance > this.trackSize) {
       element.style[key] = `${this.trackSize}px`;
-      this.notifyLabel({ value: max, element });
     } else if (distance < 0) {
       element.style[key] = '0px';
-      this.notifyLabel({ value: min, element });
     }
     return null;
   }
@@ -245,7 +223,7 @@ class ThumbView extends Observable {
     this.distance = coordinateMove - coordinateStart;
 
     if (this.currentElement) {
-      this.updatePosition({
+      this.validate({
         thumbElement: this.currentElement,
         shift: Math.round(this.shift),
         trackSize: this.trackSize,

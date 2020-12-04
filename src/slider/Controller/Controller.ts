@@ -49,15 +49,14 @@ class Controller extends Observable {
 
   private subscribeAll(): void {
     const {
-      UPDATE_OPTIONS, VALIDATE, SET_FRACTION, SET_STEP_VALUE,
+      UPDATE_OPTIONS, VALIDATE, SET_FRACTION, UPDATE,
     } = EventTypes;
 
     this.view.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });
     this.view.subscribe({ method: this.validateValue, type: VALIDATE });
     this.view.subscribe({ method: this.setFractionOfValue, type: SET_FRACTION });
-    this.model.subscribe({ method: this.view.setStepValue, type: SET_STEP_VALUE });
-    this.model.subscribe({ method: this.view.setIsValidValue, type: VALIDATE });
     this.model.subscribe({ method: this.view.setFractionOfValue, type: SET_FRACTION });
+    this.model.subscribe({ method: this.view.update, type: UPDATE });
   }
 }
 

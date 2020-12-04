@@ -9,6 +9,12 @@ interface GetDistanceOptions {
   value?: number;
 }
 
+interface SetPositionOptions {
+  element: HTMLElement;
+  coordinate: number;
+  value: number;
+}
+
 class TrackView extends Observable {
   public size: number;
 
@@ -79,7 +85,9 @@ class TrackView extends Observable {
   }
 
   private handleSliderElementClick(event: MouseEvent): void {
-    const { isRange, $element } = this.settings;
+    const {
+      isRange, $element, min, max,
+    } = this.settings;
 
     const target = event.target as HTMLElement;
 
@@ -91,18 +99,11 @@ class TrackView extends Observable {
         ? this.getRangeThumbElement(event)
         : $element.find('.js-slider__thumb')[0];
       const value = Number(target.textContent);
-      const shift = isItemElement
-        ? this.getDistance({ event, value })
-        : this.getDistance({ event });
-
-      this.notifyAll({
-        value: {
-          thumbElement: this.thumbElement,
-          shift,
-          trackSize: this.size,
-        },
-        type: EventTypes.UPDATE_THUMB_POSITION,
-      });
+      const shift = this.getDistance({ event, value });
+      const currentValue: number = isItemElement
+        ? value
+        : Math.round(min + (max - min) * (shift / this.size));
+      this.setPosition({ element: this.thumbElement, coordinate: shift, value: currentValue });
     }
   }
 
@@ -120,6 +121,21 @@ class TrackView extends Observable {
       return thumbMin;
     }
     return thumbMax;
+  }
+
+  private setPosition(options: SetPositionOptions): void {
+    const { element, coordinate, value } = options;
+    const { isVertical, isRange } = this.settings;
+    const { VALIDATE } = EventTypes;
+
+    const key = isVertical ? 'top' : 'left';
+    element.style[key] = `${coordinate}px`;
+    if (isRange) {
+      const type = this.thumbElement.classList.contains('js-slider__thumb_type_min') ? 'min' : 'max';
+      this.notifyAll({ value: { value, type }, type: VALIDATE });
+    } else {
+      this.notifyAll({ value: { value }, type: VALIDATE });
+    }
   }
 
   private getDistance(options: GetDistanceOptions): number {

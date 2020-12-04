@@ -1,13 +1,18 @@
-import { ScaleData, ThumbValueOptions, SliderElementOptions } from '../../../types/types';
+import { ScaleData, SliderElementOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
-import EventTypes from '../../constants';
 
 class ScaleView extends Observable {
   public data: ScaleData = {
     value: [], coordinates: [], shortValue: [], shortCoordinates: [],
   };
 
-  public value: number;
+  private $element: JQuery<HTMLElement>;
+
+  private $elementMin: JQuery<HTMLElement>;
+
+  private $elementMax: JQuery<HTMLElement>;
+
+  private trackSize: number;
 
   private readonly settings: SliderElementOptions;
 
@@ -30,29 +35,43 @@ class ScaleView extends Observable {
         ? $itemElement.css({ top: `${(this.data.shortCoordinates[index]) - verticalCorrection}px` })
         : $itemElement.css({ left: `${this.data.shortCoordinates[index]}px` });
     });
+    this.trackSize = trackSize;
+    this.initializeElements();
   }
 
-  public setPosition(options: Omit<ThumbValueOptions, 'value'>): void {
-    const { trackSize, element } = options;
-    const { UPDATE_LABEL_VALUE } = EventTypes;
+  public update(options: ValueAndType): void {
+    const { value, type } = options;
 
     if (this.data.coordinates.length === 0) {
-      this.generateCoordinates(trackSize);
+      this.generateCoordinates(this.trackSize);
     }
-
     const getIndex = (): number => this.data.value.findIndex(
-      (scaleValue) => scaleValue === this.value,
+      (scaleValue) => scaleValue === value,
     );
 
     const key = this.settings.isVertical ? 'top' : 'left';
+    const element = this.getCurrentElement(type)[0];
     const index = getIndex();
     if (index !== -1) {
       element.style[key] = `${this.data.coordinates[index].toString()}px`;
-      this.notifyAll({
-        value: { thumbElement: element, value: this.data.value[index] },
-        type: UPDATE_LABEL_VALUE,
-      });
     }
+  }
+
+  private getCurrentElement(type?: 'min' | 'max'): JQuery<HTMLElement> {
+    if (type) {
+      return type === 'min' ? this.$elementMin : this.$elementMax;
+    }
+    return this.$element;
+  }
+
+  private initializeElements(): void {
+    const { $element, isRange } = this.settings;
+
+    if (isRange) {
+      this.$elementMin = $element.find('.js-slider__thumb_type_min');
+      this.$elementMax = $element.find('.js-slider__thumb_type_max');
+    }
+    this.$element = $element.find('.js-slider__thumb');
   }
 
   private generateCoordinates(trackSize: number): void {

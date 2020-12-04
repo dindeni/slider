@@ -1,15 +1,17 @@
 import ScaleView from '../slider/views/ScaleView/ScaleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import { SliderElementOptions } from '../types/types';
 
 describe('ScaleView', () => {
   let scaleView: ScaleView;
   let controller: Controller;
+  let options: SliderElementOptions;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
     $element.appendTo(document.body);
-    const options = {
+    options = {
       isRange: true,
       isVertical: false,
       min: 100,
@@ -32,15 +34,32 @@ describe('ScaleView', () => {
 
   it('should set position min', () => {
     const element = $('.js-slider__thumb_type_min')[0];
-    scaleView.value = 150;
-    scaleView.setPosition({ element, trackSize: 200 });
-    expect(element.style.left).toEqual('25px');
+    scaleView.update({ value: 275, type: 'min' });
+    expect(element.style.left).toEqual('87.5px');
   });
 
   it('should set position max', () => {
     const element = $('.js-slider__thumb_type_max')[0];
-    scaleView.value = 200;
-    scaleView.setPosition({ element, trackSize: 200 });
-    expect(element.style.left).toEqual('50px');
+    scaleView.update({ value: 275, type: 'max' });
+    expect(element.style.left).toEqual('87.5px');
+  });
+
+  describe('Without label mark', () => {
+    beforeAll(() => {
+      controller.reloadSlider({ ...options, withLabel: false });
+      scaleView = controller.view.scaleView;
+    });
+
+    it('should set position min', () => {
+      const element = $('.js-slider__thumb_type_min')[0];
+      scaleView.update({ value: 200, type: 'min' });
+      expect(element.style.left).toEqual('50px');
+    });
+
+    it('should set position max', () => {
+      const element = $('.js-slider__thumb_type_max')[0];
+      scaleView.update({ value: 400, type: 'max' });
+      expect(element.style.left).toEqual('150px');
+    });
   });
 });

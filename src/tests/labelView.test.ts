@@ -1,10 +1,12 @@
 import LabelView from '../slider/views/LabelView/LabelView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
+import { SliderElementOptions } from '../types/types';
 
 describe('ProgressView', () => {
-  let options;
   let labelView: LabelView;
+  let controller: Controller;
+  let options: SliderElementOptions;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
@@ -19,7 +21,7 @@ describe('ProgressView', () => {
       $element,
     };
     const model = new Model();
-    const controller = new Controller(model);
+    controller = new Controller(model);
     model.setSettings(options);
     controller.init();
     labelView = controller.view.labelView;
@@ -30,16 +32,31 @@ describe('ProgressView', () => {
   });
 
   it('should update label value min', () => {
-    const $thumbMin = $('.js-slider__thumb_type_min');
     const $label = $('.js-slider__label_type_min');
-    labelView.updateValue({ thumbElement: $thumbMin[0], value: 100 });
-    expect($label.text()).toBe('100');
+    labelView.updateValue({ value: 150, type: 'min' });
+    expect($label.text()).toBe('150');
   });
 
   it('should update label value max', () => {
-    const $thumbMax = $('.js-slider__thumb_type_max');
     const $label = $('.js-slider__label_type_max');
-    labelView.updateValue({ thumbElement: $thumbMax[0], value: 200 });
+    labelView.updateValue({ value: 200, type: 'max' });
     expect($label.text()).toBe('200');
+  });
+
+  describe('Without label mark', () => {
+    beforeAll(() => {
+      controller.reloadSlider({ ...options, withLabel: false });
+      labelView = controller.view.labelView;
+    });
+
+    it('should update label value min', () => {
+      labelView.updateValue({ value: 150, type: 'min' });
+      expect(controller.view.settings.valueMin).toBe(150);
+    });
+
+    it('should update label value min', () => {
+      labelView.updateValue({ value: 400, type: 'max' });
+      expect(controller.view.settings.valueMax).toBe(400);
+    });
   });
 });
