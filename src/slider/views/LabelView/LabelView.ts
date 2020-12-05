@@ -51,7 +51,7 @@ class LabelView extends Observable {
     const { withLabel } = this.settings;
 
     const labelElement = this.getCurrentElement(type);
-    if (value && withLabel) {
+    if ((value || value === 0) && withLabel) {
       labelElement.text(value);
     }
     this.updateOptions(options);
