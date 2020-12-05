@@ -23,7 +23,7 @@ class Observable {
     }
   }
 
-  public notifyAll(data: { value: ObserverValueOption; type: string }): void {
+  public notifyAll(data: { value: ObserverValueOption; type: string}): void {
     this.observers.forEach((observer) => {
       if (observer.type === data.type) {
         observer.method(data.value);

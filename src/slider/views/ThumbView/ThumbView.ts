@@ -5,7 +5,6 @@ import {
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
-import CLASSES_COMMON from './constants';
 
 interface CorrectPositionOptions {
   element: HTMLElement;
@@ -58,15 +57,16 @@ class ThumbView extends Observable {
   public create(): void {
     const { isRange, $element } = this.settings;
 
+    const classes = ['slider__thumb', 'js-slider__thumb'];
     if (isRange) {
       this.$elementMin = $('<div></div>')
-        .addClass(`${CLASSES_COMMON.join(' ')} ${CLASSES_COMMON.join('_type_min ')}_type_min`);
+        .addClass(`${classes.join(' ')} ${classes.join('_type_min ')}_type_min`);
       this.$elementMax = $('<div></div>')
-        .addClass(`${CLASSES_COMMON.join(' ')} ${CLASSES_COMMON.join('_type_max ')}_type_max`);
+        .addClass(`${classes.join(' ')} ${classes.join('_type_max ')}_type_max`);
       this.$elementMin.appendTo($element);
       this.$elementMax.appendTo($element);
     } else {
-      this.$element = $('<div></div>').addClass(CLASSES_COMMON.join(' '));
+      this.$element = $('<div></div>').addClass(classes.join(' '));
       this.$element.appendTo($element);
     }
     this.addEvents();
@@ -140,7 +140,6 @@ class ThumbView extends Observable {
       thumbElement, shift, coordinateStart, coordinateMove,
     } = options;
     const { isRange, min, max } = this.settings;
-    const { VALIDATE } = EventTypes;
 
     if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
       this.setDistance({ coordinateStart, coordinateMove });
@@ -151,9 +150,13 @@ class ThumbView extends Observable {
 
     if (isRange) {
       const thumbType = $(thumbElement).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value: currentValue, type: thumbType }, type: VALIDATE });
+      this.notifyAll({
+        value:
+          { value: currentValue, type: thumbType },
+        type: EventTypes.VALIDATE,
+      });
     } else {
-      this.notifyAll({ value: { value: currentValue }, type: VALIDATE });
+      this.notifyAll({ value: { value: currentValue }, type: EventTypes.VALIDATE });
     }
   }
 

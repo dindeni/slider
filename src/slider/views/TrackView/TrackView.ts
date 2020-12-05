@@ -126,15 +126,14 @@ class TrackView extends Observable {
   private setPosition(options: SetPositionOptions): void {
     const { element, coordinate, value } = options;
     const { isVertical, isRange } = this.settings;
-    const { VALIDATE } = EventTypes;
 
     const key = isVertical ? 'top' : 'left';
     element.style[key] = `${coordinate}px`;
     if (isRange) {
       const type = this.thumbElement.classList.contains('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value, type }, type: VALIDATE });
+      this.notifyAll({ value: { value, type }, type: EventTypes.VALIDATE });
     } else {
-      this.notifyAll({ value: { value }, type: VALIDATE });
+      this.notifyAll({ value: { value }, type: EventTypes.VALIDATE });
     }
   }
 

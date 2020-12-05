@@ -1,10 +1,10 @@
 enum EventTypes {
-  UPDATE_OPTIONS = 'updateOptions',
-  SET_FRACTION = 'setFraction',
-  SET_STEP_VALUE = 'setStepValue',
-  VALIDATE = 'validate',
-  VALUE_CHANGE = 'valueChange',
-  UPDATE = 'update',
+  UPDATE_OPTIONS = 'UPDATE_OPTIONS',
+  SET_FRACTION = 'SET_FRACTION',
+  SET_STEP_VALUE = 'SET_STEP_VALUE',
+  VALIDATE = 'VALIDATE',
+  VALUE_CHANGE = 'VALUE_CHANGE',
+  UPDATE = 'UPDATE',
 }
 
 export default EventTypes;
