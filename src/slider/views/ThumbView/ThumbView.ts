@@ -82,6 +82,28 @@ class ThumbView extends Observable {
     }
   }
 
+  public setFractionOfValue(fraction: number): void {
+    this.fraction = fraction;
+  }
+
+  public setStartPosition(trackSize: number): void {
+    const {
+      isRange, isVertical, min, max, valueMin, valueMax, value,
+    } = this.settings;
+    this.trackSize = trackSize;
+
+    const key = isVertical ? 'top' : 'left';
+    if (isRange) {
+      this.coordinateMin = this.getCoordinate(valueMin || min);
+      this.$elementMin.css({ [key]: `${this.coordinateMin}px` });
+      this.coordinateMax = this.getCoordinate(valueMax || max);
+      this.$elementMax.css({ [key]: `${this.coordinateMax}px` });
+    } else {
+      this.coordinate = this.getCoordinate(value || min);
+      this.$element.css({ [key]: `${this.coordinate}px` });
+    }
+  }
+
   private setPosition(coordinate: number): void {
     const { isRange, isVertical } = this.settings;
     if (this.previousCoordinate !== coordinate && this.currentElement) {
@@ -110,28 +132,6 @@ class ThumbView extends Observable {
     } else {
       this.$elementMax.css({ zIndex: '100' });
       this.$elementMin.css({ zIndex: '200' });
-    }
-  }
-
-  public setFractionOfValue(fraction: number): void {
-    this.fraction = fraction;
-  }
-
-  public setStartPosition(trackSize: number): void {
-    const {
-      isRange, isVertical, min, max, valueMin, valueMax, value,
-    } = this.settings;
-    this.trackSize = trackSize;
-
-    const key = isVertical ? 'top' : 'left';
-    if (isRange) {
-      this.coordinateMin = this.getCoordinate(valueMin || min);
-      this.$elementMin.css({ [key]: `${this.coordinateMin}px` });
-      this.coordinateMax = this.getCoordinate(valueMax || max);
-      this.$elementMax.css({ [key]: `${this.coordinateMax}px` });
-    } else {
-      this.coordinate = this.getCoordinate(value || min);
-      this.$element.css({ [key]: `${this.coordinate}px` });
     }
   }
 

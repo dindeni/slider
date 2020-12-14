@@ -175,7 +175,7 @@ class Demo {
       const isStepValueInput = index === inputs.length - 1 && isStep;
       if (isStepValueInput) {
         const inputValue = (Number(input.value) === 0 || !input.value)
-          ? (this.settings.max - this.settings.min) / 5
+          ? Math.round((this.settings.max - this.settings.min) / 5)
           : Number(input.value);
         this.settings = { ...this.settings, ...{ step: inputValue } };
       }
@@ -316,7 +316,7 @@ class Demo {
     }
   }
 
-  correctValues(): void {
+  private correctValues(): void {
     const {
       min, max, valueMin, valueMax, value,
     } = this.settings;

@@ -16,7 +16,6 @@ class Model extends Observable {
     this.settings = { ...this.settings, ...options };
 
     this.checkSettingsValue();
-    // debugger
     this.settings.valueMin = this.validateStepValue(this.settings.valueMin || min);
     this.settings.valueMax = this.validateStepValue(this.settings.valueMax || max);
     this.settings.value = this.validateStepValue(this.settings.value || min);
@@ -82,7 +81,8 @@ class Model extends Observable {
     const { value, type } = options;
 
     if (valueMax && (valueMin || valueMin === 0)) {
-      let checkedType: 'min' | 'max' = Math.abs(value - valueMin) < Math.abs(value - valueMax) ? 'min' : 'max';
+      const valuesRange = (valueMax - valueMin);
+      let checkedType: 'min' | 'max' = value + (valuesRange / 2) < valueMax ? 'min' : 'max';
       if (valueMin === valueMax && value > (max - min) / 2) {
         checkedType = 'min';
       } else if (valueMin === valueMax && value < (max - min) / 2) {
