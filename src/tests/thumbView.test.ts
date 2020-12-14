@@ -43,7 +43,7 @@ describe('ThumbView', () => {
     const mousemove = createEvent({ type: 'mousemove', clientX: 50, clientY: 0 });
     $thumbMin[0].dispatchEvent(mousedown);
     $thumbMin[0].dispatchEvent(mousemove);
-    expect($thumbMin.css('left')).toBe('50px');
+    expect(parseInt($thumbMin.css('left'), 10)).toBe(50);
   });
 
   it('should move thumb max', () => {
@@ -51,12 +51,12 @@ describe('ThumbView', () => {
     const mousemove = createEvent({ type: 'mousemove', clientX: 200, clientY: 0 });
     $thumbMax[0].dispatchEvent(mousedown);
     $thumbMax[0].dispatchEvent(mousemove);
-    expect($thumbMax.css('left')).toBe('200px');
+    expect(parseInt($thumbMax.css('left'), 10)).toBe(200);
   });
 
   it('should create vertical thumb', () => {
     controller.reloadSlider({ ...options, isVertical: true });
     const thumbElement = $('.js-slider__thumb_type_max')[0];
-    expect(thumbElement.style.top).toBe('200px');
+    expect(parseInt(thumbElement.style.top, 10)).toBe(133);
   });
 });

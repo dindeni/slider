@@ -23,6 +23,9 @@ describe('Controller', () => {
       withProgress: true,
       withLabel: true,
       step: undefined,
+      value: 100,
+      valueMax: 500,
+      valueMin: 100,
     };
     model.setSettings(options);
   });
@@ -59,7 +62,7 @@ describe('Controller', () => {
   it('should reload slider', () => {
     const newOptions = { ...options, isRange: true };
     const spy = jest.spyOn(controller.view, 'reloadSlider');
-    controller.reloadSlider({ ...newOptions });
-    expect(spy).toBeCalledWith({ ...newOptions });
+    controller.reloadSlider(newOptions);
+    expect(spy).toHaveBeenCalledWith(newOptions);
   });
 });

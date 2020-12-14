@@ -29,7 +29,8 @@ class Controller extends Observable {
 
   public reloadSlider(options: SliderElementOptions): void {
     this.model.setSettings(options);
-    this.view.reloadSlider(options);
+    this.view.reloadSlider(this.model.settings);
+    this.updateOptions(this.model.settings);
   }
 
   private validateValue(options: ValidationOptions): void {

@@ -78,7 +78,7 @@ class View extends Observable {
   public update(options: ValueAndType): void {
     const { withProgress } = this.settings;
 
-    this.thumbView.update();
+    this.thumbView.update(options);
     if (this.settings.step) {
       this.scaleView.update(options);
     }

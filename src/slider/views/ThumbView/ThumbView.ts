@@ -1,7 +1,7 @@
 import autoBind from 'auto-bind';
 
 import {
-  DistanceOptions, ThumbPositionsOptions, SliderElementOptions,
+  DistanceOptions, ThumbPositionsOptions, SliderElementOptions, ValueAndType,
 } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
@@ -72,18 +72,18 @@ class ThumbView extends Observable {
     this.addEvents();
   }
 
-  public update(): void {
+  public update(options: ValueAndType): void {
     const { step } = this.settings;
+    const { value, type } = options;
 
     if (!step) {
-      const coordinate = this.distance + this.shift;
-      this.setPosition(coordinate);
+      this.currentElement = type === 'min' ? this.$elementMin[0] : this.$elementMax[0];
+      this.setPosition(this.getCoordinate(value || 0));
     }
   }
 
   private setPosition(coordinate: number): void {
     const { isRange, isVertical } = this.settings;
-
     if (this.previousCoordinate !== coordinate && this.currentElement) {
       const key = isVertical ? 'top' : 'left';
       this.currentElement.style[key] = `${coordinate}px`;

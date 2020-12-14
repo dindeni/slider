@@ -9,12 +9,6 @@ interface GetDistanceOptions {
   value?: number;
 }
 
-interface SetPositionOptions {
-  element: HTMLElement;
-  coordinate: number;
-  value: number;
-}
-
 class TrackView extends Observable {
   public size: number;
 
@@ -103,7 +97,7 @@ class TrackView extends Observable {
       const currentValue: number = isItemElement
         ? value
         : Math.round(min + (max - min) * (shift / this.size));
-      this.setPosition({ element: this.thumbElement, coordinate: shift, value: currentValue });
+      this.notify(currentValue);
     }
   }
 
@@ -123,12 +117,9 @@ class TrackView extends Observable {
     return thumbMax;
   }
 
-  private setPosition(options: SetPositionOptions): void {
-    const { element, coordinate, value } = options;
-    const { isVertical, isRange } = this.settings;
+  private notify(value: number): void {
+    const { isRange } = this.settings;
 
-    const key = isVertical ? 'top' : 'left';
-    element.style[key] = `${coordinate}px`;
     if (isRange) {
       const type = this.thumbElement.classList.contains('js-slider__thumb_type_min') ? 'min' : 'max';
       this.notifyAll({ value: { value, type }, type: EventTypes.VALIDATE });
