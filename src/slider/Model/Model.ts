@@ -54,7 +54,9 @@ class Model extends Observable {
 
     const isValid = validateValue();
     if (isValid) {
-      this.notifyAll({ value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE });
+      this.notifyAll(
+        { value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE_VALUE },
+      );
       return { value: validValue, type: checkedType };
     }
     return { value: null };

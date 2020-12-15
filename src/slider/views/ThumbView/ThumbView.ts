@@ -54,7 +54,7 @@ class ThumbView extends Observable {
     autoBind(this);
   }
 
-  public create(): void {
+  public createElements(): void {
     const { isRange, $element } = this.settings;
 
     const classes = ['slider__thumb', 'js-slider__thumb'];
@@ -143,7 +143,7 @@ class ThumbView extends Observable {
     }
   }
 
-  private validate(options: ThumbPositionsOptions): void {
+  private validateCurrentValue(options: ThumbPositionsOptions): void {
     const {
       thumbElement, shift, coordinateStart, coordinateMove,
     } = options;
@@ -161,10 +161,10 @@ class ThumbView extends Observable {
       this.notifyAll({
         value:
           { value: currentValue, type: thumbType },
-        type: EventTypes.VALIDATE,
+        type: EventTypes.VALIDATE_VALUE,
       });
     } else {
-      this.notifyAll({ value: { value: currentValue }, type: EventTypes.VALIDATE });
+      this.notifyAll({ value: { value: currentValue }, type: EventTypes.VALIDATE_VALUE });
     }
   }
 
@@ -221,9 +221,9 @@ class ThumbView extends Observable {
   private addEvents(): void {
     const { $element } = this.settings;
 
-    const elementsCollection = Array.from($element[0].querySelectorAll('.js-slider__thumb'));
-    elementsCollection.map((element: HTMLElement): void => element
-      .addEventListener('mousedown', this.handleElementMousedown));
+    const thumbElements = Array.from($element[0].querySelectorAll('.js-slider__thumb'));
+    thumbElements.map((thumbElement: HTMLElement): void => thumbElement
+      .addEventListener('mousedown', this.handleThumbElementMousedown));
   }
 
   private handleDocumentMousemove(event: MouseEvent): void {
@@ -234,7 +234,7 @@ class ThumbView extends Observable {
     this.distance = coordinateMove - coordinateStart;
 
     if (this.currentElement) {
-      this.validate({
+      this.validateCurrentValue({
         thumbElement: this.currentElement,
         shift: Math.round(this.shift),
         trackSize: this.trackSize,
@@ -244,7 +244,7 @@ class ThumbView extends Observable {
     }
   }
 
-  private handleElementMousedown(event: MouseEvent): void {
+  private handleThumbElementMousedown(event: MouseEvent): void {
     const targetElement = event.target as HTMLElement;
     const isTargetLabel = targetElement.classList.contains('js-slider__label');
     const isTargetThumbOrLabel = (isTargetLabel || targetElement.classList.contains('js-slider__thumb'));

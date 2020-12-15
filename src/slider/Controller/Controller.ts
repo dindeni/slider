@@ -50,10 +50,10 @@ class Controller extends Observable {
 
   private subscribeAll(): void {
     this.view.subscribe({ method: this.updateOptions, type: EventTypes.UPDATE_OPTIONS });
-    this.view.subscribe({ method: this.validateValue, type: EventTypes.VALIDATE });
+    this.view.subscribe({ method: this.validateValue, type: EventTypes.VALIDATE_VALUE });
     this.view.subscribe({ method: this.setFractionOfValue, type: EventTypes.SET_FRACTION });
     this.model.subscribe({ method: this.view.setFractionOfValue, type: EventTypes.SET_FRACTION });
-    this.model.subscribe({ method: this.view.update, type: EventTypes.UPDATE });
+    this.model.subscribe({ method: this.view.updateSlider, type: EventTypes.UPDATE_VALUE });
   }
 }
 

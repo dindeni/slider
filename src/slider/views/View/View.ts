@@ -36,7 +36,7 @@ class View extends Observable {
     this.settings = options;
     this.thumbView = new ThumbView(options);
     this.trackView = new TrackView(options);
-    this.thumbView.create();
+    this.thumbView.createElements();
 
     if (isVertical) {
       this.trackView.makeVertical();
@@ -48,10 +48,10 @@ class View extends Observable {
     this.subscribeViews();
     this.trackView.getSize();
     if (withLabel) {
-      this.labelView.create(this.getTrackSize());
+      this.labelView.createElements(this.getTrackSize());
     }
     if (step) {
-      this.scaleView.create(this.getTrackSize());
+      this.scaleView.createElements(this.getTrackSize());
     }
 
     this.thumbView.setStartPosition(this.getTrackSize());
@@ -75,7 +75,7 @@ class View extends Observable {
     this.trackView.setFractionOfValue(fraction);
   }
 
-  public update(options: ValueAndType): void {
+  public updateSlider(options: ValueAndType): void {
     const { withProgress } = this.settings;
 
     this.thumbView.update(options);
@@ -124,19 +124,19 @@ class View extends Observable {
   }
 
   private validateValue(options: ValidationOptions): void {
-    this.notifyAll({ value: options, type: EventTypes.VALIDATE });
+    this.notifyAll({ value: options, type: EventTypes.VALIDATE_VALUE });
   }
 
   private subscribeViews(): void {
-    const {
-      VALIDATE, UPDATE_OPTIONS, VALUE_CHANGE,
-    } = EventTypes;
-
-    this.trackView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
-    this.thumbView.subscribe({ method: this.notifyAboutValueChange, type: VALUE_CHANGE });
-    this.thumbView.subscribe({ method: this.validateValue, type: VALIDATE });
-    this.trackView.subscribe({ method: this.validateValue, type: VALIDATE });
-    this.labelView.subscribe({ method: this.updateOptions, type: UPDATE_OPTIONS });
+    this.trackView.subscribe(
+      { method: this.notifyAboutValueChange, type: EventTypes.VALUE_CHANGE },
+    );
+    this.thumbView.subscribe(
+      { method: this.notifyAboutValueChange, type: EventTypes.VALUE_CHANGE },
+    );
+    this.thumbView.subscribe({ method: this.validateValue, type: EventTypes.VALIDATE_VALUE });
+    this.trackView.subscribe({ method: this.validateValue, type: EventTypes.VALIDATE_VALUE });
+    this.labelView.subscribe({ method: this.updateOptions, type: EventTypes.UPDATE_OPTIONS });
   }
 }
 

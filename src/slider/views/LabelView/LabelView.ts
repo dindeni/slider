@@ -22,7 +22,7 @@ class LabelView extends Observable {
     this.settings = settings;
   }
 
-  public create(trackSize: number): void {
+  public createElements(trackSize: number): void {
     const {
       isRange, isVertical, value, valueMin, valueMax, min, $element,
     } = this.settings;

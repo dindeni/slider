@@ -21,7 +21,7 @@ class ScaleView extends Observable {
     this.settings = settings;
   }
 
-  public create(trackSize: number): void {
+  public createElements(trackSize: number): void {
     const { $element, isVertical } = this.settings;
 
     this.generateCoordinates(trackSize);

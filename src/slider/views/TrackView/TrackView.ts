@@ -4,11 +4,6 @@ import { SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 
-interface GetDistanceOptions {
-  event: MouseEvent;
-  value?: number;
-}
-
 class TrackView extends Observable {
   public size: number;
 
@@ -85,16 +80,16 @@ class TrackView extends Observable {
 
     const target = event.target as HTMLElement;
 
-    const isItemElement = target.classList.contains('js-slider__scale-item');
+    const isScaleItemElement = target.classList.contains('js-slider__scale-item');
     const isTrackElement = target === this.$trackElement[0] || target.classList.contains('js-slider__progress');
-    const isClickedElement = isItemElement || isTrackElement;
+    const isClickedElement = isScaleItemElement || isTrackElement;
     if (isClickedElement) {
       this.thumbElement = isRange
         ? this.getRangeThumbElement(event)
         : $element.find('.js-slider__thumb')[0];
       const value = Number(target.textContent);
-      const shift = this.getDistance({ event, value });
-      const currentValue: number = isItemElement
+      const shift = value ? this.getDistanceOnScaleItem(value) : this.getDistanceOnTrack(event);
+      const currentValue: number = isScaleItemElement
         ? value
         : Math.round(min + (max - min) * (shift / this.size));
       this.notify(currentValue);
@@ -122,20 +117,15 @@ class TrackView extends Observable {
 
     if (isRange) {
       const type = this.thumbElement.classList.contains('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value, type }, type: EventTypes.VALIDATE });
+      this.notifyAll({ value: { value, type }, type: EventTypes.VALIDATE_VALUE });
     } else {
-      this.notifyAll({ value: { value }, type: EventTypes.VALIDATE });
+      this.notifyAll({ value: { value }, type: EventTypes.VALIDATE_VALUE });
     }
   }
 
-  private getDistance(options: GetDistanceOptions): number {
-    const { event, value } = options;
-
-    if (value) {
-      this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
-      return this.size * this.fraction;
-    }
-    return this.getDistanceOnTrack(event);
+  private getDistanceOnScaleItem(value: number): number {
+    this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
+    return this.size * this.fraction;
   }
 
   private getDistanceOnTrack(event: MouseEvent): number {
