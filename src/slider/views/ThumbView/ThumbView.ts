@@ -77,7 +77,7 @@ class ThumbView extends Observable {
     const { value, type } = options;
 
     if (!step) {
-      this.currentElement = type === 'min' ? this.$elementMin[0] : this.$elementMax[0];
+      this.setCurrentElement(type);
       this.setPosition(this.getCoordinate(value || 0));
     }
   }
@@ -115,6 +115,14 @@ class ThumbView extends Observable {
       if (isRange) {
         this.changeZIndex(this.currentElement);
       }
+    }
+  }
+
+  private setCurrentElement(type?: 'min' | 'max'): void {
+    if (type) {
+      [this.currentElement] = type === 'min' ? this.$elementMin : this.$elementMax;
+    } else {
+      [this.currentElement] = this.$element;
     }
   }
 

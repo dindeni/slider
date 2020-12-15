@@ -52,10 +52,12 @@ class Demo {
 
   private settingsKeys: SettingsKeyOptions[] = ['value', 'valueMin', 'valueMax', 'min', 'max', 'withProgress', 'isVertical', 'isRange', 'withLabel', 'step'];
 
-  constructor(option: { wrapper: HTMLElement; settings: SliderOptions }) {
+  constructor(option: { wrapper: HTMLElement; settings?: SliderOptions }) {
     const { wrapper, settings } = option;
     this.wrapper = wrapper;
-    this.settings = settings;
+    if (settings) {
+      this.settings = settings;
+    }
     autoBind(this);
   }
 

@@ -100,8 +100,7 @@ class LabelView extends Observable {
         type: UPDATE_OPTIONS,
       });
     } else {
-      const labelValue = parseInt(this.$element.text(), 10);
-      this.notifyAll({ value: { ...this.settings, value: labelValue }, type: UPDATE_OPTIONS });
+      this.notifyAll({ value: { ...this.settings, value: options.value }, type: UPDATE_OPTIONS });
     }
   }
 

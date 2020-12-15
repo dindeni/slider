@@ -14,13 +14,13 @@ $.fn.slider = function (options?: SliderOptions): SliderReturnOption {
     progress: false,
     min: 0,
     max: 100,
-    label: false,
     isVertical: false,
     isRange: false,
     $element: this,
   };
+  const dataAttributes = $(this).data();
 
-  const config = $.extend({}, optionsDefault, options);
+  const config = $.extend({}, { ...optionsDefault, ...dataAttributes }, options);
 
   const model = new Model();
   const controller = new Controller(model);
