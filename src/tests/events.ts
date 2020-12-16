@@ -1,5 +1,5 @@
 interface EventOptions {
-  type: 'click' | 'mousedown' | 'mousemove';
+  type: 'click' | 'mousedown' | 'mousemove' | 'mouseup';
   clientX: number;
   clientY: number;
 }

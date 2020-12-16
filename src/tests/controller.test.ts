@@ -60,7 +60,8 @@ describe('Controller', () => {
   });
 
   it('should reload slider', () => {
-    const newOptions = { ...options, isRange: true };
+    const method = (): null => null;
+    const newOptions = { ...options, isRange: true, method };
     const spy = jest.spyOn(controller.view, 'reloadSlider');
     controller.reloadSlider(newOptions);
     expect(spy).toHaveBeenCalledWith(newOptions);

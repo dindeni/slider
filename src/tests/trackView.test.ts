@@ -46,15 +46,53 @@ describe('TrackView', () => {
     expect($track.height()).toBe(trackWidth);
   });
 
-  it('should move thumb after click', () => {
+  it('should move min thumb after click', () => {
     const event = createEvent({ type: 'click', clientX: 50, clientY: 0 });
     $('.js-slider__track')[0].dispatchEvent(event);
     expect($('.js-slider__thumb_type_min').css('left')).toBe('50px');
+  });
+
+  it('should move min thumb after click(negative coordinate)', () => {
+    const event = createEvent({ type: 'click', clientX: -50, clientY: 0 });
+    $('.js-slider__track')[0].dispatchEvent(event);
+    expect($('.js-slider__thumb_type_min').css('left')).toBe('0px');
+  });
+
+  it('should move max thumb after click', () => {
+    const event = createEvent({ type: 'click', clientX: 150, clientY: 0 });
+    $('.js-slider__track')[0].dispatchEvent(event);
+    expect($('.js-slider__thumb_type_max').css('left')).toBe('150px');
   });
 
   it('should remove click event', () => {
     const spy = jest.spyOn(trackView, 'removeEvent');
     view.reloadSlider(options);
     expect(spy).toHaveBeenCalled();
+  });
+
+  describe('Vertical', () => {
+    beforeAll(() => {
+      view.reloadSlider({ ...options, isVertical: true });
+    });
+
+    it('should move min thumb after click', () => {
+      const event = createEvent({ type: 'click', clientX: 0, clientY: 50 });
+      $('.js-slider__track')[0].dispatchEvent(event);
+      expect($('.js-slider__thumb').css('top')).toBe('50px');
+    });
+  });
+
+  describe('With scale', () => {
+    beforeAll(() => {
+      view.reloadSlider({
+        ...options, step: 100, isRange: false, isVertical: true,
+      });
+    });
+
+    it('should move min thumb after click', () => {
+      const event = createEvent({ type: 'click', clientX: 0, clientY: 0 });
+      $('.js-slider__scale-item')[1].dispatchEvent(event);
+      expect($('.js-slider__thumb').css('top')).toBe('50px');
+    });
   });
 });

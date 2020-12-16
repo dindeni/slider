@@ -1,10 +1,12 @@
 import Model from '../slider/Model/Model';
+import { SliderElementOptions } from '../types/types';
 
 describe('Model', () => {
   let model: Model;
+  let options: SliderElementOptions;
   const $element = $('<div class="slider js-slider"></div>');
   $element.appendTo(document.body);
-  const options = {
+  options = {
     isRange: true,
     isVertical: false,
     min: 100,
@@ -57,5 +59,26 @@ describe('Model', () => {
   it('should validate value max', () => {
     const result = model.validateValue({ value: 400, type: 'max' });
     expect(result.value).toBe(400);
+  });
+
+  it('should validate value min with equal value', () => {
+    model.setSettings({
+      ...options, valueMax: 500, valueMin: 500,
+    });
+    const result = model.validateValue({ value: 400, type: 'min' });
+    expect(result.type).toBe('min');
+  });
+
+  it('should validate value max with equal value', () => {
+    model.setSettings({
+      ...options, valueMax: 10, valueMin: 10,
+    });
+    const result = model.validateValue({ value: 100, type: 'min' });
+    expect(result.type).toBe('max');
+  });
+
+  it('should validate step value(wrong value) ', () => {
+    const result = model.validateValue({ value: 400, type: 'min' });
+    expect(result.value).toBe(null);
   });
 });

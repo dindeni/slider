@@ -6,14 +6,6 @@ import {
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 
-interface CorrectPositionOptions {
-  element: HTMLElement;
-  distance: number;
-  key: 'top' | 'left';
-}
-
-type CheckRangePositionOptions = Omit<CorrectPositionOptions, 'trackSize' | 'value'>;
-
 class ThumbView extends Observable {
   public size: number;
 
@@ -109,7 +101,6 @@ class ThumbView extends Observable {
     if (this.previousCoordinate !== coordinate && this.currentElement) {
       const key = isVertical ? 'top' : 'left';
       this.currentElement.style[key] = `${coordinate}px`;
-      this.correctPosition({ element: this.currentElement, distance: coordinate, key });
       this.previousCoordinate = coordinate;
 
       if (isRange) {
@@ -119,7 +110,7 @@ class ThumbView extends Observable {
   }
 
   private setCurrentElement(type?: 'min' | 'max'): void {
-    if (type) {
+    if (this.settings.isRange) {
       [this.currentElement] = type === 'min' ? this.$elementMin : this.$elementMax;
     } else {
       [this.currentElement] = this.$element;
@@ -173,34 +164,6 @@ class ThumbView extends Observable {
     const key = isVertical ? 'top' : 'left';
     const startPosition = $element.find('.js-slider__track')[0].getBoundingClientRect()[key];
     return startPosition + (this.trackSize / 2);
-  }
-
-  private checkRangePosition(options: CheckRangePositionOptions): boolean {
-    const { element, distance, key } = options;
-
-    if (!this.settings.isRange) {
-      return true;
-    }
-    if (element.classList.contains('js-slider__thumb_type_min')) {
-      return distance < parseInt(this.$elementMax.css(key), 10);
-    }
-    return distance > parseInt(this.$elementMin.css(key), 10);
-  }
-
-  private correctPosition(options: CorrectPositionOptions): null {
-    const { element, distance, key } = options;
-
-    const isValidDistance = this.checkRangePosition({ element, distance, key });
-    if (!isValidDistance) {
-      return null;
-    }
-
-    if (distance > this.trackSize) {
-      element.style[key] = `${this.trackSize}px`;
-    } else if (distance < 0) {
-      element.style[key] = '0px';
-    }
-    return null;
   }
 
   private getCoordinate(value: number): number {

@@ -2,11 +2,13 @@ import ScaleView from '../slider/views/ScaleView/ScaleView';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
+import View from '../slider/views/View/View';
 
 describe('ScaleView', () => {
   let scaleView: ScaleView;
   let controller: Controller;
   let options: SliderElementOptions;
+  let view: View;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');
@@ -25,7 +27,8 @@ describe('ScaleView', () => {
     controller = new Controller(model);
     model.setSettings(options);
     controller.init();
-    scaleView = controller.view.scaleView;
+    view = controller.view;
+    scaleView = view.scaleView;
   });
 
   it('should create scale', () => {
@@ -60,6 +63,16 @@ describe('ScaleView', () => {
       const element = $('.js-slider__thumb_type_max')[0];
       scaleView.update({ value: 400, type: 'max' });
       expect(element.style.left).toEqual('150px');
+    });
+
+    describe('Step = 9', () => {
+      beforeAll(() => {
+        view.reloadSlider({ ...options, step: 9 });
+      });
+
+      it('should create scale', () => {
+        expect($('.js-slider__scale-item').length).toBe(6);
+      });
     });
   });
 });
