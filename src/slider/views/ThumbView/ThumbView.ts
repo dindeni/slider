@@ -70,7 +70,7 @@ class ThumbView extends Observable {
 
     if (!step) {
       this.setCurrentElement(type);
-      this.setPosition(this.getCoordinate(value || 0));
+      this.setPosition(this.getThumbCoordinate(value || 0));
     }
   }
 
@@ -86,12 +86,12 @@ class ThumbView extends Observable {
 
     const key = isVertical ? 'top' : 'left';
     if (isRange) {
-      this.coordinateMin = this.getCoordinate(valueMin || min);
+      this.coordinateMin = this.getThumbCoordinate(valueMin || min);
       this.$elementMin.css({ [key]: `${this.coordinateMin}px` });
-      this.coordinateMax = this.getCoordinate(valueMax || max);
+      this.coordinateMax = this.getThumbCoordinate(valueMax || max);
       this.$elementMax.css({ [key]: `${this.coordinateMax}px` });
     } else {
-      this.coordinate = this.getCoordinate(value || min);
+      this.coordinate = this.getThumbCoordinate(value || min);
       this.$element.css({ [key]: `${this.coordinate}px` });
     }
   }
@@ -166,7 +166,7 @@ class ThumbView extends Observable {
     return startPosition + (this.trackSize / 2);
   }
 
-  private getCoordinate(value: number): number {
+  private getThumbCoordinate(value: number): number {
     this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
     return this.fraction * this.trackSize;
   }
