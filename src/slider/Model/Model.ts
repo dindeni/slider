@@ -77,20 +77,12 @@ class Model extends Observable {
   }
 
   private checkValueType(options: CheckTypeOptions): 'min' | 'max' {
-    const {
-      valueMin, valueMax, min, max,
-    } = this.settings;
+    const { valueMin, valueMax } = this.settings;
     const { value, type } = options;
 
     if (valueMax && (valueMin || valueMin === 0)) {
       const valuesRange = (valueMax - valueMin);
-      let checkedType: 'min' | 'max' = value + (valuesRange / 2) < valueMax ? 'min' : 'max';
-      if (valueMin === valueMax && value > (max - min) / 2) {
-        checkedType = 'min';
-      } else if (valueMin === valueMax && value < (max - min) / 2) {
-        checkedType = 'max';
-      }
-      return checkedType;
+      return value + (valuesRange / 2) < valueMax ? 'min' : 'max';
     }
     return type;
   }

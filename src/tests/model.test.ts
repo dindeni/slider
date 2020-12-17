@@ -3,10 +3,9 @@ import { SliderElementOptions } from '../types/types';
 
 describe('Model', () => {
   let model: Model;
-  let options: SliderElementOptions;
   const $element = $('<div class="slider js-slider"></div>');
   $element.appendTo(document.body);
-  options = {
+  const options: SliderElementOptions = {
     isRange: true,
     isVertical: false,
     min: 100,
@@ -75,10 +74,5 @@ describe('Model', () => {
     });
     const result = model.validateValue({ value: 100, type: 'min' });
     expect(result.type).toBe('max');
-  });
-
-  it('should validate step value(wrong value) ', () => {
-    const result = model.validateValue({ value: 400, type: 'min' });
-    expect(result.value).toBe(null);
   });
 });
