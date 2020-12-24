@@ -31,35 +31,17 @@ class Model extends Observable {
 
   public validateValue(options: ValidationOptions): ValueAndType {
     const { type, value } = options;
-    const {
-      valueMin, valueMax, step,
-    } = this.settings;
+    const { step } = this.settings;
 
     let validValue = this.validateExtremumValue(value);
     if (step) {
       validValue = this.validateStepValue(validValue);
     }
     const checkedType = type ? this.checkValueType({ type, value }) : type;
-    const validateValue = (): boolean => {
-      switch (true) {
-        case !type:
-          return true;
-        case checkedType === 'min':
-          return valueMax ? validValue <= valueMax : false;
-        case checkedType === 'max':
-          return valueMin || valueMin === 0 ? validValue >= valueMin : false;
-        default: return false;
-      }
-    };
-
-    const isValid = validateValue();
-    if (isValid) {
-      this.notifyAll(
-        { value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE_VALUE },
-      );
-      return { value: validValue, type: checkedType };
-    }
-    return { value: null };
+    this.notifyAll(
+      { value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE_VALUE },
+    );
+    return { value: validValue, type: checkedType };
   }
 
   private validateStepValue(value: number): number {
