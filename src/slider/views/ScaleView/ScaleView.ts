@@ -113,13 +113,13 @@ class ScaleView extends Observable {
 
     while (shortValue.length > 10) {
       shortValue = shortValue.filter(
-        (currentValue, index) => index === 0 || index % 2 === 0,
+        (_currentValue, index) => index === 0 || index % 2 === 0,
       );
     }
 
     while (shortCoordinates.length > 10) {
       shortCoordinates = shortCoordinates.filter(
-        (currentValue, index) => index === 0 || index % 2 === 0,
+        (_currentValue, index) => index === 0 || index % 2 === 0,
       );
     }
     this.data.shortValues = shortValue;
