@@ -3,13 +3,18 @@ import {
   UpdatingLabelOptions, ThumbValueOptions, ValueAndType,
 } from '../../types/types';
 
-type ObserverValueOption = number | boolean | HTMLElement | SliderElementOptions | ValueAndType
-  | ValidationOptions | DistanceOptions | ThumbPositionsOptions | UpdatingLabelOptions
-  | ThumbValueOptions;
+type ObserverValueOption = number | boolean | HTMLElement | number[] | SliderElementOptions
+  | ValueAndType | ValidationOptions | DistanceOptions | ThumbPositionsOptions
+  | UpdatingLabelOptions | ThumbValueOptions;
 
 interface ObserverAndType {
   type: string;
-  method: (value: ObserverValueOption) => void;
+  method: (value?: ObserverValueOption) => void;
+}
+
+interface NotifyAllOptions {
+  value?: ObserverValueOption;
+  type?: string;
 }
 
 class Observable {
@@ -23,10 +28,17 @@ class Observable {
     }
   }
 
-  public notifyAll(data: { value: ObserverValueOption; type: string}): void {
+  public notifyAll(data: NotifyAllOptions): void {
+    const isValueAndType = (options: NotifyAllOptions, observer: ObserverAndType): options is
+      { value: ObserverValueOption; type: string } => data.type !== undefined
+      && data.value !== undefined
+      && observer.type === data.type;
+
     this.observers.forEach((observer) => {
-      if (observer.type === data.type) {
+      if (isValueAndType(data, observer)) {
         observer.method(data.value);
+      } else if (observer.type === data.type) {
+        observer.method();
       }
     });
   }

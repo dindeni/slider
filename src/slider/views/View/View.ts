@@ -51,6 +51,7 @@ class View extends Observable {
       this.labelView.createElements(this.getTrackSize());
     }
     if (step) {
+      this.notifyAll({ type: EventTypes.SET_STEP_VALUES });
       this.scaleView.createElements(this.getTrackSize());
     }
 
@@ -97,6 +98,10 @@ class View extends Observable {
     this.settings = { ...this.settings, ...options };
     this.settings.$element.empty();
     this.recreate(options);
+  }
+
+  public setStepValues(values: number[]): void {
+    this.scaleView.setValues(values);
   }
 
   private handleWindowResize(): void {

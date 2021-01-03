@@ -9,6 +9,7 @@ export interface Slider {
   valueMax?: number;
   value?: number;
   withLabel?: boolean;
+  withScale?: boolean;
 }
 
 export type MethodOption = (options: SliderElementOptions) => void;
@@ -24,9 +25,9 @@ export interface SliderElementOptions extends Slider {
 export type SliderOptions = Omit<SliderElementOptions, '$element'>;
 
 export interface ScaleData {
-  value: number[];
+  values: number[];
   coordinates: number[];
-  shortValue: number[];
+  shortValues: number[];
   shortCoordinates: number[];
 }
 
@@ -62,3 +63,6 @@ export interface ThumbValueOptions {
   element: HTMLElement;
   value: number;
 }
+
+export type IsValueMinAndValueMaxReturnValue = Omit<SliderElementOptions, 'valueMin' | 'valueMax'>
+  & { valueMin: number; valueMax: number };

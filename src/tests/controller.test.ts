@@ -38,7 +38,7 @@ describe('Controller', () => {
     });
 
     it('should subscribe', () => {
-      expect(controller.view.observers.length).toBe(3);
+      expect(controller.view.observers.length).toBe(4);
     });
 
     it('should pass options', () => {

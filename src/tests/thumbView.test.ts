@@ -69,7 +69,7 @@ describe('ThumbView', () => {
     let $thumb: JQuery<HTMLElement>;
 
     beforeAll(() => {
-      view.reloadSlider({
+      controller.reloadSlider({
         ...options, isVertical: true, isRange: false,
       });
       $thumb = $('.js-slider__thumb');

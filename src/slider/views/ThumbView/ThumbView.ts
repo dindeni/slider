@@ -68,9 +68,10 @@ class ThumbView extends Observable {
     const { step } = this.settings;
     const { value, type } = options;
 
-    if (!step) {
+    const isValueNotStep = (data?: number | null): data is number => data !== undefined && !step;
+    if (isValueNotStep(value)) {
       this.setCurrentElement(type);
-      this.setPosition(this.getThumbCoordinate(value || 0));
+      this.setPosition(this.getThumbCoordinate(value));
     }
   }
 
@@ -80,18 +81,20 @@ class ThumbView extends Observable {
 
   public setStartPosition(trackSize: number): void {
     const {
-      isRange, isVertical, min, max, valueMin, valueMax, value,
+      isRange, isVertical, valueMin, valueMax, value,
     } = this.settings;
     this.trackSize = trackSize;
 
     const key = isVertical ? 'top' : 'left';
     if (isRange) {
-      this.coordinateMin = this.getThumbCoordinate(valueMin || min);
+      this.coordinateMin = this.getThumbCoordinate(valueMin);
       this.$elementMin.css({ [key]: `${this.coordinateMin}px` });
-      this.coordinateMax = this.getThumbCoordinate(valueMax || max);
+      this.changeZIndex(this.$elementMin[0]);
+      this.coordinateMax = this.getThumbCoordinate(valueMax);
       this.$elementMax.css({ [key]: `${this.coordinateMax}px` });
+      this.changeZIndex(this.$elementMax[0]);
     } else {
-      this.coordinate = this.getThumbCoordinate(value || min);
+      this.coordinate = this.getThumbCoordinate(value);
       this.$element.css({ [key]: `${this.coordinate}px` });
     }
   }
@@ -145,7 +148,7 @@ class ThumbView extends Observable {
     }
     const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
 
-    const currentValue: number = Math.round(min + (max - min) * (distance / this.trackSize));
+    const currentValue: number = (min + (max - min) * (distance / this.trackSize));
 
     if (isRange) {
       const thumbType = $(thumbElement).hasClass('js-slider__thumb_type_min') ? 'min' : 'max';
@@ -166,7 +169,7 @@ class ThumbView extends Observable {
     return startPosition + (this.trackSize / 2);
   }
 
-  private getThumbCoordinate(value: number): number {
+  private getThumbCoordinate(value?: number): number {
     this.notifyAll({ value, type: EventTypes.VALUE_CHANGE });
     return this.fraction * this.trackSize;
   }
@@ -199,7 +202,7 @@ class ThumbView extends Observable {
     if (this.currentElement) {
       this.validateCurrentValue({
         thumbElement: this.currentElement,
-        shift: Math.round(this.shift),
+        shift: this.shift,
         trackSize: this.trackSize,
         coordinateStart,
         coordinateMove,

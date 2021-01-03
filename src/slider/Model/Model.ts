@@ -1,24 +1,32 @@
 import {
-  ValidationOptions, SliderElementOptions, ValueAndType,
+  ValidationOptions, SliderElementOptions, ValueAndType, IsValueMinAndValueMaxReturnValue,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
 import EventTypes from '../constants';
 
-interface CheckTypeOptions extends Pick<ValidationOptions, 'value'> {
-  type: 'min' | 'max';
+interface CheckTypeOptions {
+  value: number;
+  valueMin: number;
+  valueMax: number;
 }
 
 class Model extends Observable {
   public settings: SliderElementOptions;
 
+  public stepValues: number[];
+
   public setSettings(options: SliderElementOptions): void {
-    const { min, max } = options;
     this.settings = { ...this.settings, ...options };
 
     this.checkSettingsValue();
-    this.settings.valueMin = this.validateStepValue(this.settings.valueMin || min);
-    this.settings.valueMax = this.validateStepValue(this.settings.valueMax || max);
-    this.settings.value = this.validateStepValue(this.settings.value || min);
+    if (this.settings.step) {
+      this.setStepValues();
+    }
+
+    const { valueMin, valueMax, value } = this.settings;
+    this.settings.valueMin = this.validateStepValue(this.getSettingsValue({ type: 'min', value: valueMin }));
+    this.settings.valueMax = this.validateStepValue(this.getSettingsValue({ type: 'max', value: valueMax }));
+    this.settings.value = this.validateStepValue(this.getSettingsValue({ value }));
   }
 
   public calculateFractionOfValue(value: number): number {
@@ -31,42 +39,88 @@ class Model extends Observable {
 
   public validateValue(options: ValidationOptions): ValueAndType {
     const { type, value } = options;
-    const { step } = this.settings;
+    const { step, isRange } = this.settings;
 
     let validValue = this.validateExtremumValue(value);
-    if (step) {
-      validValue = this.validateStepValue(validValue);
-    }
-    const checkedType = type ? this.checkValueType({ type, value }) : type;
-    this.notifyAll(
-      { value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE_VALUE },
+    validValue = step ? this.validateStepValue(validValue) : Math.round(validValue);
+
+    const isValueMinAndValueMax = (data: SliderElementOptions): data is
+      IsValueMinAndValueMaxReturnValue => (
+      data.valueMin !== undefined && data.valueMax !== undefined
     );
-    return { value: validValue, type: checkedType };
+    if (isValueMinAndValueMax(this.settings)) {
+      const { valueMin, valueMax } = this.settings;
+
+      const checkedType = !type && isRange
+        ? Model.checkValueType({ value, valueMin, valueMax })
+        : type;
+      validValue = Model.checkValueBetweenValueMinAndValueMax({
+        value: validValue, valueMin, valueMax, type: checkedType,
+      });
+      this.notifyAll(
+        { value: { value: validValue, type: checkedType }, type: EventTypes.UPDATE_VALUE },
+      );
+    }
+    return { value: validValue, type };
   }
 
   private validateStepValue(value: number): number {
-    const { step, min, max } = this.settings;
+    const { step, max } = this.settings;
 
     if (step) {
-      let validValue = min + Math.round((value - min) / step) * step;
-      if (validValue > max) {
+      let validValue = this.stepValues.reduce((previousValue, currentValue) => (
+        Math.abs(currentValue - value) < Math.abs(previousValue - value)
+          ? currentValue
+          : previousValue
+      ));
+      if (validValue >= max) {
         validValue = max;
       }
-      this.notifyAll({ value: validValue, type: EventTypes.SET_STEP_VALUE });
+      this.notifyAll({ value: validValue, type: EventTypes.SET_STEP_VALID_VALUE });
       return validValue;
     }
     return value;
   }
 
-  private checkValueType(options: CheckTypeOptions): 'min' | 'max' {
-    const { valueMin, valueMax } = this.settings;
-    const { value, type } = options;
+  private static checkValueBetweenValueMinAndValueMax(options: CheckTypeOptions
+    & { type?: string }): number {
+    const {
+      value, valueMin, valueMax, type,
+    } = options;
 
-    if (valueMax && (valueMin || valueMin === 0)) {
-      const valuesRange = (valueMax - valueMin);
-      return value + (valuesRange / 2) < valueMax ? 'min' : 'max';
+    switch (true) {
+      case type === 'min' && value > valueMax:
+        return valueMin;
+      case type === 'max' && value < valueMin:
+        return valueMax;
+      default:
+        return value;
     }
-    return type;
+  }
+
+  private static checkValueType(options: CheckTypeOptions): 'min' | 'max' {
+    const { value, valueMin, valueMax } = options;
+
+    const valuesRange = (valueMax - valueMin);
+    return value + (valuesRange / 2) < valueMax ? 'min' : 'max';
+  }
+
+  private setStepValues(): void {
+    const { min, max, step } = this.settings;
+
+    if (step) {
+      const length = Math.round((max - min) / step) + 1;
+      const stepValues = new Array(length).fill(0);
+      let value = min;
+      this.stepValues = stepValues.map(() => {
+        value = parseFloat((value + step).toFixed(10));
+        return parseFloat((value - step).toFixed(10));
+      });
+      if (this.stepValues[this.stepValues.length - 1] !== max) {
+        this.stepValues.pop();
+        this.stepValues.push(max);
+      }
+    }
   }
 
   private validateExtremumValue(checkedValue: number): number {
@@ -82,15 +136,26 @@ class Model extends Observable {
   private checkSettingsValue(): void {
     const { value, valueMin, valueMax } = this.settings;
 
-    if (valueMin) {
+    if (typeof valueMin === 'number') {
       this.settings.valueMin = this.validateExtremumValue(valueMin);
     }
-    if (valueMax) {
+    if (typeof valueMax === 'number') {
       this.settings.valueMax = this.validateExtremumValue(valueMax);
     }
-    if (value) {
+    if (typeof value === 'number') {
       this.settings.value = this.validateExtremumValue(value);
     }
+  }
+
+  private getSettingsValue(options: { type?: 'min' | 'max'; value?: number }): number {
+    const { type, value } = options;
+
+    const isType = (settingsType?: 'min' | 'max'): settingsType is
+      'min' | 'max' => settingsType === 'min' || settingsType === 'max';
+    if (isType(type)) {
+      return value || value === 0 ? value : this.settings[type];
+    }
+    return value || value === 0 ? value : this.settings.min;
   }
 }
 

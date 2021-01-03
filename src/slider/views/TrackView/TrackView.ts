@@ -46,6 +46,7 @@ class TrackView extends Observable {
   public getSize(): void {
     const { isVertical, $element } = this.settings;
     const $thumbElement = $element.find('.js-slider__thumb');
+    [this.thumbElement] = $thumbElement;
     const trackSize = isVertical ? this.$trackElement.height() : this.$trackElement.width();
 
     this.size = Math.round((trackSize || 0) - ($thumbElement.width() || 0));
@@ -74,9 +75,7 @@ class TrackView extends Observable {
   }
 
   private handleSliderElementClick(event: MouseEvent): void {
-    const {
-      isRange, $element, min, max,
-    } = this.settings;
+    const { min, max } = this.settings;
 
     const target = event.target as HTMLElement;
 
@@ -84,42 +83,12 @@ class TrackView extends Observable {
     const isTrackElement = target === this.$trackElement[0] || target.classList.contains('js-slider__progress');
     const isClickedElement = isScaleItemElement || isTrackElement;
     if (isClickedElement) {
-      this.thumbElement = isRange
-        ? this.getRangeThumbElement(event)
-        : $element.find('.js-slider__thumb')[0];
       const value = Number(target.textContent);
       const shift = value ? this.getDistanceOnScaleItem(value) : this.getDistanceOnTrack(event);
       const currentValue: number = isScaleItemElement
         ? value
-        : Math.round(min + (max - min) * (shift / this.size));
-      this.notify(currentValue);
-    }
-  }
-
-  private getRangeThumbElement(event: MouseEvent): HTMLElement {
-    const { $element, isVertical } = this.settings;
-
-    const thumbMin = $element.find('.js-slider__thumb_type_min')[0];
-    const thumbMax = $element.find('.js-slider__thumb_type_max')[0];
-    const key = isVertical ? 'top' : 'left';
-    const startPosition = this.$trackElement[0].getBoundingClientRect()[key];
-    const coordinateOfMiddle = startPosition + (this.size / 2);
-    const position = isVertical ? event.clientY : event.clientX;
-
-    if (position < coordinateOfMiddle) {
-      return thumbMin;
-    }
-    return thumbMax;
-  }
-
-  private notify(value: number): void {
-    const { isRange } = this.settings;
-
-    if (isRange) {
-      const type = this.thumbElement.classList.contains('js-slider__thumb_type_min') ? 'min' : 'max';
-      this.notifyAll({ value: { value, type }, type: EventTypes.VALIDATE_VALUE });
-    } else {
-      this.notifyAll({ value: { value }, type: EventTypes.VALIDATE_VALUE });
+        : min + (max - min) * (shift / this.size);
+      this.notifyAll({ value: { value: currentValue }, type: EventTypes.VALIDATE_VALUE });
     }
   }
 

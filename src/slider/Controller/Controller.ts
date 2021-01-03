@@ -41,6 +41,10 @@ class Controller extends Observable {
     this.model.calculateFractionOfValue(value);
   }
 
+  private setStepValues(): void {
+    this.view.setStepValues(this.model.stepValues);
+  }
+
   private updateOptions(options: SliderElementOptions): void {
     this.model.setSettings(options);
     if (this.model.settings.method) {
@@ -52,6 +56,7 @@ class Controller extends Observable {
     this.view.subscribe({ method: this.updateOptions, type: EventTypes.UPDATE_OPTIONS });
     this.view.subscribe({ method: this.validateValue, type: EventTypes.VALIDATE_VALUE });
     this.view.subscribe({ method: this.setFractionOfValue, type: EventTypes.SET_FRACTION });
+    this.view.subscribe({ method: this.setStepValues, type: EventTypes.SET_STEP_VALUES });
     this.model.subscribe({ method: this.view.setFractionOfValue, type: EventTypes.SET_FRACTION });
     this.model.subscribe({ method: this.view.updateSlider, type: EventTypes.UPDATE_VALUE });
   }

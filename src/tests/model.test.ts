@@ -67,12 +67,4 @@ describe('Model', () => {
     const result = model.validateValue({ value: 400, type: 'min' });
     expect(result.type).toBe('min');
   });
-
-  it('should validate value max with equal value', () => {
-    model.setSettings({
-      ...options, valueMax: 10, valueMin: 10,
-    });
-    const result = model.validateValue({ value: 100, type: 'min' });
-    expect(result.type).toBe('max');
-  });
 });

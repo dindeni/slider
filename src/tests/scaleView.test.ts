@@ -22,6 +22,7 @@ describe('ScaleView', () => {
       withLabel: true,
       step: 25,
       $element,
+      withScale: true,
     };
     const model = new Model();
     controller = new Controller(model);
@@ -67,7 +68,7 @@ describe('ScaleView', () => {
 
     describe('Step = 9', () => {
       beforeAll(() => {
-        view.reloadSlider({ ...options, step: 9 });
+        controller.reloadSlider({ ...options, step: 9 });
       });
 
       it('should create scale', () => {

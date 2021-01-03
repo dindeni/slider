@@ -112,14 +112,17 @@ class LabelView extends Observable {
 
     if (withLabel) {
       return {
-        valueMin: parseInt(this.$elementMin.text(), 10),
-        valueMax: parseInt(this.$elementMax.text(), 10),
+        valueMin: parseFloat(this.$elementMin.text()),
+        valueMax: parseFloat(this.$elementMax.text()),
       };
     }
-    if (type && value) {
+    const isTypeAndValue = (data: ValueAndType): data is { type: 'min' | 'max'; value: number } => (
+      data.type !== undefined && data.value !== undefined
+    );
+    if (isTypeAndValue({ type, value })) {
       return {
-        valueMin: type === 'min' ? value : this.valueMin,
-        valueMax: type === 'max' ? value : this.valueMax,
+        valueMin: type === 'min' ? (value || this.valueMin) : this.valueMin,
+        valueMax: type === 'max' ? (value || this.valueMin) : this.valueMax,
       };
     }
     return { valueMin, valueMax };

@@ -8,6 +8,7 @@ import View from '../slider/views/View/View';
 describe('TrackView', () => {
   let trackView: TrackView;
   let view: View;
+  let controller: Controller;
   let options: SliderElementOptions;
 
   beforeAll(() => {
@@ -24,7 +25,7 @@ describe('TrackView', () => {
       $element,
     };
     const model = new Model();
-    const controller = new Controller(model);
+    controller = new Controller(model);
     model.setSettings(options);
     controller.init();
     trackView = controller.view.trackView;
@@ -83,13 +84,10 @@ describe('TrackView', () => {
   });
 
   describe('With scale', () => {
-    beforeAll(() => {
-      view.reloadSlider({
-        ...options, step: 100, isRange: false, isVertical: true,
-      });
-    });
-
     it('should move min thumb after click', () => {
+      controller.reloadSlider({
+        ...options, step: 100, isRange: false, isVertical: true, withScale: true,
+      });
       const event = createEvent({ type: 'click', clientX: 0, clientY: 0 });
       $('.js-slider__scale-item')[1].dispatchEvent(event);
       expect($('.js-slider__thumb').css('top')).toBe('50px');

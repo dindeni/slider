@@ -13,6 +13,7 @@ const sliderSettings = [
     isRange: true,
     withLabel: true,
     step: 100,
+    withScale: true,
   }, {
     min: 0,
     max: 1000,

@@ -3,7 +3,7 @@ import Observable from '../../Observable/Observable';
 
 class ScaleView extends Observable {
   private data: ScaleData = {
-    value: [], coordinates: [], shortValue: [], shortCoordinates: [],
+    values: [], coordinates: [], shortValues: [], shortCoordinates: [],
   };
 
   private $element: JQuery<HTMLElement>;
@@ -22,19 +22,21 @@ class ScaleView extends Observable {
   }
 
   public createElements(trackSize: number): void {
-    const { $element, isVertical } = this.settings;
+    const { $element, isVertical, withScale } = this.settings;
 
     this.generateCoordinates(trackSize);
-
     const $ul = $('<ul class="slider__scale"></ul>').appendTo($element);
-    this.data.shortValue.map((item, index) => {
-      const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
+    if (withScale) {
+      this.data.shortValues.map((item, index) => {
+        const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
-      const verticalCorrection = 7;
-      return isVertical
-        ? $itemElement.css({ top: `${(this.data.shortCoordinates[index]) - verticalCorrection}px` })
-        : $itemElement.css({ left: `${this.data.shortCoordinates[index]}px` });
-    });
+        const verticalCorrection = 7;
+        return isVertical
+          ? $itemElement.css({ top: `${(this.data.shortCoordinates[index]) - verticalCorrection}px` })
+          : $itemElement.css({ left: `${this.data.shortCoordinates[index]}px` });
+      });
+    }
+
     this.trackSize = trackSize;
     this.initializeElements();
   }
@@ -45,7 +47,7 @@ class ScaleView extends Observable {
     if (this.data.coordinates.length === 0) {
       this.generateCoordinates(this.trackSize);
     }
-    const getIndex = (): number => this.data.value.findIndex(
+    const getIndex = (): number => this.data.values.findIndex(
       (scaleValue) => scaleValue === value,
     );
 
@@ -55,6 +57,10 @@ class ScaleView extends Observable {
     if (index !== -1) {
       element.style[key] = `${this.data.coordinates[index].toString()}px`;
     }
+  }
+
+  public setValues(values: number[]): void {
+    this.data.values = values;
   }
 
   private getCurrentElement(type?: 'min' | 'max'): JQuery<HTMLElement> {
@@ -78,7 +84,6 @@ class ScaleView extends Observable {
     const { max, min, step } = this.settings;
 
     this.data.coordinates = [];
-    this.data.value = [];
 
     if (step) {
       let count = 0;
@@ -86,9 +91,8 @@ class ScaleView extends Observable {
       [...Array(arrayLength)].map(() => {
         const fractionOfValue = count / (max - min);
         const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
-        this.data.value.push(count + min);
         this.data.coordinates.push(coordinatesItems);
-        count += step;
+        count = parseFloat((count + step).toFixed(10));
         return count;
       });
 
@@ -97,16 +101,14 @@ class ScaleView extends Observable {
       if (isLastCoordinate) {
         this.data.coordinates.pop();
         this.data.coordinates.push(trackSize);
-        this.data.value.pop();
-        this.data.value.push(max);
       }
     }
     this.checkData();
   }
 
   private checkData(): void {
-    const { coordinates, value } = this.data;
-    let shortValue = value;
+    const { coordinates, values } = this.data;
+    let shortValue = values;
     let shortCoordinates = coordinates;
 
     while (shortValue.length > 10) {
@@ -120,7 +122,7 @@ class ScaleView extends Observable {
         (currentValue, index) => index === 0 || index % 2 === 0,
       );
     }
-    this.data.shortValue = shortValue;
+    this.data.shortValues = shortValue;
     this.data.shortCoordinates = shortCoordinates;
   }
 }
