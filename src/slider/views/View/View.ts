@@ -48,7 +48,7 @@ class View extends Observable {
     this.subscribeViews();
     this.trackView.getSize();
     if (withLabel) {
-      this.labelView.createElements(this.getTrackSize());
+      this.labelView.createElements();
     }
     if (step) {
       this.notifyAll({ type: EventTypes.SET_STEP_VALUES });

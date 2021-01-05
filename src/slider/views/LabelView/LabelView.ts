@@ -13,8 +13,6 @@ class LabelView extends Observable {
 
   private valueMax: number | undefined;
 
-  private trackSize: number;
-
   private readonly settings: SliderElementOptions;
 
   constructor(settings: SliderElementOptions) {
@@ -22,12 +20,11 @@ class LabelView extends Observable {
     this.settings = settings;
   }
 
-  public createElements(trackSize: number): void {
+  public createElements(): void {
     const {
       isRange, isVertical, value, valueMin, valueMax, min, $element,
     } = this.settings;
 
-    this.trackSize = trackSize;
     const thumbSet = $element.children('.js-slider__thumb');
     if (isRange) {
       this.createRangeLabel(thumbSet);
@@ -51,7 +48,9 @@ class LabelView extends Observable {
     const { withLabel } = this.settings;
 
     const labelElement = this.getCurrentElement(type);
-    if ((value || value === 0) && withLabel) {
+    const isValueAndWithLabel = (updatedValue?: number | null): updatedValue is
+      number => updatedValue !== undefined && withLabel === true;
+    if (isValueAndWithLabel(value)) {
       labelElement.text(value);
     }
     this.updateOptions(options);

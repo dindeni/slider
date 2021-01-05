@@ -101,14 +101,19 @@ class ThumbView extends Observable {
 
   private setPosition(coordinate: number): void {
     const { isRange, isVertical } = this.settings;
-    if (this.previousCoordinate !== coordinate && this.currentElement) {
+
+    const isCurrentElementAndCoordinateChanged = (element: HTMLElement | null): element is
+      HTMLElement => element !== undefined && this.previousCoordinate !== coordinate;
+    const isCurrentElementAndCoordinateChangedAndIsRange = (element: HTMLElement | null): element is
+      HTMLElement => isCurrentElementAndCoordinateChanged(element) && isRange;
+
+    if (isCurrentElementAndCoordinateChanged(this.currentElement)) {
       const key = isVertical ? 'top' : 'left';
       this.currentElement.style[key] = `${coordinate}px`;
       this.previousCoordinate = coordinate;
-
-      if (isRange) {
-        this.changeZIndex(this.currentElement);
-      }
+    }
+    if (isCurrentElementAndCoordinateChangedAndIsRange(this.currentElement)) {
+      this.changeZIndex(this.currentElement);
     }
   }
 
@@ -138,16 +143,18 @@ class ThumbView extends Observable {
   }
 
   private validateCurrentValue(options: ThumbPositionsOptions): void {
-    const {
-      thumbElement, shift, coordinateStart, coordinateMove,
-    } = options;
+    const { thumbElement, shift } = options;
     const { isRange, min, max } = this.settings;
 
-    if ((coordinateStart || coordinateStart === 0) && coordinateMove) {
+    const isCoordinateStartAndMove = (data: ThumbPositionsOptions): data is ThumbPositionsOptions
+      & { coordinateStart: number; coordinateMove: number } => (
+      data.coordinateStart !== undefined && data.coordinateMove !== undefined
+    );
+    if (isCoordinateStartAndMove(options)) {
+      const { coordinateStart, coordinateMove } = options;
       this.setDistance({ coordinateStart, coordinateMove });
     }
-    const distance = (coordinateStart || coordinateStart === 0) ? this.distance + shift : shift;
-
+    const distance = typeof options.coordinateStart === 'number' ? this.distance + shift : shift;
     const currentValue: number = (min + (max - min) * (distance / this.trackSize));
 
     if (isRange) {
@@ -216,15 +223,7 @@ class ThumbView extends Observable {
     const isTargetThumbOrLabel = (isTargetLabel || targetElement.classList.contains('js-slider__thumb'));
     if (isTargetThumbOrLabel) {
       this.currentElement = isTargetLabel ? targetElement.parentElement : targetElement;
-
-      const { isVertical } = this.settings;
-      if (isVertical && this.currentElement) {
-        this.coordinateYStart = event.clientY;
-        this.shift = parseFloat(this.currentElement.style.top);
-      } else if (this.currentElement) {
-        this.coordinateXStart = event.clientX;
-        this.shift = parseFloat(this.currentElement.style.left);
-      }
+      this.setCoordinateStart({ event, element: this.currentElement });
 
       const handleDocumentMouseup = (): void => {
         document.removeEventListener('mousemove', this.handleDocumentMousemove);
@@ -233,6 +232,25 @@ class ThumbView extends Observable {
 
       document.addEventListener('mousemove', this.handleDocumentMousemove);
       document.addEventListener('mouseup', handleDocumentMouseup);
+    }
+  }
+
+  private setCoordinateStart(options: { event: MouseEvent; element: HTMLElement | null }): void {
+    const { isVertical } = this.settings;
+    const { event, element } = options;
+
+    const isCurrentElementAndVertical = (currentElement: HTMLElement | null): currentElement is
+      HTMLElement => currentElement !== undefined && isVertical;
+    const isCurrentElementAndNotVertical = (currentElement: HTMLElement | null): currentElement is
+      HTMLElement => currentElement !== undefined && !isVertical;
+
+    if (isCurrentElementAndVertical(element)) {
+      this.coordinateYStart = event.clientY;
+      this.shift = parseFloat(element.style.top);
+    }
+    if (isCurrentElementAndNotVertical(element)) {
+      this.coordinateXStart = event.clientX;
+      this.shift = parseFloat(element.style.left);
     }
   }
 }

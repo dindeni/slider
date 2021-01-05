@@ -108,7 +108,7 @@ class Model extends Observable {
   private setStepValues(): void {
     const { min, max, step } = this.settings;
 
-    if (step) {
+    if (typeof step === 'number') {
       const length = Math.round((max - min) / step) + 1;
       const stepValues = new Array(length).fill(0);
       let value = min;

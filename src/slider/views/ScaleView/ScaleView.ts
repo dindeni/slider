@@ -85,7 +85,7 @@ class ScaleView extends Observable {
 
     this.data.coordinates = [];
 
-    if (step) {
+    if (typeof step === 'number') {
       let count = 0;
       const arrayLength = Math.round((max - min) / step) + 1;
       [...Array(arrayLength)].map(() => {
@@ -95,13 +95,11 @@ class ScaleView extends Observable {
         count = parseFloat((count + step).toFixed(10));
         return count;
       });
-
-      const isLastCoordinate = this.data.coordinates[
-        this.data.coordinates.length - 1] !== trackSize;
-      if (isLastCoordinate) {
-        this.data.coordinates.pop();
-        this.data.coordinates.push(trackSize);
-      }
+    }
+    const isLastCoordinate = this.data.coordinates[this.data.coordinates.length - 1] !== trackSize;
+    if (isLastCoordinate) {
+      this.data.coordinates.pop();
+      this.data.coordinates.push(trackSize);
     }
     this.checkData();
   }
