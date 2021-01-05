@@ -9,7 +9,7 @@ module.exports = merge(common, {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/pugTemplates/index.pug',
+      template: './src/demoPage/index/index.pug',
       filename: './index.html',
       inject: 'body',
     }),

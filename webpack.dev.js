@@ -15,7 +15,7 @@ module.exports = merge(common, {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/pugTemplates/index.pug',
+      template: './src/demoPage/index/index.pug',
       filename: `${path.resolve('./')}/index.html`,
       inject: 'body',
     }),
