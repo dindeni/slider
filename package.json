@@ -9,7 +9,8 @@
     "build": "webpack --config webpack.prod.js",
     "deploy": "webpack --config webpack.prod.js --withDemoPage && gh-pages -d build",
     "test": "jest --watch",
-    "test-coverage": "jest --coverage"
+    "test-coverage": "jest --coverage",
+    "lint": "eslint --ext .ts --ext .js ./src"
   },
   "homepage": "https://dindeni.github.io/slider",
   "author": "Dmitrij Lagutin",
