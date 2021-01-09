@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -5,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
+  entry: ['jquery', './src/ts/app.ts'],
   mode: 'development',
   devServer: {
     host: '0.0.0.0',
@@ -19,8 +21,11 @@ module.exports = merge(common, {
       filename: `${path.resolve('./')}/index.html`,
       inject: 'body',
     }),
-    new MiniCssExtractPlugin({
-      filename: './style.css',
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'window.$': 'jquery',
     }),
   ],
   module: {
@@ -47,6 +52,7 @@ module.exports = merge(common, {
           options: {
             outputPath: './files',
             publicPath: './files',
+
           },
         },
       },

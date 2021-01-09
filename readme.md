@@ -12,6 +12,10 @@
 
   `npm run build`
 
+#### Создание production версии проекта c демо страницей:
+
+`npm run build:withDemoPage`
+
 #### Разворачивание проекта на github pages:
 
   `npm run deploy`

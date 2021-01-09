@@ -1,9 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const config = {
-  entry: ['jquery', './src/ts/app.ts'],
+module.exports = {
+  entry: './src/ts/app.ts',
   output: {
     path: path.resolve(__dirname, './'),
     filename: './bundle.js',
@@ -22,13 +23,7 @@ const config = {
           presets: [
             ['@babel/preset-env',
               {
-                targets: {
-                  edge: '17',
-                  firefox: '60',
-                  chrome: '67',
-                  safari: '11.1',
-
-                },
+                targets: '> 0.25%, not dead',
                 useBuiltIns: 'usage',
               },
             ],
@@ -47,12 +42,6 @@ const config = {
     ],
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      'window.$': 'jquery',
-    }),
     new webpack.LoaderOptionsPlugin({
       options: {
         postcss: [
@@ -60,7 +49,8 @@ const config = {
         ],
       },
     }),
+    new MiniCssExtractPlugin({
+      filename: './style.css',
+    }),
   ],
 };
-
-module.exports = config;
