@@ -43,15 +43,21 @@ describe('View', () => {
   });
 
   it('should reload slider', () => {
-    $element = $('<div class="slider js-slider"></div>');
-    $element.appendTo(document.body);
-    view.reloadSlider({ ...options, $element, isRange: false });
+    view.reloadSlider({
+      ...options, isRange: false, withProgress: false,
+    });
     expect($('.js-slider__thumb_type_min').length).toBe(0);
+    expect($('.js-slider__progress').length).toBe(0);
   });
 
   it('should call reload after resize', () => {
     const spy = jest.spyOn(view, 'reloadSlider');
     $(window).trigger('resize');
     expect(spy).toBeCalled();
+  });
+
+  it('should update slider(withProgress = false)', () => {
+    view.updateSlider({ value: 50 });
+    expect(view.settings.value).toBe(50);
   });
 });

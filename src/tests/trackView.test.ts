@@ -65,6 +65,14 @@ describe('TrackView', () => {
     expect($('.js-slider__thumb_type_max').css('left')).toBe('150px');
   });
 
+  it('should not move thumb after click', () => {
+    const event = createEvent({ type: 'click', clientX: 150, clientY: 0 });
+    const $thumb = $('.js-slider__thumb_type_max');
+    const coordinate = $thumb.css('left');
+    $thumb[0].dispatchEvent(event);
+    expect(coordinate).toBe($thumb.css('left'));
+  });
+
   it('should remove click event', () => {
     const spy = jest.spyOn(trackView, 'removeEvent');
     view.reloadSlider(options);

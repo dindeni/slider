@@ -107,13 +107,13 @@ class ThumbView extends Observable {
     const isCurrentElementAndCoordinateChangedAndIsRange = (element: HTMLElement | null): element is
       HTMLElement => isCurrentElementAndCoordinateChanged(element) && isRange;
 
+    if (isCurrentElementAndCoordinateChangedAndIsRange(this.currentElement)) {
+      this.changeZIndex(this.currentElement);
+    }
     if (isCurrentElementAndCoordinateChanged(this.currentElement)) {
       const key = isVertical ? 'top' : 'left';
       this.currentElement.style[key] = `${coordinate}px`;
       this.previousCoordinate = coordinate;
-    }
-    if (isCurrentElementAndCoordinateChangedAndIsRange(this.currentElement)) {
-      this.changeZIndex(this.currentElement);
     }
   }
 
@@ -128,11 +128,8 @@ class ThumbView extends Observable {
   private changeZIndex(element: HTMLElement): void {
     const { isVertical } = this.settings;
 
-    const coordinateOfMiddle = this.getCoordinatesOfMiddle();
-    const isLessMiddle = (isVertical && element.getBoundingClientRect().top
-      + window.scrollY < coordinateOfMiddle)
-      || (!isVertical && element.getBoundingClientRect().left < coordinateOfMiddle);
-
+    const key = isVertical ? 'top' : 'left';
+    const isLessMiddle = parseFloat(element.style[key]) < (this.trackSize / 2);
     if (isLessMiddle) {
       this.$elementMax.css({ zIndex: '200' });
       this.$elementMin.css({ zIndex: '100' });
@@ -167,13 +164,6 @@ class ThumbView extends Observable {
     } else {
       this.notifyAll({ value: { value: currentValue }, type: EventTypes.VALIDATE_VALUE });
     }
-  }
-
-  private getCoordinatesOfMiddle(): number {
-    const { isVertical, $element } = this.settings;
-    const key = isVertical ? 'top' : 'left';
-    const startPosition = $element.find('.js-slider__track')[0].getBoundingClientRect()[key];
-    return startPosition + (this.trackSize / 2);
   }
 
   private getThumbCoordinate(value?: number): number {

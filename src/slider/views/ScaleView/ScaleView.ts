@@ -44,9 +44,6 @@ class ScaleView extends Observable {
   public update(options: ValueAndType): void {
     const { value, type } = options;
 
-    if (this.data.coordinates.length === 0) {
-      this.generateCoordinates(this.trackSize);
-    }
     const getIndex = (): number => this.data.values.findIndex(
       (scaleValue) => scaleValue === value,
     );

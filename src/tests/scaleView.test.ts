@@ -76,4 +76,16 @@ describe('ScaleView', () => {
       });
     });
   });
+
+  it('should not update thumb position', () => {
+    const $min = $('.js-slider__thumb_type_min');
+    const coordinateLeft = $min.css('left');
+    scaleView.update({ value: 43, type: 'min' });
+    expect($min.css('left')).toBe(coordinateLeft);
+  });
+
+  it('should create elements(withScale = false)', () => {
+    controller.reloadSlider({ ...options, withScale: false });
+    expect($('.js-slider__scale-item').length).toBe(0);
+  });
 });
