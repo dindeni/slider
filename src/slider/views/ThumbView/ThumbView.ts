@@ -47,7 +47,7 @@ class ThumbView extends Observable {
   }
 
   public createElements(): void {
-    const { isRange, $element } = this.settings;
+    const { isRange, $element, isVertical } = this.settings;
 
     const classes = ['slider__thumb', 'js-slider__thumb'];
     if (isRange) {
@@ -61,7 +61,11 @@ class ThumbView extends Observable {
       this.$element = $('<div></div>').addClass(classes.join(' '));
       this.$element.appendTo($element);
     }
+
     this.addEvents();
+    if (isVertical) {
+      $element.addClass('slider_type_vertical');
+    } else $element.removeClass('slider_type_vertical');
   }
 
   public update(options: ValueAndType): void {

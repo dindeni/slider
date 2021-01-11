@@ -18,11 +18,13 @@ class LabelView extends Observable {
   constructor(settings: SliderElementOptions) {
     super();
     this.settings = settings;
+    this.valueMin = settings.valueMin;
+    this.valueMax = settings.valueMax;
   }
 
   public createElements(): void {
     const {
-      isRange, isVertical, value, valueMin, valueMax, min, $element,
+      isRange, isVertical, value, min, $element,
     } = this.settings;
 
     const thumbSet = $element.children('.js-slider__thumb');
@@ -35,12 +37,6 @@ class LabelView extends Observable {
         this.$element.addClass('slider__label_type_vertical');
       }
     }
-
-    if (isVertical) {
-      $element.addClass('slider_type_vertical');
-    } else $element.removeClass('slider_type_vertical');
-    this.valueMin = valueMin;
-    this.valueMax = valueMax;
   }
 
   public updateValue(options: ValueAndType): void {
