@@ -51,7 +51,7 @@ const config = {
 };
 
 const configWithDemoPage = {
-  entry: ['jquery', './src/ts/app.ts'],
+  entry: ['jquery', './src/app.ts'],
   module: {
     rules: [
       loadFiles(true),
@@ -73,7 +73,7 @@ const configWithDemoPage = {
 };
 
 const configOnlySlider = {
-  entry: './src/ts/app.ts',
+  entry: './src/app.ts',
   output: {
     path: path.resolve(__dirname, './build'),
   },

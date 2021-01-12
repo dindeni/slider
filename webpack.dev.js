@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
-  entry: ['jquery', './src/ts/app.ts'],
+  entry: ['jquery', './src/app.ts'],
   mode: 'development',
   devServer: {
     host: '0.0.0.0',
