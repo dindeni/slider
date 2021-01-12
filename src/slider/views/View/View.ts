@@ -9,7 +9,6 @@ import ThumbView from '../ThumbView/ThumbView';
 import LabelView from '../LabelView/LabelView';
 import ProgressView from '../ProgressView/ProgressView';
 
-
 class View extends Observable {
   constructor() {
     super();

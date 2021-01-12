@@ -25,6 +25,14 @@ module.exports = {
   'no-unused-expressions': [2, {allowTernary: true}],
   'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}],
   '@typescript-eslint/no-explicit-any': 'error',
+  'import/extensions': [
+    'error',
+    'ignorePackages',
+    {
+      'js': 'never',
+      'ts': 'never',
+    }
+  ]
   },
   settings: {
     'import/resolver': {

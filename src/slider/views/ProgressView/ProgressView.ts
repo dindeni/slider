@@ -13,7 +13,6 @@ class ProgressView {
 
   private size: number;
 
-
   constructor(settings: SliderElementOptions) {
     this.settings = settings;
   }
