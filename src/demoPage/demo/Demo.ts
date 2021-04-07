@@ -1,51 +1,14 @@
 import autoBind from 'auto-bind';
 
 import {
-  Slider, SliderOptions, SliderReturnOption, MethodOption, IsValueMinAndValueMaxReturnValue,
+  SliderOptions, SliderReturnOption, MethodOption, IsValueMinAndValueMaxReturnValue,
 } from '../../types/types';
 import '../../slider/sliderInit/sliderInit';
-
-interface ObservingInputOptions extends Pick<Slider, 'step'> {
-  element: HTMLElement;
-}
-
-interface DemoElementsAndEventOptions {
-  event: Event;
-  element: HTMLElement;
-  formElement: HTMLElement;
-}
-
-interface DemoElementChangeOptions extends DemoElementsAndEventOptions {
-  step: number | undefined;
-}
-
-interface OptionsForUpdatingSlider extends DemoElementsAndEventOptions {
-  settings: Slider;
-}
-
-interface ElementsCreationOptions {
-  settings: Slider;
-  form: HTMLElement;
-}
-
-interface ErrorCreationOptions {
-  element: HTMLInputElement;
-  text: string;
-}
-
-interface ValidateOptions {
-  element: HTMLInputElement;
-  value: number;
-}
-
-interface SetInputValueOptions {
-  type: string;
-  input: HTMLInputElement;
-  key: keyof SliderOptions;
-}
-
-type SettingsKeyOptions = 'value' | 'valueMin' | 'valueMax' | 'min' | 'max' | 'withProgress'
-  | 'isVertical' | 'isRange' | 'withLabel' | 'step' | 'withScale';
+import {
+  ObservingInputOptions, SettingsKeyOptions, DemoElementChangeOptions,
+  OptionsForUpdatingSlider, SetInputValueOptions, ElementsCreationOptions, ErrorCreationOptions,
+  CheckRangeValue, ValidateOptions,
+} from './types';
 
 class Demo {
   private slider: SliderReturnOption;
@@ -77,7 +40,7 @@ class Demo {
     this.$sliderElement = $(this.wrapper).find('.js-slider');
     this.slider = this.$sliderElement.slider({
       ...this.settings,
-      method: (options: SliderOptions) => Demo.updateInputValue({
+      method: (options: SliderOptions) => this.updateInputValue({
         settings: options,
         wrapper: this.wrapper,
       }),
@@ -115,15 +78,17 @@ class Demo {
     const targetElement = event.target as HTMLInputElement;
     const targetValue = Number(targetElement.value);
 
-    this.getInputValues(event);
-
     const isValidValueOrSetting = targetElement.classList.contains('js-demo__field-value')
       ? this.validateValue({ element: targetElement, value: targetValue })
       : this.validateSettings(targetElement);
+    const stepInput = this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement;
     const isTargetParentAndValidValueOrSetting = (targetParent: ParentNode | null):
-      targetParent is HTMLElement => targetParent !== undefined && isValidValueOrSetting === true;
+      targetParent is HTMLElement => targetParent !== undefined && isValidValueOrSetting === true
+      && this.validateSettings(stepInput) === true;
     const target = event.currentTarget as HTMLElement;
+
     if (isTargetParentAndValidValueOrSetting(target.parentNode)) {
+      this.getInputValues(event);
       const form = target.cloneNode(true);
       target.parentNode.replaceChild(form, target);
       this.correctValues();
@@ -174,10 +139,11 @@ class Demo {
     });
   }
 
-  private static updateInputValue(options:
+  private updateInputValue(options:
     { settings: SliderOptions; wrapper: HTMLElement }): void {
     const { isRange, value } = options.settings;
     const { wrapper } = options;
+    this.settings = options.settings;
 
     const isRangeAndValueMinAndValueMax = (data: SliderOptions): data is
       IsValueMinAndValueMaxReturnValue => (
@@ -189,6 +155,8 @@ class Demo {
       const inputElementMax = wrapper.querySelector('.js-demo__field-value_type_max');
       (inputElementMin as HTMLInputElement).value = valueMin.toString();
       (inputElementMax as HTMLInputElement).value = valueMax.toString();
+      this.validateValue({ element: inputElementMin as HTMLInputElement, value: valueMin });
+      this.validateValue({ element: inputElementMax as HTMLInputElement, value: valueMax });
     } else if (value) {
       const inputElement = wrapper.querySelector('.js-demo__field-value');
       (inputElement as HTMLInputElement).value = value.toString();
@@ -206,6 +174,9 @@ class Demo {
         input.checked = Boolean(settings[key]);
       } else if (settings[key] !== undefined) {
         input.value = (settings[key] || 0).toString();
+      }
+      if (input.classList.contains('js-demo__field-step')) {
+        input.value = (settings[key] || 1).toString();
       }
     };
     if (formElement) {
@@ -241,8 +212,8 @@ class Demo {
   private validateValue(options: ValidateOptions): boolean {
     const { element, value } = options;
     const { min, max, step } = this.settings;
-    Demo.deleteErrorElement(element);
 
+    Demo.deleteErrorElement(element);
     const checkRangeLimits = (number: number): boolean => {
       if (!number) {
         return true;
@@ -254,14 +225,16 @@ class Demo {
       return Demo.createErrorElement({ element, text: 'invalid value' });
     };
 
-    const isValidValues = checkRangeLimits(value) && this.checkRangeValue(options);
+    const isValidValues = checkRangeLimits(value) && this.checkRangeValue();
 
     const checkStepValue = (number: number): boolean => {
       const isValidValuesAndStep = (stepValue?: number): stepValue is
         number => isValidValues && typeof stepValue === 'number';
       if (isValidValuesAndStep(step)) {
         Demo.deleteErrorElement(element);
-        return (number - min) % step === 0 || Demo.createErrorElement({ element, text: 'value must be a multiple of step' });
+        return ((number - min) % step === 0) || Demo.createErrorElement(
+          { element, text: 'value must be a multiple of step and above zero' },
+        );
       }
       return false;
     };
@@ -272,19 +245,35 @@ class Demo {
     return isValidValues;
   }
 
-  private checkRangeValue(options: ValidateOptions): boolean {
+  private checkRangeValue(): boolean {
     const { isRange, valueMin, valueMax } = this.settings;
-    const { value, element } = options;
 
+    const minElement = this.wrapper.querySelector('.js-demo__field-value_type_min') as HTMLInputElement;
+    const maxElement = this.wrapper.querySelector('.js-demo__field-value_type_max') as HTMLInputElement;
+    const inputValueMin = parseFloat(minElement.value);
+    const inputValueMax = parseFloat(maxElement.value);
+
+    Demo.deleteErrorElement(minElement);
+    Demo.deleteErrorElement(maxElement);
     if (isRange) {
-      const isMin = element.classList.contains('js-demo__field-value_type_min');
-      switch (true) {
-        case isMin && typeof valueMax === 'number' && value > valueMax:
-          return Demo.createErrorElement({ element, text: 'invalid value min' });
-        case !isMin && typeof valueMin === 'number' && value < valueMin:
-          return Demo.createErrorElement({ element, text: 'invalid value max' });
-        default: return true;
-      }
+      const checkValue = ({ inputValue, inputElement }: CheckRangeValue): boolean => {
+        switch (true) {
+          case inputElement === minElement && typeof valueMax === 'number' && inputValue > valueMax:
+            return Demo.createErrorElement({
+              element: inputElement,
+              text: 'invalid value min',
+            });
+          case inputElement !== minElement && typeof valueMin === 'number' && inputValue < valueMin:
+            return Demo.createErrorElement({
+              element: inputElement,
+              text: 'invalid value max',
+            });
+          default:
+            return true;
+        }
+      };
+      return checkValue({ inputValue: inputValueMin, inputElement: minElement })
+        && checkValue({ inputValue: inputValueMax, inputElement: maxElement });
     } return true;
   }
 
@@ -293,11 +282,14 @@ class Demo {
     const { min, max } = this.settings;
 
     Demo.deleteErrorElement(element);
+    const stepInput = this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement;
+    const stepValue = parseFloat(stepInput.value);
     switch (true) {
-      case min > max: Demo.createErrorElement({ element, text: 'must be less than max' });
-        return false;
-      case max < min: Demo.createErrorElement({ element, text: 'must be greater than min' });
-        return false;
+      case min > max: return Demo.createErrorElement({ element, text: 'must be less than max' });
+      case max < min: return Demo.createErrorElement({ element, text: 'must be greater than min' });
+      case element === stepInput && stepValue <= 0: return Demo.createErrorElement(
+        { element, text: 'step must be above zero' },
+      );
       default: return true;
     }
   }
