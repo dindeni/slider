@@ -6,7 +6,7 @@ import {
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 
-class ThumbView extends Observable {
+class Thumb extends Observable {
   public size: number;
 
   private $element: JQuery<HTMLElement>;
@@ -249,4 +249,4 @@ class ThumbView extends Observable {
   }
 }
 
-export default ThumbView;
+export default Thumb;

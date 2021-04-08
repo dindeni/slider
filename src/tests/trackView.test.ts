@@ -1,13 +1,13 @@
-import TrackView from '../slider/views/TrackView/TrackView';
+import Track from '../slider/views/Track/Track';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
 import createEvent from './events';
-import View from '../slider/views/View/View';
+import Main from '../slider/views/Main/Main';
 
-describe('TrackView', () => {
-  let trackView: TrackView;
-  let view: View;
+describe('Track', () => {
+  let trackView: Track;
+  let view: Main;
   let controller: Controller;
   let options: SliderElementOptions;
 

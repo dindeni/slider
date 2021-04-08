@@ -1,9 +1,9 @@
-import ProgressView from '../slider/views/ProgressView/ProgressView';
+import Progress from '../slider/views/Progress/Progress';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 
-describe('ProgressView', () => {
-  let progressView: ProgressView;
+describe('Progress', () => {
+  let progressView: Progress;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');

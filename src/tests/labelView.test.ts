@@ -1,10 +1,10 @@
-import LabelView from '../slider/views/LabelView/LabelView';
+import Label from '../slider/views/Label/Label';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
 
 describe('ProgressView', () => {
-  let labelView: LabelView;
+  let labelView: Label;
   let controller: Controller;
   let options: SliderElementOptions;
 

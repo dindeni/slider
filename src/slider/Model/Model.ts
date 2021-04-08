@@ -54,7 +54,7 @@ class Model extends Observable {
       const checkedType = !type && isRange
         ? Model.checkValueType({ value, valueMin, valueMax })
         : type;
-      validValue = Model.checkValueBetweenValueMinAndValueMax({
+      validValue = Model.checkValueBetweenMinAndMax({
         value: validValue, valueMin, valueMax, type: checkedType,
       });
       this.notifyAll(
@@ -82,7 +82,7 @@ class Model extends Observable {
     return value;
   }
 
-  private static checkValueBetweenValueMinAndValueMax(options: CheckTypeOptions
+  private static checkValueBetweenMinAndMax(options: CheckTypeOptions
     & { type?: string }): number {
     const {
       value, valueMin, valueMax, type,

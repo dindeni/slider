@@ -4,7 +4,7 @@ import { SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 
-class TrackView extends Observable {
+class Track extends Observable {
   public size: number;
 
   private $trackElement: JQuery<HTMLElement>;
@@ -113,4 +113,4 @@ class TrackView extends Observable {
   }
 }
 
-export default TrackView;
+export default Track;

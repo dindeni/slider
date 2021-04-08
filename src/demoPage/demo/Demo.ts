@@ -3,7 +3,7 @@ import autoBind from 'auto-bind';
 import {
   SliderOptions, SliderReturnOption, MethodOption, IsValueMinAndValueMaxReturnValue,
 } from '../../types/types';
-import '../../slider/sliderInit/sliderInit';
+import '../../slider';
 import {
   ObservingInputOptions, SettingsKeyOptions, DemoElementChangeOptions,
   OptionsForUpdatingSlider, SetInputValueOptions, ElementsCreationOptions, ErrorCreationOptions,

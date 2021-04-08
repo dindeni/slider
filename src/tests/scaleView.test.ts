@@ -1,14 +1,14 @@
-import ScaleView from '../slider/views/ScaleView/ScaleView';
+import Scale from '../slider/views/Scale/Scale';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
-import View from '../slider/views/View/View';
+import Main from '../slider/views/Main/Main';
 
-describe('ScaleView', () => {
-  let scaleView: ScaleView;
+describe('Scale', () => {
+  let scaleView: Scale;
   let controller: Controller;
   let options: SliderElementOptions;
-  let view: View;
+  let view: Main;
 
   beforeAll(() => {
     const $element = $('<div class="slider js-slider"></div>');

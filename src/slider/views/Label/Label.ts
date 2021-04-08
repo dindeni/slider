@@ -2,7 +2,7 @@ import { SliderElementOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
 
-class LabelView extends Observable {
+class Label extends Observable {
   private $element: JQuery<HTMLElement>;
 
   private $elementMin: JQuery<HTMLElement>;
@@ -124,4 +124,4 @@ class LabelView extends Observable {
   }
 }
 
-export default LabelView;
+export default Label;

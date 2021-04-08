@@ -1,11 +1,11 @@
-import View from '../slider/views/View/View';
+import Main from '../slider/views/Main/Main';
 import { SliderElementOptions } from '../types/types';
 import Model from '../slider/Model/Model';
 import Controller from '../slider/Controller/Controller';
 
-describe('View', () => {
+describe('Main', () => {
   let options: SliderElementOptions;
-  let view: View;
+  let view: Main;
   let $element: JQuery<HTMLElement>;
   let $trackElement: JQuery<HTMLElement>;
 

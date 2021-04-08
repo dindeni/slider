@@ -1,6 +1,6 @@
-import { SliderOptions, SliderReturnOption } from '../../types/types';
-import Controller from '../Controller/Controller';
-import Model from '../Model/Model';
+import { SliderOptions, SliderReturnOption } from '../types/types';
+import Controller from './Controller/Controller';
+import Model from './Model/Model';
 
 declare global {
   interface JQuery {

@@ -1,14 +1,14 @@
-import ThumbView from '../slider/views/ThumbView/ThumbView';
+import Thumb from '../slider/views/Thumb/Thumb';
 import Controller from '../slider/Controller/Controller';
 import Model from '../slider/Model/Model';
 import { SliderElementOptions } from '../types/types';
 import createEvent from './events';
-import View from '../slider/views/View/View';
+import Main from '../slider/views/Main/Main';
 
-describe('ThumbView', () => {
-  let view: View;
+describe('Thumb', () => {
+  let view: Main;
   let options: SliderElementOptions;
-  let thumbView: ThumbView;
+  let thumbView: Thumb;
   let controller: Controller;
   let $thumbMin: JQuery<HTMLElement>;
   let $thumbMax: JQuery<HTMLElement>;

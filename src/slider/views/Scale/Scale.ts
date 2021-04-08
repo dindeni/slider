@@ -1,7 +1,7 @@
 import { ScaleData, SliderElementOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
-class ScaleView extends Observable {
+class Scale extends Observable {
   private data: ScaleData = {
     values: [], coordinates: [], shortValues: [], shortCoordinates: [],
   };
@@ -122,4 +122,4 @@ class ScaleView extends Observable {
   }
 }
 
-export default ScaleView;
+export default Scale;

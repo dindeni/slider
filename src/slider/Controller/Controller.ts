@@ -2,12 +2,12 @@ import autoBind from 'auto-bind';
 
 import { SliderElementOptions, ValidationOptions } from '../../types/types';
 import Model from '../Model/Model';
-import View from '../views/View/View';
+import Main from '../views/Main/Main';
 import Observable from '../Observable/Observable';
 import EventTypes from '../constants';
 
 class Controller extends Observable {
-  public readonly view: View = new View();
+  public readonly view: Main = new Main();
 
   private model: Model;
 

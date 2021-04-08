@@ -3,13 +3,13 @@ import autoBind from 'auto-bind';
 import { SliderElementOptions, ValidationOptions, ValueAndType } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 import EventTypes from '../../constants';
-import ScaleView from '../ScaleView/ScaleView';
-import TrackView from '../TrackView/TrackView';
-import ThumbView from '../ThumbView/ThumbView';
-import LabelView from '../LabelView/LabelView';
-import ProgressView from '../ProgressView/ProgressView';
+import Scale from '../Scale/Scale';
+import Track from '../Track/Track';
+import Thumb from '../Thumb/Thumb';
+import Label from '../Label/Label';
+import Progress from '../Progress/Progress';
 
-class View extends Observable {
+class Main extends Observable {
   constructor() {
     super();
     autoBind(this);
@@ -17,15 +17,15 @@ class View extends Observable {
 
   public settings: SliderElementOptions;
 
-  public scaleView: ScaleView;
+  public scaleView: Scale;
 
-  public trackView: TrackView;
+  public trackView: Track;
 
-  public labelView: LabelView;
+  public labelView: Label;
 
-  public thumbView: ThumbView;
+  public thumbView: Thumb;
 
-  public progressView: ProgressView;
+  public progressView: Progress;
 
   public createElements(options: SliderElementOptions): void {
     const {
@@ -33,16 +33,16 @@ class View extends Observable {
     } = options;
 
     this.settings = options;
-    this.thumbView = new ThumbView(options);
-    this.trackView = new TrackView(options);
+    this.thumbView = new Thumb(options);
+    this.trackView = new Track(options);
     this.thumbView.createElements();
 
     if (isVertical) {
       this.trackView.makeVertical();
     }
-    this.scaleView = new ScaleView(options);
-    this.labelView = new LabelView(options);
-    this.progressView = new ProgressView(options);
+    this.scaleView = new Scale(options);
+    this.labelView = new Label(options);
+    this.progressView = new Progress(options);
 
     this.subscribeViews();
     this.trackView.getSize();
@@ -144,4 +144,4 @@ class View extends Observable {
   }
 }
 
-export default View;
+export default Main;

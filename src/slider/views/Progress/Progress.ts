@@ -1,6 +1,6 @@
 import { SliderElementOptions } from '../../../types/types';
 
-class ProgressView {
+class Progress {
   private readonly settings: SliderElementOptions;
 
   private $progress: JQuery<HTMLElement>;
@@ -56,4 +56,4 @@ class ProgressView {
   }
 }
 
-export default ProgressView;
+export default Progress;
