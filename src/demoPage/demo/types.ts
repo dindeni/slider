@@ -1,4 +1,19 @@
-import { Slider, SliderOptions } from '../../types/types';
+import { MethodOption, SliderOptions } from '../../types/types';
+
+export interface Slider {
+  min?: number;
+  max?: number;
+  isVertical?: boolean;
+  isRange?: boolean;
+  withProgress?: boolean;
+  step?: number;
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
+  withLabel?: boolean;
+  withScale?: boolean;
+  method?: MethodOption;
+}
 
 export interface ObservingInputOptions extends Pick<Slider, 'step'> {
   element: HTMLElement;
@@ -15,7 +30,7 @@ export interface DemoElementChangeOptions extends DemoElementsAndEventOptions {
 }
 
 export interface OptionsForUpdatingSlider extends DemoElementsAndEventOptions {
-  settings: Slider;
+  settings: SliderOptions;
 }
 
 export interface ElementsCreationOptions {

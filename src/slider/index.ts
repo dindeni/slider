@@ -1,17 +1,17 @@
-import { SliderOptions, SliderReturnOption } from '../types/types';
+import { PluginOptions, SliderReturnOption } from '../types/types';
 import Controller from './Controller/Controller';
 import Model from './Model/Model';
 
 declare global {
   interface JQuery {
-    slider(options?: SliderOptions): SliderReturnOption;
+    slider(options?: PluginOptions): SliderReturnOption;
     }
 }
 
 /* eslint-disable func-names */
-$.fn.slider = function (options?: SliderOptions): SliderReturnOption {
+$.fn.slider = function (options?: PluginOptions): SliderReturnOption {
   const optionsDefault = {
-    progress: false,
+    withProgress: false,
     min: 0,
     max: 100,
     isVertical: false,
@@ -27,18 +27,13 @@ $.fn.slider = function (options?: SliderOptions): SliderReturnOption {
   model.setSettings(config);
 
   controller.init();
-  this.data = {};
-  const isNotOptions = options && Object.values(options).length === 0;
-  if (isNotOptions) {
-    return this;
-  }
+  this.settings = config;
 
   if (config.method) {
-    this.data = { method: controller.passMethod(config.method) };
+    this.method = controller.passMethod(config.method);
   }
-
-  this.data = { ...this.data, reload: controller.reloadSlider };
-  return this.data;
+  this.reload = (reloadOptions?: PluginOptions): void => controller.reloadSlider(reloadOptions);
+  return this;
 };
 
 export default $.fn.slider;

@@ -1,9 +1,7 @@
 import Demo from './Demo';
 
 const sliderSettings = [
-  {
-    min: 100, max: 500, withProgress: true, isVertical: false, isRange: true, withLabel: true,
-  }, {
+  {}, {
     min: 0, max: 100, withProgress: true, isVertical: true, isRange: true, withLabel: true,
   }, {
     min: 0,

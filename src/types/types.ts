@@ -12,10 +12,28 @@ export interface Slider {
   withScale?: boolean;
 }
 
+export interface PluginOptions {
+  min?: number;
+  max?: number;
+  isVertical?: boolean;
+  isRange?: boolean;
+  withProgress?: boolean;
+  step?: number;
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
+  withLabel?: boolean;
+  withScale?: boolean;
+  method?: MethodOption;
+}
+
 export type MethodOption = (options: SliderElementOptions) => void;
 
-export type SliderReturnOption = { reload: MethodOption; method: MethodOption }
-  | JQuery<HTMLElement>;
+export interface SliderReturnOption {
+  reload: MethodOption;
+  method: MethodOption;
+  settings: Slider;
+}
 
 export interface SliderElementOptions extends Slider {
   $element: JQuery<HTMLElement>;
@@ -64,5 +82,5 @@ export interface ThumbValueOptions {
   value: number;
 }
 
-export type IsValueMinAndValueMaxReturnValue = Omit<SliderElementOptions, 'valueMin' | 'valueMax'>
+export type IsMinAndMaxReturnValue = Omit<SliderElementOptions, 'valueMin' | 'valueMax'>
   & { valueMin: number; valueMax: number };

@@ -6,6 +6,21 @@ import Main from '../views/Main/Main';
 import Observable from '../Observable/Observable';
 import EventTypes from '../constants';
 
+export interface Slider {
+  min?: number;
+  max?: number;
+  isVertical?: boolean;
+  isRange?: boolean;
+  withProgress?: boolean;
+  step?: number;
+  valueMin?: number;
+  valueMax?: number;
+  value?: number;
+  withLabel?: boolean;
+  withScale?: boolean;
+  method?: (options: Slider) => void;
+}
+
 class Controller extends Observable {
   public readonly view: Main = new Main();
 
@@ -23,11 +38,11 @@ class Controller extends Observable {
     this.view.createElements(this.model.settings);
   }
 
-  public passMethod(method: (options: SliderElementOptions) => void): void {
+  public passMethod(method: (options?: Slider) => void): void {
     method(this.model.settings);
   }
 
-  public reloadSlider(options: SliderElementOptions): void {
+  public reloadSlider(options?: Slider): void {
     this.model.setSettings(options);
     this.view.reloadSlider(this.model.settings);
     this.updateOptions(this.model.settings);

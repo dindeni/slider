@@ -1,5 +1,9 @@
 import {
-  ValidationOptions, SliderElementOptions, ValueAndType, IsValueMinAndValueMaxReturnValue,
+  ValidationOptions,
+  SliderElementOptions,
+  ValueAndType,
+  IsMinAndMaxReturnValue,
+  PluginOptions,
 } from '../../types/types';
 import Observable from '../Observable/Observable';
 import EventTypes from '../constants';
@@ -15,7 +19,7 @@ class Model extends Observable {
 
   public stepValues: number[];
 
-  public setSettings(options: SliderElementOptions): void {
+  public setSettings(options?: PluginOptions): void {
     this.settings = { ...this.settings, ...options };
 
     this.checkSettingsValue();
@@ -45,7 +49,7 @@ class Model extends Observable {
     validValue = step ? this.validateStepValue(validValue) : Math.round(validValue);
 
     const isValueMinAndValueMax = (data: SliderElementOptions): data is
-      IsValueMinAndValueMaxReturnValue => (
+      IsMinAndMaxReturnValue => (
       data.valueMin !== undefined && data.valueMax !== undefined
     );
     if (isValueMinAndValueMax(this.settings)) {

@@ -1,7 +1,10 @@
 import autoBind from 'auto-bind';
 
 import {
-  SliderOptions, SliderReturnOption, MethodOption, IsValueMinAndValueMaxReturnValue,
+  SliderOptions,
+  SliderReturnOption,
+  PluginOptions,
+  IsMinAndMaxReturnValue,
 } from '../../types/types';
 import '../../slider';
 import {
@@ -11,7 +14,7 @@ import {
 } from './types';
 
 class Demo {
-  private slider: SliderReturnOption;
+  readonly slider: SliderReturnOption;
 
   readonly wrapper: HTMLElement;
 
@@ -22,12 +25,17 @@ class Demo {
   private settingsKeys: SettingsKeyOptions[] = ['value', 'valueMin', 'valueMax', 'min', 'max',
     'withProgress', 'isVertical', 'isRange', 'withLabel', 'withScale', 'step'];
 
-  constructor(option: { wrapper: HTMLElement; settings?: SliderOptions }) {
+  constructor(option: { wrapper: HTMLElement; settings?: Omit <PluginOptions, 'method'> }) {
     const { wrapper, settings } = option;
     this.wrapper = wrapper;
-    if (settings) {
-      this.settings = settings;
-    }
+    this.$sliderElement = $(this.wrapper).find('.js-slider');
+    this.slider = this.$sliderElement.slider({
+      ...settings,
+      method: (options: SliderOptions) => this.updateInputValue({
+        settings: options,
+        wrapper,
+      }),
+    });
     autoBind(this);
   }
 
@@ -36,16 +44,7 @@ class Demo {
     if (formElement) {
       Demo.createElements({ settings: this.settings, form: formElement });
     }
-
-    this.$sliderElement = $(this.wrapper).find('.js-slider');
-    this.slider = this.$sliderElement.slider({
-      ...this.settings,
-      method: (options: SliderOptions) => this.updateInputValue({
-        settings: options,
-        wrapper: this.wrapper,
-      }),
-    });
-
+    this.settings = this.slider.settings;
     this.setInputValues(this.settings);
 
     const optionsForInput = {
@@ -107,7 +106,7 @@ class Demo {
       this.setInputValues(settings);
 
       this.$sliderElement = $(this.wrapper).find('.js-slider');
-      (this.slider as { reload: MethodOption }).reload(
+      this.slider.reload(
         { ...settings, $element: this.$sliderElement },
       );
 
@@ -145,8 +144,7 @@ class Demo {
     const { wrapper } = options;
     this.settings = options.settings;
 
-    const isRangeAndValueMinAndValueMax = (data: SliderOptions): data is
-      IsValueMinAndValueMaxReturnValue => (
+    const isRangeAndValueMinAndValueMax = (data: SliderOptions): data is IsMinAndMaxReturnValue => (
       data.valueMin !== undefined && data.valueMax !== undefined && isRange
     );
     if (isRangeAndValueMinAndValueMax(options.settings)) {
