@@ -83,7 +83,7 @@ class Demo {
     const stepInput = this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement;
     const isTargetParentAndValidValueOrSetting = (targetParent: ParentNode | null):
       targetParent is HTMLElement => targetParent !== undefined && isValidValueOrSetting === true
-      && this.validateSettings(stepInput) === true;
+      && this.validateSettings(stepInput) === true && this.checkRangeValue();
     const target = event.currentTarget as HTMLElement;
 
     if (isTargetParentAndValidValueOrSetting(target.parentNode)) {
@@ -223,11 +223,9 @@ class Demo {
       return Demo.createErrorElement({ element, text: 'invalid value' });
     };
 
-    const isValidValues = checkRangeLimits(value) && this.checkRangeValue();
-
     const checkStepValue = (number: number): boolean => {
       const isValidValuesAndStep = (stepValue?: number): stepValue is
-        number => isValidValues && typeof stepValue === 'number';
+        number => checkRangeLimits(value) && typeof stepValue === 'number';
       if (isValidValuesAndStep(step)) {
         Demo.deleteErrorElement(element);
         return ((number - min) % step === 0) || Demo.createErrorElement(
@@ -240,7 +238,7 @@ class Demo {
     if (step) {
       return checkStepValue(value);
     }
-    return isValidValues;
+    return checkRangeLimits(value);
   }
 
   private checkRangeValue(): boolean {
