@@ -79,9 +79,6 @@ class Main extends Observable {
     const { withProgress } = this.settings;
 
     this.thumbView.update(options);
-    if (this.settings.step) {
-      this.scaleView.update(options);
-    }
     this.labelView.updateValue(options);
 
     if (withProgress) {

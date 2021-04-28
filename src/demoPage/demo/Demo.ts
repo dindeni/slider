@@ -147,6 +147,9 @@ class Demo {
     const isRangeAndValueMinAndValueMax = (data: SliderOptions): data is IsMinAndMaxReturnValue => (
       data.valueMin !== undefined && data.valueMax !== undefined && isRange
     );
+    const isValue = (checkedValue?: number): checkedValue is number => (
+      typeof checkedValue === 'number' || checkedValue === 0);
+
     if (isRangeAndValueMinAndValueMax(options.settings)) {
       const { valueMin, valueMax } = options.settings;
       const inputElementMin = wrapper.querySelector('.js-demo__field-value_type_min');
@@ -155,7 +158,7 @@ class Demo {
       (inputElementMax as HTMLInputElement).value = valueMax.toString();
       this.validateValue({ element: inputElementMin as HTMLInputElement, value: valueMin });
       this.validateValue({ element: inputElementMax as HTMLInputElement, value: valueMax });
-    } else if (value) {
+    } else if (isValue(value)) {
       const inputElement = wrapper.querySelector('.js-demo__field-value');
       (inputElement as HTMLInputElement).value = value.toString();
     }
@@ -228,7 +231,10 @@ class Demo {
         number => checkRangeLimits(value) && typeof stepValue === 'number';
       if (isValidValuesAndStep(step)) {
         Demo.deleteErrorElement(element);
-        return ((number - min) % step === 0) || Demo.createErrorElement(
+        const isValidValue = (Number((number / step).toFixed(2).split('.')[1]) === 0)
+          || number === max;
+
+        return isValidValue || Demo.createErrorElement(
           { element, text: 'value must be a multiple of step and above zero' },
         );
       }

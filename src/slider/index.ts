@@ -17,6 +17,7 @@ $.fn.slider = function (options?: PluginOptions): SliderReturnOption {
     isVertical: false,
     isRange: false,
     $element: this,
+    step: 1,
   };
   const dataAttributes = $(this).data();
 
@@ -32,7 +33,9 @@ $.fn.slider = function (options?: PluginOptions): SliderReturnOption {
   if (config.method) {
     this.method = controller.passMethod(config.method);
   }
-  this.reload = (reloadOptions?: PluginOptions): void => controller.reloadSlider(reloadOptions);
+  this.reload = (reloadOptions?: PluginOptions): void => controller.reloadSlider(
+    { ...config, ...reloadOptions },
+  );
   return this;
 };
 

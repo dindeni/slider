@@ -42,7 +42,7 @@ class Controller extends Observable {
     method(this.model.settings);
   }
 
-  public reloadSlider(options?: Slider): void {
+  public reloadSlider(options: Slider): void {
     this.model.setSettings(options);
     this.view.reloadSlider(this.model.settings);
     this.updateOptions(this.model.settings);

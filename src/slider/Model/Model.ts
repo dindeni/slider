@@ -19,13 +19,13 @@ class Model extends Observable {
 
   public stepValues: number[];
 
-  public setSettings(options?: PluginOptions): void {
+  private oldStep? = 1;
+
+  public setSettings(options: PluginOptions): void {
     this.settings = { ...this.settings, ...options };
 
     this.checkSettingsValue();
-    if (this.settings.step) {
-      this.setStepValues();
-    }
+    this.oldStep = this.settings.step;
 
     const { valueMin, valueMax, value } = this.settings;
     this.settings.valueMin = this.validateStepValue(this.getSettingsValue({ type: 'min', value: valueMin }));
@@ -72,14 +72,9 @@ class Model extends Observable {
     const { step, max } = this.settings;
 
     if (step) {
-      let validValue = this.stepValues.reduce((previousValue, currentValue) => (
-        Math.abs(currentValue - value) < Math.abs(previousValue - value)
-          ? currentValue
-          : previousValue
-      ));
-      if (validValue >= max) {
-        validValue = max;
-      }
+      const checkedValue = Number((Math.round(value / step) * step).toFixed(2));
+      const validValue = checkedValue > max ? max : checkedValue;
+
       this.notifyAll({ value: validValue, type: EventTypes.SET_STEP_VALID_VALUE });
       return validValue;
     }
@@ -107,24 +102,6 @@ class Model extends Observable {
 
     const valuesRange = (valueMax - valueMin);
     return value + (valuesRange / 2) < valueMax ? 'min' : 'max';
-  }
-
-  private setStepValues(): void {
-    const { min, max, step } = this.settings;
-
-    if (typeof step === 'number') {
-      const length = Math.round((max - min) / step) + 1;
-      const stepValues = new Array(length).fill(0);
-      let value = min;
-      this.stepValues = stepValues.map(() => {
-        value = parseFloat((value + step).toFixed(10));
-        return parseFloat((value - step).toFixed(10));
-      });
-      if (this.stepValues[this.stepValues.length - 1] !== max) {
-        this.stepValues.pop();
-        this.stepValues.push(max);
-      }
-    }
   }
 
   private validateExtremumValue(checkedValue: number): number {

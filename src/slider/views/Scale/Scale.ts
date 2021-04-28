@@ -1,16 +1,10 @@
-import { ScaleData, SliderElementOptions, ValueAndType } from '../../../types/types';
+import { ScaleData, SliderElementOptions } from '../../../types/types';
 import Observable from '../../Observable/Observable';
 
 class Scale extends Observable {
-  private data: ScaleData = {
-    values: [], coordinates: [], shortValues: [], shortCoordinates: [],
+  private data: Pick<ScaleData, 'values' | 'coordinates'> = {
+    values: [], coordinates: [],
   };
-
-  private $element: JQuery<HTMLElement>;
-
-  private $elementMin: JQuery<HTMLElement>;
-
-  private $elementMax: JQuery<HTMLElement>;
 
   private trackSize: number;
 
@@ -27,98 +21,45 @@ class Scale extends Observable {
     this.generateCoordinates(trackSize);
     const $ul = $('<ul class="slider__scale"></ul>').appendTo($element);
     if (withScale) {
-      this.data.shortValues.map((item, index) => {
+      this.data.values.map((item, index) => {
         const $itemElement = $(`<li class="slider__scale-item js-slider__scale-item">${item}</li>`).appendTo($ul);
 
         const verticalCorrection = 7;
         return isVertical
-          ? $itemElement.css({ top: `${(this.data.shortCoordinates[index]) - verticalCorrection}px` })
-          : $itemElement.css({ left: `${this.data.shortCoordinates[index]}px` });
+          ? $itemElement.css({ top: `${(this.data.coordinates[index]) - verticalCorrection}px` })
+          : $itemElement.css({ left: `${this.data.coordinates[index]}px` });
       });
     }
 
     this.trackSize = trackSize;
-    this.initializeElements();
-  }
-
-  public update(options: ValueAndType): void {
-    const { value, type } = options;
-
-    const getIndex = (): number => this.data.values.findIndex(
-      (scaleValue) => scaleValue === value,
-    );
-
-    const key = this.settings.isVertical ? 'top' : 'left';
-    const element = this.getCurrentElement(type)[0];
-    const index = getIndex();
-    if (index !== -1) {
-      element.style[key] = `${this.data.coordinates[index].toString()}px`;
-    }
   }
 
   public setValues(values: number[]): void {
     this.data.values = values;
   }
 
-  private getCurrentElement(type?: 'min' | 'max'): JQuery<HTMLElement> {
-    if (type) {
-      return type === 'min' ? this.$elementMin : this.$elementMax;
-    }
-    return this.$element;
-  }
-
-  private initializeElements(): void {
-    const { $element, isRange } = this.settings;
-
-    if (isRange) {
-      this.$elementMin = $element.find('.js-slider__thumb_type_min');
-      this.$elementMax = $element.find('.js-slider__thumb_type_max');
-    }
-    this.$element = $element.find('.js-slider__thumb');
-  }
-
   private generateCoordinates(trackSize: number): void {
-    const { max, min, step } = this.settings;
+    const { max, min } = this.settings;
 
+    const step = this.settings.step || 1;
     this.data.coordinates = [];
+    this.data.values = [];
+    let currentValue = min;
+    const arrayLength = Math.round((max - min) / step);
+    const listLength = arrayLength < 7 ? arrayLength : 7;
 
-    if (typeof step === 'number') {
-      let count = 0;
-      const arrayLength = Math.round((max - min) / step) + 1;
-      [...Array(arrayLength)].map(() => {
-        const fractionOfValue = count / (max - min);
-        const coordinatesItems = Number((fractionOfValue * trackSize).toFixed(2));
-        this.data.coordinates.push(coordinatesItems);
-        count = parseFloat((count + step).toFixed(10));
-        return count;
-      });
-    }
-    const isLastCoordinate = this.data.coordinates[this.data.coordinates.length - 1] !== trackSize;
-    if (isLastCoordinate) {
-      this.data.coordinates.pop();
-      this.data.coordinates.push(trackSize);
-    }
-    this.checkData();
-  }
-
-  private checkData(): void {
-    const { coordinates, values } = this.data;
-    let shortValue = values;
-    let shortCoordinates = coordinates;
-
-    while (shortValue.length > 10) {
-      shortValue = shortValue.filter(
-        (_currentValue, index) => index === 0 || index % 2 === 0,
-      );
-    }
-
-    while (shortCoordinates.length > 10) {
-      shortCoordinates = shortCoordinates.filter(
-        (_currentValue, index) => index === 0 || index % 2 === 0,
-      );
-    }
-    this.data.shortValues = shortValue;
-    this.data.shortCoordinates = shortCoordinates;
+    [...Array(listLength + 1)].forEach((_value, index, array) => {
+      if (index === array.length - 1) {
+        this.data.coordinates.push(trackSize);
+        this.data.values.push(max);
+        return;
+      }
+      const value = Math.round(((max - min) / listLength) / step) * step;
+      const coordinatesItems = ((currentValue / (max - min)) * trackSize);
+      this.data.coordinates.push(Number(coordinatesItems.toFixed(2)));
+      this.data.values.push(Number(currentValue.toFixed(2)));
+      currentValue += value;
+    });
   }
 }
 

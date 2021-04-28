@@ -69,10 +69,9 @@ class Thumb extends Observable {
   }
 
   public update(options: ValueAndType): void {
-    const { step } = this.settings;
     const { value, type } = options;
 
-    const isValueNotStep = (data?: number | null): data is number => data !== undefined && !step;
+    const isValueNotStep = (data?: number | null): data is number => data !== undefined;
     if (isValueNotStep(value)) {
       this.setCurrentElement(type);
       this.setPosition(this.getThumbCoordinate(value));
