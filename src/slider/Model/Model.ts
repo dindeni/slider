@@ -19,18 +19,14 @@ class Model extends Observable {
 
   public stepValues: number[];
 
-  private oldStep? = 1;
-
   public setSettings(options: PluginOptions): void {
     this.settings = { ...this.settings, ...options };
-
-    this.checkSettingsValue();
-    this.oldStep = this.settings.step;
 
     const { valueMin, valueMax, value } = this.settings;
     this.settings.valueMin = this.validateStepValue(this.getSettingsValue({ type: 'min', value: valueMin }));
     this.settings.valueMax = this.validateStepValue(this.getSettingsValue({ type: 'max', value: valueMax }));
     this.settings.value = this.validateStepValue(this.getSettingsValue({ value }));
+    this.checkSettingsValue();
   }
 
   public calculateFractionOfValue(value: number): number {
@@ -69,16 +65,23 @@ class Model extends Observable {
   }
 
   private validateStepValue(value: number): number {
-    const { step, max } = this.settings;
+    const { max, min } = this.settings;
+    const step = this.settings.step || 1;
 
-    if (step) {
-      const checkedValue = Number((Math.round(value / step) * step).toFixed(2));
-      const validValue = checkedValue > max ? max : checkedValue;
-
-      this.notifyAll({ value: validValue, type: EventTypes.SET_STEP_VALID_VALUE });
-      return validValue;
+    if (value === max) {
+      return max;
     }
-    return value;
+    const checkValue = (): number => {
+      const checkedValue = Number((Math.round((value - min) / step) * step).toFixed(2)) + min;
+      switch (true) {
+        case checkedValue > max: return max;
+        case checkedValue < min: return min;
+        default: return checkedValue;
+      }
+    };
+
+    this.notifyAll({ value: checkValue(), type: EventTypes.SET_STEP_VALID_VALUE });
+    return checkValue();
   }
 
   private static checkValueBetweenMinAndMax(options: CheckTypeOptions

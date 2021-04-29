@@ -75,7 +75,7 @@ class Label extends Observable {
 
     this.$elementMax = $('<div class="slider__label js-slider__label slider__label_type_max js-slider__label_type_max"></div>')
       .appendTo(thumbSet[1]);
-    this.$elementMax.text(valueMax || max);
+    this.$elementMax.text(valueMax || valueMax === 0 ? valueMax : max);
   }
 
   private updateOptions(options: ValueAndType): void {

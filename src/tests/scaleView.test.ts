@@ -27,7 +27,7 @@ describe('Scale', () => {
   });
 
   it('should create scale', () => {
-    expect($('.js-slider__scale-item').length).toBe(8);
+    expect($('.js-slider__scale-item').length).toBe(11);
   });
 
   describe('Without label mark', () => {
@@ -41,7 +41,7 @@ describe('Scale', () => {
       });
 
       it('should create scale', () => {
-        expect($('.js-slider__scale-item').length).toBe(8);
+        expect($('.js-slider__scale-item').length).toBe(11);
       });
     });
   });

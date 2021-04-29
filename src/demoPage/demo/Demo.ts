@@ -80,6 +80,7 @@ class Demo {
     const isValidValueOrSetting = targetElement.classList.contains('js-demo__field-value')
       ? this.validateValue({ element: targetElement, value: targetValue })
       : this.validateSettings(targetElement);
+
     const stepInput = this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement;
     const isTargetParentAndValidValueOrSetting = (targetParent: ParentNode | null):
       targetParent is HTMLElement => targetParent !== undefined && isValidValueOrSetting === true
@@ -87,7 +88,7 @@ class Demo {
     const target = event.currentTarget as HTMLElement;
 
     if (isTargetParentAndValidValueOrSetting(target.parentNode)) {
-      this.getInputValues(event);
+      this.getInputValues();
       const form = target.cloneNode(true);
       target.parentNode.replaceChild(form, target);
       this.correctValues();
@@ -123,8 +124,8 @@ class Demo {
     }
   }
 
-  private getInputValues(event: Event): void {
-    const inputs = [...(event.currentTarget as HTMLFormElement).elements];
+  private getInputValues(): void {
+    const inputs = [...(this.wrapper.querySelector('.js-demo__form-panel') as HTMLFormElement).elements];
     inputs.forEach((input: HTMLInputElement, index: number) => {
       const key = this.settingsKeys[index];
 
@@ -231,8 +232,8 @@ class Demo {
         number => checkRangeLimits(value) && typeof stepValue === 'number';
       if (isValidValuesAndStep(step)) {
         Demo.deleteErrorElement(element);
-        const isValidValue = (Number((number / step).toFixed(2).split('.')[1]) === 0)
-          || number === max;
+        const isValidValue = (Number(((min - number) / step).toFixed(2).split('.')[1]) === 0)
+          || number === max || number === min;
 
         return isValidValue || Demo.createErrorElement(
           { element, text: 'value must be a multiple of step and above zero' },
@@ -286,9 +287,13 @@ class Demo {
     Demo.deleteErrorElement(element);
     const stepInput = this.wrapper.querySelector('.js-demo__field-step') as HTMLInputElement;
     const stepValue = parseFloat(stepInput.value);
+    const minInput = this.wrapper.querySelector('.js-panel-settings__field_type_min') as HTMLInputElement;
+    const minValue = parseFloat(minInput.value);
+    const maxInput = this.wrapper.querySelector('.js-panel-settings__field_type_max') as HTMLInputElement;
+    const maxValue = parseFloat(maxInput.value);
     switch (true) {
-      case min > max: return Demo.createErrorElement({ element, text: 'must be less than max' });
-      case max < min: return Demo.createErrorElement({ element, text: 'must be greater than min' });
+      case minValue > max: return Demo.createErrorElement({ element: minInput, text: 'must be less than max' });
+      case maxValue < min: return Demo.createErrorElement({ element: maxInput, text: 'must be greater than min' });
       case element === stepInput && stepValue <= 0: return Demo.createErrorElement(
         { element, text: 'step must be above zero' },
       );
@@ -311,7 +316,9 @@ class Demo {
       return number;
     };
 
-    if (valueMin) {
+    const isValueMin = (checkedValue?: number):
+      checkedValue is number => typeof checkedValue === 'number' || checkedValue === 0;
+    if (isValueMin(valueMin)) {
       this.settings.valueMin = checkValue(valueMin);
     }
     if (valueMax) {

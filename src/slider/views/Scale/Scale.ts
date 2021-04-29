@@ -46,7 +46,7 @@ class Scale extends Observable {
     this.data.values = [];
     let currentValue = min;
     const arrayLength = Math.round((max - min) / step);
-    const listLength = arrayLength < 7 ? arrayLength : 7;
+    const listLength = arrayLength < 10 ? arrayLength : 10;
 
     [...Array(listLength + 1)].forEach((_value, index, array) => {
       if (index === array.length - 1) {
@@ -55,8 +55,15 @@ class Scale extends Observable {
         return;
       }
       const value = Math.round(((max - min) / listLength) / step) * step;
-      const coordinatesItems = ((currentValue / (max - min)) * trackSize);
-      this.data.coordinates.push(Number(coordinatesItems.toFixed(2)));
+      if (index === 0) {
+        this.data.coordinates.push(0);
+        this.data.values.push(min);
+        currentValue = (Math.round((value) / step) * step) + min;
+        return;
+      }
+
+      const coordinateItem = (((currentValue - min) / (max - min)) * trackSize);
+      this.data.coordinates.push(Number(coordinateItem.toFixed(2)));
       this.data.values.push(Number(currentValue.toFixed(2)));
       currentValue += value;
     });
