@@ -5,7 +5,6 @@ enum EventTypes {
   VALIDATE_VALUE = 'VALIDATE_VALUE',
   VALUE_CHANGE = 'VALUE_CHANGE',
   UPDATE_VALUE = 'UPDATE_VALUE',
-  SET_STEP_VALUES = 'SET_STEP_VALUES',
 }
 
 export default EventTypes;

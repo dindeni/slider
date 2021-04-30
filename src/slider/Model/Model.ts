@@ -17,8 +17,6 @@ interface CheckTypeOptions {
 class Model extends Observable {
   public settings: SliderElementOptions;
 
-  public stepValues: number[];
-
   public setSettings(options: PluginOptions): void {
     this.settings = { ...this.settings, ...options };
 

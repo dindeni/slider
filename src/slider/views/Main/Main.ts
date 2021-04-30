@@ -50,7 +50,6 @@ class Main extends Observable {
       this.labelView.createElements();
     }
     if (step) {
-      this.notifyAll({ type: EventTypes.SET_STEP_VALUES });
       this.scaleView.createElements(this.getTrackSize());
     }
 
